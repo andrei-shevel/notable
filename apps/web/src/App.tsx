@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Route, Switch } from 'wouter';
 import { Tooltip } from '@notable/ui';
-import { Home } from './routes/Home';
+import { Workspace } from './routes/Workspace';
 
 const DesignSystem = import.meta.env.DEV
   ? lazy(() => import('./routes/_design'))
@@ -19,7 +19,7 @@ export function App() {
           </Route>
         ) : null}
         <Route>
-          <Home />
+          <Workspace />
         </Route>
       </Switch>
     </Tooltip.Provider>

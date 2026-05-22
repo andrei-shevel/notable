@@ -1,0 +1,65 @@
+.sidebar {
+  background-color: var(--surface-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  min-height: 0;
+}
+
+.section {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.section-title {
+  font-size: var(--text-section-head-size);
+  font-weight: var(--text-section-head-weight);
+  letter-spacing: var(--text-section-head-tracking);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 4px 8px 8px;
+}
+
+.foot {
+  margin-top: auto;
+  padding: 12px 8px 4px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  color: var(--text);
+}
+
+.user-email {
+  font-size: var(--font-size-xs);
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Override the Avatar's default amber gradient with the prototype's
+// indigo→violet for the user chip.
+.avatar {
+  background: linear-gradient(135deg, #818cf8, #c084fc);
+}
+
+@media (max-width: 960px) {
+  .sidebar {
+    display: none;
+  }
+}
