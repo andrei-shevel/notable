@@ -17,7 +17,7 @@ Goal: turn the `index.html` prototype into a working notes app with sync across 
 
 ```
                 ┌──────────┐
-   browser ───▶ │  caddy   │ ─── /          ───▶ static (web/dist)
+   browser ───▶ │  caddy   │ ─── /          ───▶ static (apps/web/dist)
                 │ (prod)   │ ─── /api/*      ───▶ api:3000
                 └──────────┘
                               ┌────────┐
@@ -28,7 +28,7 @@ Goal: turn the `index.html` prototype into a working notes app with sync across 
 
 `docker-compose.yml` services:
 - **db** — `postgres:16-alpine`, volume-mounted data dir, healthcheck, exposed only on the compose network in prod.
-- **api** — built from `./api/Dockerfile` (Node 22 + Fastify). Reads `DATABASE_URL`, `JWT_SECRET`, `SMTP_*`, `PUBLIC_URL` from env.
+- **api** — built from `./apps/api/Dockerfile` (Node 22 + Fastify). Reads `DATABASE_URL`, `JWT_SECRET`, `SMTP_*`, `PUBLIC_URL` from env.
 - **web** — static build of the Vite app. Either served by Caddy directly from a shared volume, or baked into a tiny Nginx image. (In dev this service is omitted; Vite dev server runs on the host.)
 - **caddy** — `caddy:2-alpine`, single Caddyfile reverse-proxies to `api` and serves static files. Handles HTTPS via automatic ACME.
 - **mailpit** — `axllent/mailpit`, dev-only profile, captures all outbound mail at `localhost:8025`.
@@ -94,7 +94,7 @@ Notes on the schema:
 - Tokens are stored hashed (`sha256(token)`); the raw token only ever lives in the email link. Lookup by hash on verify.
 - `citext` for emails so lookups are case-insensitive without surprising users.
 
-Migrations live in `api/drizzle/` with `drizzle-kit` generating SQL from `api/src/db/schema.ts`. Apply on boot via a one-shot `migrate` script (the `api` container runs `drizzle-kit migrate` before `node server.js`).
+Migrations live in `apps/api/drizzle/` with `drizzle-kit` generating SQL from `apps/api/src/db/schema.ts`. Apply on boot via a one-shot `migrate` script (the `api` container runs `drizzle-kit migrate` before `node server.js`).
 
 ## Auth & access
 
@@ -146,14 +146,14 @@ POST   /api/notes/:id/tags/:tagId
 DELETE /api/notes/:id/tags/:tagId
 ```
 
-Every request/response validated with Zod via `fastify-type-provider-zod`. The schemas live in `api/src/schemas/` and are imported by the frontend for shared types (via a small `shared/` package or path alias).
+Every request/response validated with Zod via `fastify-type-provider-zod`. The Zod schemas (request/response shapes) live in `packages/shared/src/schemas/` so they're a single source of truth — both `@notable/api` and `@notable/web` import them directly (`import { NoteSchema } from '@notable/shared'`). Drizzle's DB schema is server-only and stays in `apps/api/src/db/schema.ts`.
 
 ## Frontend changes
 
 Split `index.html` into a React app:
 
 ```
-web/src/
+apps/web/src/
 ├── main.tsx                   # React root + providers (QueryClient, Router, persister)
 ├── App.tsx                    # router + auth gate
 ├── routes/
@@ -226,49 +226,60 @@ notable/
 ├── docker-compose.dev.yml
 ├── Caddyfile
 ├── .env.example
-├── api/
-│   ├── Dockerfile
-│   ├── package.json
-│   ├── drizzle.config.ts
-│   ├── drizzle/                  # generated migrations
-│   └── src/
-│       ├── server.ts             # Fastify bootstrap
-│       ├── db/
-│       │   ├── client.ts
-│       │   └── schema.ts         # Drizzle schema
-│       ├── routes/
-│       │   ├── auth.ts
-│       │   ├── notes.ts
-│       │   ├── tags.ts
-│       │   └── search.ts
-│       ├── schemas/              # Zod schemas (shared with web)
-│       ├── plugins/
-│       │   ├── auth.ts           # preHandler that attaches request.user
-│       │   ├── cookie.ts
-│       │   └── ratelimit.ts
-│       └── mail/
-│           └── magicLink.ts
-├── web/
-│   ├── index.html
-│   ├── vite.config.ts
-│   ├── package.json
-│   └── src/                      # see "Frontend changes"
-└── shared/
-    └── types.ts                  # re-exports Zod schemas from api/src/schemas
+├── package.json                  # pnpm workspace root
+├── pnpm-workspace.yaml           # packages: apps/*, packages/*
+├── apps/
+│   ├── api/
+│   │   ├── Dockerfile
+│   │   ├── package.json
+│   │   ├── drizzle.config.ts
+│   │   ├── drizzle/              # generated migrations
+│   │   └── src/
+│   │       ├── server.ts         # Fastify bootstrap
+│   │       ├── db/
+│   │       │   ├── client.ts
+│   │       │   └── schema.ts     # Drizzle schema
+│   │       ├── routes/
+│   │       │   ├── auth.ts
+│   │       │   ├── notes.ts
+│   │       │   ├── tags.ts
+│   │       │   └── search.ts
+│   │       ├── plugins/
+│   │       │   ├── auth.ts       # preHandler that attaches request.user
+│   │       │   ├── cookie.ts
+│   │       │   └── ratelimit.ts
+│   │       └── mail/
+│   │           └── magicLink.ts
+│   └── web/
+│       ├── index.html
+│       ├── vite.config.ts
+│       ├── package.json
+│       └── src/                  # see "Frontend changes"
+└── packages/
+    └── shared/                   # @notable/shared
+        ├── package.json
+        └── src/
+            ├── index.ts          # barrel export
+            └── schemas/          # Zod schemas — imported by both api and web
+                ├── notes.ts
+                ├── tags.ts
+                └── auth.ts
 ```
+
+All workspace packages use a `@notable/*` scoped name (`@notable/web`, `@notable/api`, `@notable/shared`). Cross-package imports go through the package name (`import { NoteSchema } from '@notable/shared'`), and workspace deps are declared as `"@notable/shared": "workspace:*"` in each consumer's `package.json`.
 
 ## Implementation steps
 
-1. **Scaffold the empty skeleton.** `pnpm init` at root with workspaces for `api`, `web`, `shared`. `pnpm create vite@latest web --template react-ts`. Add `sass` as a dev dep so `*.scss` files just work in Vite. Write a minimal `main.tsx` (React root only) and an `App.tsx` that renders a placeholder. No router, no data layer, no providers yet — those come in with the deps that need them. `pnpm --filter web dev` should boot a working empty app with no prototype content yet.
+1. **Scaffold the empty skeleton.** `pnpm init` at root, `pnpm-workspace.yaml` with `apps/*` + `packages/*`. `pnpm create vite@latest apps/web --template react-ts`. Rename the generated package to `@notable/web` in `apps/web/package.json`. Add `sass` as a dev dep so `*.scss` files just work in Vite. Write a minimal `main.tsx` (React root only) and an `App.tsx` that renders a placeholder. No router, no data layer, no providers yet — those come in with the deps that need them. `pnpm --filter @notable/web dev` should boot a working empty app with no prototype content yet.
 2. **Common components + design tokens.** Port the prototype's design tokens into `styles/tokens.scss` (`:root` block + the `@media (prefers-color-scheme: dark)` override) and `styles/reset.scss`. Import `styles/global.scss` once from `main.tsx`. Build the component library listed in "Frontend changes" — `Brand`, `Icon`, `IconButton`, `Tag`, `Avatar`, `NavItem`, `SearchInput`, `SavedPill`, `Crumbs`, `NoteCard` — each with a colocated `*.module.scss`. No data, no logic; just typed props and static markup. Verify each in isolation via a throwaway `/_kitchen-sink` route that renders one of each.
 3. **Workspace page from prototype.** Build `Workspace.tsx` as the 3-pane shell (`.app` grid). Compose `Sidebar`, `NoteList`, and an editor pane (static prototype content rendered as plain JSX for now — Tiptap arrives in step 10). Feed the same hard-coded note data the prototype uses, sourced from a `lib/fixtures.ts` so it's easy to swap for API data in step 9. At the end of this step, the rendered React app is visually indistinguishable from the original `index.html`.
 4. **Compose skeleton.** Write `docker-compose.yml` with `db` + `caddy` + `api` (empty), `docker-compose.dev.yml` with `mailpit` and source mounts. `.env.example` with `POSTGRES_PASSWORD`, `JWT_SECRET`, `SMTP_URL`, `PUBLIC_URL`. Verify `docker compose up db mailpit` boots.
-5. **Fastify boot.** `pnpm --filter api add fastify @fastify/cookie @fastify/jwt @fastify/cors @fastify/rate-limit zod fastify-type-provider-zod postgres drizzle-orm` (dev: `drizzle-kit tsx`). Build a `/api/health` endpoint that returns `{ db: ok }` after a `SELECT 1`. Verify `docker compose up api` is healthy.
+5. **Fastify boot.** `pnpm --filter @notable/api add fastify @fastify/cookie @fastify/jwt @fastify/cors @fastify/rate-limit zod fastify-type-provider-zod postgres drizzle-orm` (dev: `drizzle-kit tsx`). Build a `/api/health` endpoint that returns `{ db: ok }` after a `SELECT 1`. Verify `docker compose up api` is healthy.
 6. **Schema + migrations.** Define Drizzle schema, run `drizzle-kit generate`, commit migrations. Container entrypoint runs `drizzle-kit migrate` then starts the server.
 7. **Auth.** Build login + verify + logout. Use nodemailer pointed at Mailpit in dev. Test the full flow in a browser, confirm cookie is set.
 8. **Notes CRUD.** Implement the routes from the API surface. Add the `preHandler` that gates everything. Hand-test with `curl` + the auth cookie.
-9. **Frontend wiring.** Install the data-layer deps: `pnpm --filter web add wouter @tanstack/react-query @tanstack/react-query-persist-client @tanstack/query-async-storage-persister idb-keyval`. Build the `App.tsx` router with `wouter` (`/login`, `/auth/verify`, `/`, `/n/:id`). Wire `QueryClientProvider` + `persistQueryClient` in `main.tsx`. Build `useNotes()` and replace the `lib/fixtures.ts` source in `NoteList.tsx` with `useQuery(['notes'])`. Build the `Login` route. Cookie session is automatic since it's `httpOnly`.
-10. **Tiptap editor.** `pnpm --filter web add @tiptap/react @tiptap/starter-kit @tiptap/extension-task-list @tiptap/extension-task-item @tiptap/extension-placeholder @tiptap/extension-link @tiptap/html`. Build `Editor.tsx` with `useEditor`, mount the shared extensions from `lib/tiptap.ts`, wire `useAutosave` to a `PATCH` mutation with optimistic update of `['notes', id]`. Handle active-note switching with `editor.commands.setContent(...)` (suppress the `onUpdate` event with the second arg).
+9. **Frontend wiring.** Install the data-layer deps: `pnpm --filter @notable/web add wouter @tanstack/react-query @tanstack/react-query-persist-client @tanstack/query-async-storage-persister idb-keyval`. Build the `App.tsx` router with `wouter` (`/login`, `/auth/verify`, `/`, `/n/:id`). Wire `QueryClientProvider` + `persistQueryClient` in `main.tsx`. Build `useNotes()` and replace the `lib/fixtures.ts` source in `NoteList.tsx` with `useQuery(['notes'])`. Build the `Login` route. Cookie session is automatic since it's `httpOnly`.
+10. **Tiptap editor.** `pnpm --filter @notable/web add @tiptap/react @tiptap/starter-kit @tiptap/extension-task-list @tiptap/extension-task-item @tiptap/extension-placeholder @tiptap/extension-link @tiptap/html`. Build `Editor.tsx` with `useEditor`, mount the shared extensions from `lib/tiptap.ts`, wire `useAutosave` to a `PATCH` mutation with optimistic update of `['notes', id]`. Handle active-note switching with `editor.commands.setContent(...)` (suppress the `onUpdate` event with the second arg).
 11. **Tags.** Tag CRUD + sidebar list with per-tag counts (one query: `SELECT t.*, COUNT(nt.note_id) FROM tags t LEFT JOIN note_tags nt ON nt.tag_id = t.id WHERE t.user_id = $1 GROUP BY t.id`). Tag picker in the editor toolbar.
 12. **Search.** `GET /api/notes/search?q=...` runs `websearch_to_tsquery` against `search_tsv`, ranked, with a `pg_trgm` fallback if the query produces no FTS hits. Debounce client-side.
 13. **Cache hardening.** The TanStack Query persister wired in step 9 already handles "render from cache on load, revalidate in background." This step is the polish: tune `staleTime` per query (notes list: 30s, single note: 0), set `maxAge` on the persister (7 days), wire mutation `onMutate`/`onError` for rollback on failed PATCH, and add a small "offline" indicator when fetches fail. Last-write-wins on the server is fine for a single user across devices.
@@ -276,12 +287,12 @@ notable/
 
 ## Scaling later
 
-The architecture deliberately makes the future easy:
+The architecture deliberately makes the future easy. New deployable services land in `apps/` (each with its own Dockerfile and compose service); new shared libraries land in `packages/` (each with a `@notable/*` name).
 - **More API instances:** the API is stateless. Add `deploy: replicas: N` (or move to Kubernetes), put Caddy in front as the load balancer. Cookies are JWT so no shared session store needed.
 - **More database load:** add **PgBouncer** as a sidecar container in transaction-pooling mode. The Fastify `postgres` driver opens fewer connections; PgBouncer multiplexes across instances.
 - **Read scaling:** Postgres streaming replication to a read replica, route `GET` traffic to it.
-- **Background work:** when we add things like embeddings generation or weekly digest emails, add a `worker` service to compose that consumes a Postgres-based queue (`pg-boss`) — no new infra.
-- **Realtime (Tier 3):** add a `collab` service running `y-websocket`, persist Yjs doc snapshots in a new `note_yjs (note_id, doc bytea, updated_at)` table. Caddy reverse-proxies `/collab/*` to it.
+- **Background work:** when we add things like embeddings generation or weekly digest emails, add `apps/worker` (a new compose service) that consumes a Postgres-based queue (`pg-boss`) — no new infra.
+- **Realtime (Tier 3):** add `apps/collab` running `y-websocket`, persist Yjs doc snapshots in a new `note_yjs (note_id, doc bytea, updated_at)` table. Caddy reverse-proxies `/collab/*` to it.
 - **Semantic search later:** `CREATE EXTENSION vector;` adds a `body_embedding vector(1536)` column. A worker backfills via OpenAI/local embedding. Same Postgres.
 - **Backups:** WAL-G or pgBackRest container, ship base backups + WAL to S3-compatible storage (Backblaze B2 is cheapest).
 
