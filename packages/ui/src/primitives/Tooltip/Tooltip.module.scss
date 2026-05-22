@@ -1,0 +1,30 @@
+.content {
+  background-color: var(--text);
+  color: var(--surface);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-tooltip);
+  user-select: none;
+  animation: fade var(--duration-fast) var(--easing-standard);
+
+  &[data-state='closed'] {
+    animation: fadeOut var(--duration-fast) var(--easing-standard);
+  }
+}
+
+.arrow {
+  fill: var(--text);
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}

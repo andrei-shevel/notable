@@ -1,0 +1,105 @@
+.shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+.nav {
+  background-color: var(--surface-2);
+  border-right: 1px solid var(--border);
+  padding: var(--space-6) var(--space-4);
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.brand {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tighter);
+  color: var(--text);
+
+  small {
+    display: block;
+    color: var(--text-faint);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--tracking-normal);
+    margin-top: 2px;
+  }
+}
+
+.group {
+  margin-bottom: var(--space-5);
+}
+
+.group-label {
+  font-size: var(--text-section-head-size);
+  font-weight: var(--text-section-head-weight);
+  letter-spacing: var(--text-section-head-tracking);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  padding: 0 var(--space-2);
+  margin: 0 0 var(--space-1);
+}
+
+.link {
+  display: block;
+  padding: 6px var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-md);
+  color: var(--text-muted);
+  transition:
+    background-color var(--duration-fast) var(--easing-standard),
+    color var(--duration-fast) var(--easing-standard);
+
+  &:hover {
+    background-color: var(--surface);
+    color: var(--text);
+  }
+
+  &.active {
+    background-color: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.main {
+  padding: var(--space-12);
+  overflow-y: auto;
+  max-width: 100%;
+}
+
+.page-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-section-size);
+  font-weight: var(--text-section-weight);
+  letter-spacing: var(--text-section-tracking);
+}
+
+.page-description {
+  margin: 0 0 var(--space-8);
+  color: var(--text-muted);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+  max-width: 640px;
+}
+
+.section-title {
+  margin: var(--space-10) 0 var(--space-3);
+  font-size: var(--text-subsection-size);
+  font-weight: var(--text-subsection-weight);
+  color: var(--text);
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}

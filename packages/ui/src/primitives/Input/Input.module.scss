@@ -1,0 +1,134 @@
+@use '../../mixins' as m;
+
+.field {
+  --field-h: 36px;
+  --field-px: var(--space-3);
+  --field-font-size: var(--font-size-md);
+  --field-bg: var(--surface);
+  --field-border: var(--border);
+  --field-ring: var(--accent-soft);
+
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  background-color: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-sm);
+  transition:
+    background-color var(--duration-base) var(--easing-standard),
+    border-color var(--duration-base) var(--easing-standard),
+    box-shadow var(--duration-base) var(--easing-standard);
+
+  &:hover:not(.disabled) {
+    border-color: var(--border-strong);
+  }
+
+  &.focused {
+    border-color: var(--field-border);
+    box-shadow: 0 0 0 3px var(--field-ring);
+  }
+
+  &.error {
+    --field-border: var(--danger);
+    --field-ring: var(--danger-soft);
+  }
+
+  &.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+// -- Variants -------------------------------------------------------------
+.variant-default {
+  --field-bg: var(--surface);
+}
+
+.variant-inline {
+  --field-bg: var(--surface-2);
+  --field-border: transparent;
+
+  &:hover:not(.disabled) {
+    border-color: transparent;
+  }
+
+  &.focused {
+    background-color: var(--surface);
+    border-color: var(--border);
+  }
+}
+
+// -- Sizes ----------------------------------------------------------------
+.size-sm {
+  --field-h: 30px;
+  --field-px: var(--space-2);
+  --field-font-size: var(--font-size-sm);
+}
+
+.size-md {
+  --field-h: 36px;
+  --field-px: var(--space-3);
+  --field-font-size: var(--font-size-md);
+}
+
+// Multiline grows; height becomes a min on the field shell.
+.multiline {
+  align-items: flex-start;
+
+  .control {
+    height: auto;
+    min-height: var(--field-h);
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-2);
+    resize: vertical;
+  }
+}
+
+// -- Control: the native input/textarea ----------------------------------
+.control {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--field-h);
+  padding: 0 var(--field-px);
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--text);
+  font-size: var(--field-font-size);
+  font-family: var(--font-sans);
+  line-height: 1.4;
+
+  &::placeholder {
+    color: var(--text-faint);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// -- Icon slots -----------------------------------------------------------
+.adornment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.adornment-left {
+  padding-left: var(--field-px);
+  padding-right: var(--space-2);
+
+  & + .control {
+    padding-left: 0;
+  }
+}
+
+.adornment-right {
+  padding-left: var(--space-2);
+  padding-right: var(--field-px);
+}

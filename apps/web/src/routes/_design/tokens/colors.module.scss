@@ -1,0 +1,67 @@
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: 2px;
+  margin-bottom: var(--space-2);
+}
+
+.swatch {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.swatch-label {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 2px 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: var(--color-stone-900);
+  text-align: center;
+}
+
+.ramp-name {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-1);
+}
+
+.semantic-card {
+  padding: var(--space-4);
+  background-color: var(--bg);
+}
+
+.semantic-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.semantic-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.semantic-name {
+  color: var(--text);
+}
+
+.semantic-value {
+  color: var(--text-muted);
+}

@@ -1,0 +1,64 @@
+.tag {
+  --tag-px: var(--space-2);
+  --tag-py: 3px;
+  --tag-font-size: var(--text-tag-size);
+  --tag-dot-size: 8px;
+  --tag-dot: var(--tag-neutral);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--tag-py) var(--tag-px);
+  background-color: var(--surface-2);
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  font-size: var(--tag-font-size);
+  font-weight: var(--text-tag-weight);
+  line-height: var(--text-tag-leading);
+  white-space: nowrap;
+}
+
+.size-sm {
+  --tag-px: 6px;
+  --tag-py: 2px;
+  --tag-font-size: var(--font-size-xs);
+  --tag-dot-size: 6px;
+}
+
+.size-md {
+  --tag-px: var(--space-2);
+  --tag-py: 3px;
+  --tag-font-size: var(--font-size-xs);
+  --tag-dot-size: 8px;
+}
+
+.dot {
+  flex: 0 0 auto;
+  width: var(--tag-dot-size);
+  height: var(--tag-dot-size);
+  border-radius: var(--radius-full);
+  background-color: var(--tag-dot);
+}
+
+.color-blue   { --tag-dot: var(--tag-blue); }
+.color-green  { --tag-dot: var(--tag-green); }
+.color-pink   { --tag-dot: var(--tag-pink); }
+.color-violet { --tag-dot: var(--tag-violet); }
+.color-neutral { --tag-dot: var(--tag-neutral); }
+
+// Translucent variant used when a parent surface is amber-tinted (active note
+// card from the prototype).
+.translucent {
+  background-color: rgba(255, 255, 255, 0.6);
+  color: var(--text);
+}
+
+@media (prefers-color-scheme: dark) {
+  .translucent {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
+[data-theme='dark'] .translucent {
+  background-color: rgba(0, 0, 0, 0.3);
+}

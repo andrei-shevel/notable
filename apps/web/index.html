@@ -6,6 +6,20 @@
     <title>Notable</title>
   </head>
   <body>
+    <script>
+      // Apply the persisted theme synchronously before React paints to avoid a
+      // light-to-dark flash on first load.
+      (function () {
+        try {
+          var t = localStorage.getItem('notable-theme');
+          if (t === 'light' || t === 'dark') {
+            document.documentElement.setAttribute('data-theme', t);
+          }
+        } catch (e) {
+          /* localStorage unavailable — fall back to OS preference */
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

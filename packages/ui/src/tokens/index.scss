@@ -1,0 +1,6 @@
+// @notable/ui/tokens — load order matters: primitives → semantics → reset.
+// The reset references semantic tokens; semantics reference primitives.
+
+@forward 'primitives';
+@forward 'semantics';
+@forward 'reset';
