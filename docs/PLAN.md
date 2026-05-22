@@ -4,7 +4,7 @@ Goal: turn the `index.html` prototype into a working notes app with sync across 
 
 ## Stack
 
-- **Frontend:** the existing `index.html`, progressively split into a small Vite + vanilla-TS app (no framework needed at this size).
+- **Frontend:** Vite + React 19 + TypeScript. Routing via `wouter` (tiny, fits a 3-route app). Server state via TanStack Query, persisted to IndexedDB. Local UI state via `useState`/`useReducer`; reach for `zustand` only if cross-tree sharing appears. Styling via Sass + CSS Modules (`*.module.scss`); design tokens (`--bg`, `--accent`, etc.) live as CSS custom properties in `styles/tokens.scss` so dark mode stays a single `@media` block.
 - **Editor:** Tiptap (ProseMirror under the hood). Storage format is the Tiptap JSON document; HTML is derived on read for previews.
 - **Backend:** Node 22 + Fastify 5 in TypeScript. Validation via `fastify-type-provider-zod`. Postgres driver: `postgres` (porsager/postgres). Migrations + schema-as-code via Drizzle.
 - **Database:** Postgres 16 in its own container. `pg_trgm` enabled now; `pgvector` left as a no-op extension for future semantic search.
@@ -150,31 +150,72 @@ Every request/response validated with Zod via `fastify-type-provider-zod`. The s
 
 ## Frontend changes
 
-Split `index.html` into:
-- `web/index.html` — shell
-- `web/src/main.ts` — bootstrap, router (hash-based, no framework)
-- `web/src/api.ts` — typed fetch wrapper, reads/writes JSON, throws on non-2xx
-- `web/src/cache.ts` — IndexedDB cache for notes + tags (idb-keyval)
-- `web/src/notes.ts` — list/load/save/delete, optimistic updates
-- `web/src/editor.ts` — Tiptap setup, extensions, save bridge
-- `web/src/preview.ts` — `body_json` → HTML for the list pane via `@tiptap/html`
-- `web/src/search.ts` — debounced API search
-- `web/src/auth.ts` — login form, verify-redirect handler, session bootstrap
+Split `index.html` into a React app:
 
-Tiptap extensions:
+```
+web/src/
+├── main.tsx                   # React root + providers (QueryClient, Router, persister)
+├── App.tsx                    # router + auth gate
+├── routes/
+│   ├── Login.tsx              # email input → POST /api/auth/login
+│   ├── Verify.tsx             # consumes ?token, calls /verify, redirects
+│   └── Workspace.tsx          # the 3-pane app shell
+├── components/
+│   ├── Brand.tsx              # logo mark + wordmark
+│   ├── Icon.tsx               # tiny SVG wrapper, one named icon per export
+│   ├── IconButton.tsx         # 30×30 button used in toolbars
+│   ├── Tag.tsx                # pill (Work, Planning, …)
+│   ├── Avatar.tsx             # gradient initials circle
+│   ├── NavItem.tsx            # sidebar row: icon + label + count + dot
+│   ├── SearchInput.tsx        # search-icon + text input
+│   ├── SavedPill.tsx          # green-dot "Saved 2m ago"
+│   ├── Crumbs.tsx             # editor-toolbar breadcrumb
+│   ├── NoteCard.tsx           # list row
+│   ├── Sidebar.tsx            # composes Brand + NavItem groups + Avatar
+│   ├── NoteList.tsx           # middle pane: header + SearchInput + NoteCards
+│   ├── EditorToolbar.tsx      # composes Crumbs + SavedPill + IconButton
+│   ├── Editor.tsx             # Tiptap via useEditor (added in step 10)
+│   ├── TagPicker.tsx
+│   └── SearchModal.tsx        # ⌘K palette
+├── hooks/
+│   ├── useNotes.ts            # TanStack Query queries + mutations
+│   ├── useTags.ts
+│   ├── useAutosave.ts         # debounced PATCH on editor updates
+│   └── useAuth.ts             # session bootstrap, logout
+├── lib/
+│   ├── api.ts                 # typed fetch wrapper, throws on non-2xx
+│   ├── queryClient.ts         # TanStack Query + persistQueryClient (idb-keyval)
+│   ├── preview.ts             # body_json → snippet via generateHTML + stripper
+│   └── tiptap.ts              # shared extension list (used by editor + preview)
+└── styles/
+    ├── tokens.scss            # :root custom properties + dark @media override
+    ├── reset.scss             # box-sizing, margin/padding reset, body font
+    ├── mixins.scss            # @mixin focus-ring, @mixin truncate, …
+    └── global.scss            # entry: forwards reset + tokens, sets body
+```
+
+Each component has a colocated `Foo.module.scss`. Component styles reference design tokens via `var(--bg)` / `var(--accent)` directly — no Sass variables for theme colors, since the dark-mode override lives in `tokens.scss`. Use Sass `@use 'styles/mixins' as *;` only when a component needs a shared mixin.
+
+State strategy:
+- **Server state** lives in TanStack Query. `useQuery(['notes'])`, `useMutation` for create/patch/delete, `queryClient.setQueryData` for optimistic updates. Persisted to IndexedDB via `@tanstack/query-async-storage-persister` + `idb-keyval` — first paint is instant from cache, then it revalidates against the API.
+- **UI state** (active note id, search modal open, sidebar collapsed) lives in component `useState` or URL search params. No global store needed for v1.
+
+Tiptap extensions (in `lib/tiptap.ts`, exported once and reused by both `Editor.tsx` and `preview.ts`):
 - `@tiptap/starter-kit` (paragraphs, headings, lists, blockquote, code, code block, bold/italic, history)
-- `@tiptap/extension-task-list` + `@tiptap/extension-task-item` for the checklist style already in the prototype
+- `@tiptap/extension-task-list` + `@tiptap/extension-task-item`
 - `@tiptap/extension-placeholder` for empty-state hint
 - `@tiptap/extension-link` with autolink
-- `@tiptap/html` for server-free preview rendering
+- `@tiptap/html` for snippet generation in the list pane (called outside React, no editor instance needed)
 
 The prototype's `.editor-body` CSS ports over essentially unchanged — Tiptap renders the same tag structure (`h1/h2/h3`, `p`, `ul`, `blockquote`, `pre code`). Replace the prototype's `.checklist` markup with Tiptap's `<ul data-type="taskList">`.
 
-Editor behavior:
-- Debounced autosave (500ms after last `editor.on('update')`) → `PATCH /api/notes/:id` with `{ body_json, body_text }`.
-- "Saved 2m ago" pill driven by real `updated_at` from the server response.
-- Title is a separate `<input>` above the editor (not part of the Tiptap doc) — keeps it indexable and easy to render in the list pane.
-- New-note button creates a row, navigates to it.
+Editor wiring:
+- `useEditor({ extensions, content: note.body_json, onUpdate })` inside `Editor.tsx`.
+- `useAutosave` debounces 500ms after the last `onUpdate`, then fires a `PATCH /api/notes/:id` mutation with `{ body_json: editor.getJSON(), body_text: editor.getText() }`. Optimistic cache update on dispatch, rollback on error.
+- When the active note id changes, call `editor.commands.setContent(newNote.body_json, false)` (the `false` flag suppresses an `onUpdate` so we don't autosave on load).
+- "Saved 2m ago" pill driven by `note.updated_at` returned from the mutation, formatted with `Intl.RelativeTimeFormat`.
+- Title is a separate `<input>` above the editor, not inside the Tiptap doc — keeps it indexable and easy to render in `NoteCard`.
+- New-note button creates a row, navigates to it via `setLocation('/n/' + id)`.
 - Trash = `PATCH` with `trashed_at: now()`. "Trash" view filters `trashed_at is not null`; hard-delete from there.
 
 ## Repo layout
@@ -218,18 +259,20 @@ notable/
 
 ## Implementation steps
 
-1. **Scaffold the monorepo.** `pnpm init` at root with workspaces for `api`, `web`, `shared`. `pnpm create vite@latest web --template vanilla-ts`. Drop the prototype's HTML/CSS into `web/index.html` and verify it still renders via `pnpm --filter web dev`.
-2. **Compose skeleton.** Write `docker-compose.yml` with `db` + `caddy` + `api` (empty), `docker-compose.dev.yml` with `mailpit` and source mounts. `.env.example` with `POSTGRES_PASSWORD`, `JWT_SECRET`, `SMTP_URL`, `PUBLIC_URL`. Verify `docker compose up db mailpit` boots.
-3. **Fastify boot.** `pnpm --filter api add fastify @fastify/cookie @fastify/jwt @fastify/cors @fastify/rate-limit zod fastify-type-provider-zod postgres drizzle-orm` (dev: `drizzle-kit tsx`). Build a `/api/health` endpoint that returns `{ db: ok }` after a `SELECT 1`. Verify `docker compose up api` is healthy.
-4. **Schema + migrations.** Define Drizzle schema, run `drizzle-kit generate`, commit migrations. Container entrypoint runs `drizzle-kit migrate` then starts the server.
-5. **Auth.** Build login + verify + logout. Use nodemailer pointed at Mailpit in dev. Test the full flow in a browser, confirm cookie is set.
-6. **Notes CRUD.** Implement the routes from the API surface. Add the `preHandler` that gates everything. Hand-test with `curl` + the auth cookie.
-7. **Frontend wiring.** Replace the hard-coded note cards with `GET /api/notes`. Build the login screen. Persist session via cookie automatically. Hash-route between notes.
-8. **Tiptap editor.** Install extensions, mount onto the editor pane, port the prototype's CSS, wire autosave to `PATCH /api/notes/:id`.
-9. **Tags.** Tag CRUD + sidebar list with per-tag counts (one query: `SELECT t.*, COUNT(nt.note_id) FROM tags t LEFT JOIN note_tags nt ON nt.tag_id = t.id WHERE t.user_id = $1 GROUP BY t.id`). Tag picker in the editor toolbar.
-10. **Search.** `GET /api/notes/search?q=...` runs `websearch_to_tsquery` against `search_tsv`, ranked, with a `pg_trgm` fallback if the query produces no FTS hits. Debounce client-side.
-11. **IndexedDB cache.** On load, render from cache immediately; fetch from API in background and reconcile by `updated_at`. Last-write-wins is fine for a single user across devices.
-12. **Caddy + production build.** Multi-stage Dockerfile for `api` (build TS → slim runtime). `web` builds static files into a volume Caddy serves. Caddyfile: `notable.example.com { reverse_proxy /api/* api:3000; root * /srv; file_server }`. Test with a real domain or `caddy.local` + `mkcert`.
+1. **Scaffold the empty skeleton.** `pnpm init` at root with workspaces for `api`, `web`, `shared`. `pnpm create vite@latest web --template react-ts`. Add `sass` as a dev dep so `*.scss` files just work in Vite. Write a minimal `main.tsx` (React root only) and an `App.tsx` that renders a placeholder. No router, no data layer, no providers yet — those come in with the deps that need them. `pnpm --filter web dev` should boot a working empty app with no prototype content yet.
+2. **Common components + design tokens.** Port the prototype's design tokens into `styles/tokens.scss` (`:root` block + the `@media (prefers-color-scheme: dark)` override) and `styles/reset.scss`. Import `styles/global.scss` once from `main.tsx`. Build the component library listed in "Frontend changes" — `Brand`, `Icon`, `IconButton`, `Tag`, `Avatar`, `NavItem`, `SearchInput`, `SavedPill`, `Crumbs`, `NoteCard` — each with a colocated `*.module.scss`. No data, no logic; just typed props and static markup. Verify each in isolation via a throwaway `/_kitchen-sink` route that renders one of each.
+3. **Workspace page from prototype.** Build `Workspace.tsx` as the 3-pane shell (`.app` grid). Compose `Sidebar`, `NoteList`, and an editor pane (static prototype content rendered as plain JSX for now — Tiptap arrives in step 10). Feed the same hard-coded note data the prototype uses, sourced from a `lib/fixtures.ts` so it's easy to swap for API data in step 9. At the end of this step, the rendered React app is visually indistinguishable from the original `index.html`.
+4. **Compose skeleton.** Write `docker-compose.yml` with `db` + `caddy` + `api` (empty), `docker-compose.dev.yml` with `mailpit` and source mounts. `.env.example` with `POSTGRES_PASSWORD`, `JWT_SECRET`, `SMTP_URL`, `PUBLIC_URL`. Verify `docker compose up db mailpit` boots.
+5. **Fastify boot.** `pnpm --filter api add fastify @fastify/cookie @fastify/jwt @fastify/cors @fastify/rate-limit zod fastify-type-provider-zod postgres drizzle-orm` (dev: `drizzle-kit tsx`). Build a `/api/health` endpoint that returns `{ db: ok }` after a `SELECT 1`. Verify `docker compose up api` is healthy.
+6. **Schema + migrations.** Define Drizzle schema, run `drizzle-kit generate`, commit migrations. Container entrypoint runs `drizzle-kit migrate` then starts the server.
+7. **Auth.** Build login + verify + logout. Use nodemailer pointed at Mailpit in dev. Test the full flow in a browser, confirm cookie is set.
+8. **Notes CRUD.** Implement the routes from the API surface. Add the `preHandler` that gates everything. Hand-test with `curl` + the auth cookie.
+9. **Frontend wiring.** Install the data-layer deps: `pnpm --filter web add wouter @tanstack/react-query @tanstack/react-query-persist-client @tanstack/query-async-storage-persister idb-keyval`. Build the `App.tsx` router with `wouter` (`/login`, `/auth/verify`, `/`, `/n/:id`). Wire `QueryClientProvider` + `persistQueryClient` in `main.tsx`. Build `useNotes()` and replace the `lib/fixtures.ts` source in `NoteList.tsx` with `useQuery(['notes'])`. Build the `Login` route. Cookie session is automatic since it's `httpOnly`.
+10. **Tiptap editor.** `pnpm --filter web add @tiptap/react @tiptap/starter-kit @tiptap/extension-task-list @tiptap/extension-task-item @tiptap/extension-placeholder @tiptap/extension-link @tiptap/html`. Build `Editor.tsx` with `useEditor`, mount the shared extensions from `lib/tiptap.ts`, wire `useAutosave` to a `PATCH` mutation with optimistic update of `['notes', id]`. Handle active-note switching with `editor.commands.setContent(...)` (suppress the `onUpdate` event with the second arg).
+11. **Tags.** Tag CRUD + sidebar list with per-tag counts (one query: `SELECT t.*, COUNT(nt.note_id) FROM tags t LEFT JOIN note_tags nt ON nt.tag_id = t.id WHERE t.user_id = $1 GROUP BY t.id`). Tag picker in the editor toolbar.
+12. **Search.** `GET /api/notes/search?q=...` runs `websearch_to_tsquery` against `search_tsv`, ranked, with a `pg_trgm` fallback if the query produces no FTS hits. Debounce client-side.
+13. **Cache hardening.** The TanStack Query persister wired in step 9 already handles "render from cache on load, revalidate in background." This step is the polish: tune `staleTime` per query (notes list: 30s, single note: 0), set `maxAge` on the persister (7 days), wire mutation `onMutate`/`onError` for rollback on failed PATCH, and add a small "offline" indicator when fetches fail. Last-write-wins on the server is fine for a single user across devices.
+14. **Caddy + production build.** Multi-stage Dockerfile for `api` (build TS → slim runtime). `web` builds static files into a volume Caddy serves. Caddyfile: `notable.example.com { reverse_proxy /api/* api:3000; root * /srv; file_server }`. Test with a real domain or `caddy.local` + `mkcert`.
 
 ## Scaling later
 
