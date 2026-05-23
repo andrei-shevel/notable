@@ -1,0 +1,44 @@
+# Notable — dev overrides.
+#
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+#
+# Layers on top of docker-compose.yml:
+# - exposes Postgres on 127.0.0.1:5432 for psql / GUI clients
+# - exposes the api on 127.0.0.1:3000 so the host's Vite dev server can proxy
+#   /api/* to it (in prod Caddy handles this hop on the compose network)
+# - adds mailpit (catches all outbound mail; UI at http://localhost:8025)
+# - points the api at mailpit's SMTP listener
+# - mounts api source so tsx watch can hot-reload
+
+services:
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "127.0.0.1:1025:1025"   # SMTP
+      - "127.0.0.1:8025:8025"   # web UI
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+    restart: unless-stopped
+
+  api:
+    command: ["pnpm", "run", "dev"]
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      NODE_ENV: development
+      # Route outbound mail to mailpit on the compose network.
+      SMTP_URL: smtp://mailpit:1025
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:5173}
+    volumes:
+      - ./apps/api:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started

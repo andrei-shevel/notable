@@ -1,0 +1,26 @@
+# Used by builds whose context is the repo root (apps/web/Dockerfile).
+# apps/api/Dockerfile uses apps/api/.dockerignore — keep both in sync where
+# patterns overlap.
+
+**/node_modules
+**/dist
+**/build
+**/.turbo
+**/.cache
+**/.vite
+
+.git
+.github
+.idea
+.vscode
+.DS_Store
+
+.env
+.env.*
+!.env.example
+
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+docs/

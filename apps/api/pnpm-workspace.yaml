@@ -1,0 +1,11 @@
+# Used only inside the Docker build: when apps/api is copied into a container,
+# pnpm sees no parent workspace and treats this directory as standalone.
+# Mirror the repo-root allowBuilds entry so esbuild's postinstall (tsx's
+# native transform engine) runs instead of failing the build.
+#
+# Dormant on the host: pnpm walks UP from cwd; repo-root pnpm-workspace.yaml
+# wins, so this file is ignored unless someone cd's into apps/api/ directly
+# (which the host workflow never does — everything is `pnpm --filter` from
+# the repo root).
+allowBuilds:
+  esbuild: true

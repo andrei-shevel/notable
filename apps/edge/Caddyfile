@@ -1,0 +1,45 @@
+# Notable — single-site edge serving three surfaces under one origin:
+#   /                  → marketing landing (apps/landing)
+#   /app, /app/*       → SPA workspace (apps/web), wouter base = /app
+#   /api/*             → Fastify (apps/api)
+#
+# {$PUBLIC_HOSTNAME} comes from the compose env (defaults to "localhost"). For
+# a real domain, set PUBLIC_HOSTNAME=notable.example.com in .env and Caddy
+# provisions a Let's Encrypt cert automatically. For "localhost" Caddy serves
+# HTTPS using its internal CA — you can also hit http://localhost, which
+# auto-redirects to https.
+
+{$PUBLIC_HOSTNAME} {
+	encode zstd gzip
+
+	# `handle` blocks are mutually exclusive: the first matching prefix wins
+	# and never falls through to the others. That keeps try_files from
+	# rewriting /api or /app requests into the landing's index.html.
+
+	# API ----------------------------------------------------------------
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+
+	# SPA ----------------------------------------------------------------
+	# handle_path strips the /app prefix BEFORE try_files, so requests for
+	# /app/assets/foo.js look up /srv-app/assets/foo.js on disk. Unknown
+	# paths fall back to /index.html so wouter can resolve client-side
+	# routes on hard refresh.
+	handle_path /app/* {
+		root * /srv-app
+		try_files {path} /index.html
+		file_server
+	}
+
+	# Redirect bare /app (no trailing slash) so relative asset URLs in the
+	# SPA's index.html resolve correctly.
+	redir /app /app/ permanent
+
+	# Landing (everything else) ------------------------------------------
+	handle {
+		root * /srv-landing
+		try_files {path} {path}/ /index.html
+		file_server
+	}
+}

@@ -1,0 +1,70 @@
+# Notable — base compose stack.
+#
+# Default usage: docker compose up -d
+#   Brings up `db` + `api`. `edge` is behind the `prod` profile so the default
+#   doesn't try to build static assets.
+#
+# Dev usage:     docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+#   Adds `mailpit`, source mounts, and exposes db on 127.0.0.1:5432.
+#
+# Prod usage:    docker compose --profile prod up -d
+#   Activates `edge` (the Caddy image bakes in landing + SPA + Caddyfile).
+#   Caddy serves the marketing landing at /, the SPA under /app, and proxies
+#   /api/* to the api container.
+
+name: notable
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: notable
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required, see .env.example}
+      POSTGRES_DB: notable
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notable -d notable"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./apps/api
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://notable:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@db:5432/notable
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required, see .env.example}
+      SMTP_URL: ${SMTP_URL:?SMTP_URL required, see .env.example}
+      PUBLIC_URL: ${PUBLIC_URL:?PUBLIC_URL required, see .env.example}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  edge:
+    # Self-contained Caddy image: bakes in the SPA build, the static landing,
+    # and the Caddyfile. One artifact for the entire web tier. Build context
+    # is the repo root because stage 1 builds the SPA via the pnpm workspace.
+    profiles: ["prod"]
+    build:
+      context: .
+      dockerfile: apps/edge/Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      PUBLIC_HOSTNAME: ${PUBLIC_HOSTNAME:-localhost}
+    volumes:
+      - caddy-data:/data
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  caddy-data:

@@ -1,0 +1,16 @@
+{
+  "name": "@notable/landing",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Marketing landing — Astro, ships near-zero JS by default.",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check"
+  },
+  "devDependencies": {
+    "astro": "^6.3.7"
+  }
+}
