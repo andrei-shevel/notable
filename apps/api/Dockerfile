@@ -1,24 +1,32 @@
-# Notable API — single-stage image for step 5. Step 14 will replace this with
-# a slim multi-stage build (TS → compiled JS) for production deploys. Until
-# then `tsx` is fine: the binary is small and dev hot-reload uses the same
-# image with source bind-mounted.
+# Notable API — single-stage image. Builds from the repo root so the
+# pnpm workspace is visible (api depends on @notable/shared).
+# Step 14 will replace this with a slim multi-stage prod build.
 
 FROM node:22-alpine
 
-WORKDIR /app
+WORKDIR /repo
 
 # pnpm via corepack — same version family the workspace uses on the host.
 RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 
-# Install deps first so a source-only change doesn't bust the layer cache.
-# pnpm-workspace.yaml carries allowBuilds so esbuild's postinstall (used by
-# tsx) is permitted inside the container.
-COPY package.json pnpm-workspace.yaml ./
-RUN pnpm install --prod=false
+# Workspace + manifest layer first so source-only edits don't bust the cache.
+# All workspace package.jsons are copied because pnpm needs to see the full
+# workspace shape to resolve `--filter ...` correctly against the lockfile.
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY apps/landing/package.json apps/landing/package.json
+COPY packages/shared/package.json packages/shared/package.json
+COPY packages/ui/package.json packages/ui/package.json
 
-# Copy the rest of the source. In dev, docker-compose.dev.yml bind-mounts
-# ./apps/api over /app and keeps node_modules via an anonymous volume.
-COPY . .
+# Install only what @notable/api needs (transitively pulls @notable/shared).
+RUN pnpm install --frozen-lockfile --filter @notable/api...
+
+# Source for the packages this image actually runs.
+COPY apps/api apps/api
+COPY packages/shared packages/shared
+
+WORKDIR /repo/apps/api
 
 ENV NODE_ENV=production
 ENV PORT=3000

@@ -6,6 +6,10 @@ import {
 } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { sql } from './db/client.js';
+import cookiePlugin from './plugins/cookie.js';
+import jwtPlugin from './plugins/jwt.js';
+import ratelimitPlugin from './plugins/ratelimit.js';
+import authRoutes from './routes/auth.js';
 
 const app = Fastify({
   logger: {
@@ -17,6 +21,12 @@ const app = Fastify({
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+
+// Order matters: cookie must register before jwt (jwt reads the cookie),
+// and rate-limit before any route that opts in via `config.rateLimit`.
+await app.register(cookiePlugin);
+await app.register(jwtPlugin);
+await app.register(ratelimitPlugin);
 
 app.get(
   '/api/health',
@@ -32,6 +42,8 @@ app.get(
     return { db: 'ok' as const };
   },
 );
+
+await app.register(authRoutes, { prefix: '/api/auth' });
 
 const port = Number(process.env.PORT ?? 3000);
 

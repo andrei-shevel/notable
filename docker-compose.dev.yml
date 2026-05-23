@@ -33,10 +33,16 @@ services:
       NODE_ENV: development
       # Route outbound mail to mailpit on the compose network.
       SMTP_URL: smtp://mailpit:1025
-      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:5173}
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3000}
     volumes:
-      - ./apps/api:/app
-      - /app/node_modules
+      # Bind both the api source and the shared package so edits hot-reload.
+      # Anonymous volumes preserve node_modules (and pnpm's symlink farms)
+      # from being shadowed by the bind mounts.
+      - ./apps/api:/repo/apps/api
+      - ./packages/shared:/repo/packages/shared
+      - /repo/node_modules
+      - /repo/apps/api/node_modules
+      - /repo/packages/shared/node_modules
     depends_on:
       db:
         condition: service_healthy
