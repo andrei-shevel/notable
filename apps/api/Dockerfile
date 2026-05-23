@@ -24,7 +24,10 @@ ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
 
-HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=5 \
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=5 \
   CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
 
-CMD ["pnpm", "run", "start"]
+# Apply pending migrations, then boot. pnpm propagates the child's exit code,
+# so a failing migration aborts startup and the orchestrator's restart policy
+# takes over. start-period above is generous enough to cover a cold migrate.
+CMD ["sh", "-c", "pnpm run db:migrate && pnpm run start"]
