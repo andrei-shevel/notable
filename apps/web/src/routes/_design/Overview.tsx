@@ -14,9 +14,8 @@ export function Overview() {
           lineHeight: 'var(--line-height-relaxed)',
         }}
       >
-        Pick a section from the sidebar. The Tokens pages render both light and
-        dark themes side by side. The Primitives and Blocks pages enumerate
-        every variant, size, and state.
+        Pick a section from the sidebar. The Tokens pages render both light and dark themes side by
+        side. The Primitives and Blocks pages enumerate every variant, size, and state.
       </p>
     </>
   );

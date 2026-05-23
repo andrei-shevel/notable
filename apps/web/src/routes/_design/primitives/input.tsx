@@ -19,11 +19,7 @@ export function InputPage() {
         <Input placeholder="Email" />
       </Specimen>
       <Specimen label="inline (search-bar look)">
-        <Input
-          variant="inline"
-          placeholder="Search notes…"
-          leftIcon={<Icon icon={Search} />}
-        />
+        <Input variant="inline" placeholder="Search notes…" leftIcon={<Icon icon={Search} />} />
       </Specimen>
 
       <SectionTitle>Sizes</SectionTitle>
@@ -47,11 +43,7 @@ export function InputPage() {
         <Input placeholder="Required" error defaultValue="not-an-email" />
       </Specimen>
       <Specimen label="controlled">
-        <Input
-          placeholder="Type here"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-        />
+        <Input placeholder="Type here" value={value} onChange={(e) => setValue(e.target.value)} />
       </Specimen>
 
       <SectionTitle>Textarea</SectionTitle>

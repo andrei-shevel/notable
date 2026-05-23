@@ -10,11 +10,7 @@ export type NoteListProps = {
   onSelectNote?: (id: string) => void;
 };
 
-export function NoteList({
-  notes = FIXTURE_NOTES,
-  activeNoteId,
-  onSelectNote,
-}: NoteListProps) {
+export function NoteList({ notes = FIXTURE_NOTES, activeNoteId, onSelectNote }: NoteListProps) {
   return (
     <section className={styles.list}>
       <div className={styles.head}>

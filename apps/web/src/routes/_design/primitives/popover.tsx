@@ -46,9 +46,7 @@ export function PopoverPage() {
               </Button>
             </Popover.Trigger>
             <Popover.Content side={side} withArrow>
-              <span style={{ fontSize: 'var(--font-size-sm)' }}>
-                Anchored {side}
-              </span>
+              <span style={{ fontSize: 'var(--font-size-sm)' }}>Anchored {side}</span>
             </Popover.Content>
           </Popover.Root>
         ))}

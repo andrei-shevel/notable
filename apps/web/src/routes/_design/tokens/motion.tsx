@@ -48,20 +48,14 @@ export function MotionPage() {
       <SectionTitle>Durations</SectionTitle>
       {DURATIONS.map((d) => (
         <Specimen key={d.token} label={`--duration-${d.token}`} code={`${d.value} — ${d.use}`}>
-          <Demo
-            duration={`var(--duration-${d.token})`}
-            easing="var(--easing-standard)"
-          />
+          <Demo duration={`var(--duration-${d.token})`} easing="var(--easing-standard)" />
         </Specimen>
       ))}
 
       <SectionTitle>Easing</SectionTitle>
       {EASINGS.map((e) => (
         <Specimen key={e.token} label={`--easing-${e.token}`} code={`${e.value} — ${e.use}`}>
-          <Demo
-            duration="var(--duration-slow)"
-            easing={`var(--easing-${e.token})`}
-          />
+          <Demo duration="var(--duration-slow)" easing={`var(--easing-${e.token})`} />
         </Specimen>
       ))}
     </>

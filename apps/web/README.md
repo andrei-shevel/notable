@@ -20,13 +20,13 @@ Vite serves on `http://localhost:5173` (or the next free port if 5173 is taken).
 
 ## Scripts
 
-| Script             | What it does                          |
-| ------------------ | ------------------------------------- |
-| `pnpm dev`         | Vite dev server with HMR              |
-| `pnpm build`       | `tsc -b` then `vite build` → `dist/`  |
-| `pnpm typecheck`   | `tsc -b` only                         |
-| `pnpm lint`        | ESLint                                |
-| `pnpm preview`     | Serve the built `dist/` locally       |
+| Script           | What it does                         |
+| ---------------- | ------------------------------------ |
+| `pnpm dev`       | Vite dev server with HMR             |
+| `pnpm build`     | `tsc -b` then `vite build` → `dist/` |
+| `pnpm typecheck` | `tsc -b` only                        |
+| `pnpm lint`      | ESLint                               |
+| `pnpm preview`   | Serve the built `dist/` locally      |
 
 ## Architecture
 

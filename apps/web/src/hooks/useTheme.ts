@@ -20,10 +20,7 @@ function applyTheme(theme: Theme): void {
 }
 
 function readSystemDark(): boolean {
-  return (
-    typeof matchMedia !== 'undefined' &&
-    matchMedia('(prefers-color-scheme: dark)').matches
-  );
+  return typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 export function useTheme() {
@@ -47,8 +44,7 @@ export function useTheme() {
     setThemeState(next);
   };
 
-  const resolved: 'light' | 'dark' =
-    theme === 'system' ? (systemDark ? 'dark' : 'light') : theme;
+  const resolved: 'light' | 'dark' = theme === 'system' ? (systemDark ? 'dark' : 'light') : theme;
 
   return { theme, setTheme, resolved };
 }

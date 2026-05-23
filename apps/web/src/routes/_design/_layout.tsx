@@ -62,10 +62,7 @@ export function DesignLayout({ children }: { children: ReactNode }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={[
-                  styles.link,
-                  location === link.href ? styles.active : '',
-                ]
+                className={[styles.link, location === link.href ? styles.active : '']
                   .filter(Boolean)
                   .join(' ')}
               >
@@ -80,19 +77,11 @@ export function DesignLayout({ children }: { children: ReactNode }) {
   );
 }
 
-export function PageHeader({
-  title,
-  description,
-}: {
-  title: string;
-  description?: string;
-}) {
+export function PageHeader({ title, description }: { title: string; description?: string }) {
   return (
     <>
       <h1 className={styles['page-title']}>{title}</h1>
-      {description ? (
-        <p className={styles['page-description']}>{description}</p>
-      ) : null}
+      {description ? <p className={styles['page-description']}>{description}</p> : null}
     </>
   );
 }

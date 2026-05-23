@@ -27,6 +27,7 @@ Goal: turn the `index.html` prototype into a working notes app with sync across 
 ```
 
 `docker-compose.yml` services:
+
 - **db** — `postgres:16-alpine`, volume-mounted data dir, healthcheck, exposed only on the compose network in prod.
 - **api** — built from `./apps/api/Dockerfile` (Node 22 + Fastify). Reads `DATABASE_URL`, `JWT_SECRET`, `SMTP_*`, `PUBLIC_URL` from env.
 - **web** — static build of the Vite app. Either served by Caddy directly from a shared volume, or baked into a tiny Nginx image. (In dev this service is omitted; Vite dev server runs on the host.)
@@ -34,6 +35,7 @@ Goal: turn the `index.html` prototype into a working notes app with sync across 
 - **mailpit** — `axllent/mailpit`, dev-only profile, captures all outbound mail at `localhost:8025`.
 
 Two compose files:
+
 - `docker-compose.yml` — base services (`db`, `api`, `caddy`, `web`)
 - `docker-compose.dev.yml` — overrides + `mailpit`, mounts source for hot reload, exposes db on `127.0.0.1:5432` for psql access.
 
@@ -90,6 +92,7 @@ create table note_tags (
 ```
 
 Notes on the schema:
+
 - `body_json` is the source of truth. `body_text` is a plain-text snapshot the client writes via `editor.getText()` on save; the generated `search_tsv` column derives from it. HTML is never stored — derived on demand via `generateHTML` from `@tiptap/html`.
 - Tokens are stored hashed (`sha256(token)`); the raw token only ever lives in the email link. Lookup by hash on verify.
 - `citext` for emails so lookups are case-insensitive without surprising users.
@@ -113,6 +116,7 @@ Magic-link only for v1. Flow:
 3. `POST /api/auth/logout` — clear cookie.
 
 Every other endpoint uses a Fastify `preHandler` that:
+
 - Reads the JWT from the cookie via `@fastify/jwt`.
 - Decodes it, attaches `request.user = { id }`.
 - Returns 401 if missing/invalid.
@@ -197,10 +201,12 @@ apps/web/src/
 Each component has a colocated `Foo.module.scss`. Component styles reference design tokens via `var(--bg)` / `var(--accent)` directly — no Sass variables for theme colors, since the dark-mode override lives in `tokens.scss`. Use Sass `@use 'styles/mixins' as *;` only when a component needs a shared mixin.
 
 State strategy:
+
 - **Server state** lives in TanStack Query. `useQuery(['notes'])`, `useMutation` for create/patch/delete, `queryClient.setQueryData` for optimistic updates. Persisted to IndexedDB via `@tanstack/query-async-storage-persister` + `idb-keyval` — first paint is instant from cache, then it revalidates against the API.
 - **UI state** (active note id, search modal open, sidebar collapsed) lives in component `useState` or URL search params. No global store needed for v1.
 
 Tiptap extensions (in `lib/tiptap.ts`, exported once and reused by both `Editor.tsx` and `preview.ts`):
+
 - `@tiptap/starter-kit` (paragraphs, headings, lists, blockquote, code, code block, bold/italic, history)
 - `@tiptap/extension-task-list` + `@tiptap/extension-task-item`
 - `@tiptap/extension-placeholder` for empty-state hint
@@ -210,6 +216,7 @@ Tiptap extensions (in `lib/tiptap.ts`, exported once and reused by both `Editor.
 The prototype's `.editor-body` CSS ports over essentially unchanged — Tiptap renders the same tag structure (`h1/h2/h3`, `p`, `ul`, `blockquote`, `pre code`). Replace the prototype's `.checklist` markup with Tiptap's `<ul data-type="taskList">`.
 
 Editor wiring:
+
 - `useEditor({ extensions, content: note.body_json, onUpdate })` inside `Editor.tsx`.
 - `useAutosave` debounces 500ms after the last `onUpdate`, then fires a `PATCH /api/notes/:id` mutation with `{ body_json: editor.getJSON(), body_text: editor.getText() }`. Optimistic cache update on dispatch, rollback on error.
 - When the active note id changes, call `editor.commands.setContent(newNote.body_json, false)` (the `false` flag suppresses an `onUpdate` so we don't autosave on load).
@@ -288,6 +295,7 @@ All workspace packages use a `@notable/*` scoped name (`@notable/web`, `@notable
 ## Scaling later
 
 The architecture deliberately makes the future easy. New deployable services land in `apps/` (each with its own Dockerfile and compose service); new shared libraries land in `packages/` (each with a `@notable/*` name).
+
 - **More API instances:** the API is stateless. Add `deploy: replicas: N` (or move to Kubernetes), put Caddy in front as the load balancer. Cookies are JWT so no shared session store needed.
 - **More database load:** add **PgBouncer** as a sidecar container in transaction-pooling mode. The Fastify `postgres` driver opens fewer connections; PgBouncer multiplexes across instances.
 - **Read scaling:** Postgres streaming replication to a read replica, route `GET` traffic to it.

@@ -21,10 +21,7 @@ type ContentProps = ComponentPropsWithoutRef<typeof RadixDialog.Content> & {
 };
 
 const Content = forwardRef<ElementRef<typeof RadixDialog.Content>, ContentProps>(
-  function DialogContent(
-    { size = 'md', className, overlayClassName, children, ...rest },
-    ref,
-  ) {
+  function DialogContent({ size = 'md', className, overlayClassName, children, ...rest }, ref) {
     return (
       <Portal>
         <RadixDialog.Overlay className={cx(styles.overlay, overlayClassName)} />
@@ -52,11 +49,7 @@ const Description = forwardRef<
   ComponentPropsWithoutRef<typeof RadixDialog.Description>
 >(function DialogDescription({ className, ...rest }, ref) {
   return (
-    <RadixDialog.Description
-      ref={ref}
-      className={cx(styles.description, className)}
-      {...rest}
-    />
+    <RadixDialog.Description ref={ref} className={cx(styles.description, className)} {...rest} />
   );
 });
 

@@ -2,11 +2,7 @@ import { Clock, FileText, Star, Trash2 } from 'lucide-react';
 import { Avatar } from '@notable/ui';
 import { Brand } from './Brand';
 import { NavItem } from './NavItem';
-import {
-  FIXTURE_NAV_COUNTS,
-  FIXTURE_TAGS,
-  FIXTURE_USER,
-} from '../lib/fixtures';
+import { FIXTURE_NAV_COUNTS, FIXTURE_TAGS, FIXTURE_USER } from '../lib/fixtures';
 import styles from './Sidebar.module.scss';
 
 export function Sidebar() {
@@ -16,12 +12,7 @@ export function Sidebar() {
 
       <div className={styles.section}>
         <div className={styles['section-title']}>Library</div>
-        <NavItem
-          icon={FileText}
-          label="All Notes"
-          count={FIXTURE_NAV_COUNTS.all}
-          active
-        />
+        <NavItem icon={FileText} label="All Notes" count={FIXTURE_NAV_COUNTS.all} active />
         <NavItem icon={Star} label="Starred" count={FIXTURE_NAV_COUNTS.starred} />
         <NavItem icon={Clock} label="Recent" />
         <NavItem icon={Trash2} label="Trash" />
@@ -30,12 +21,7 @@ export function Sidebar() {
       <div className={styles.section}>
         <div className={styles['section-title']}>Tags</div>
         {FIXTURE_TAGS.map((tag) => (
-          <NavItem
-            key={tag.id}
-            dotColor={tag.color}
-            label={tag.name}
-            count={tag.count}
-          />
+          <NavItem key={tag.id} dotColor={tag.color} label={tag.name} count={tag.count} />
         ))}
       </div>
 

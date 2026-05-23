@@ -1,10 +1,5 @@
 import { forwardRef, useState } from 'react';
-import type {
-  FocusEvent,
-  InputHTMLAttributes,
-  ReactNode,
-  TextareaHTMLAttributes,
-} from 'react';
+import type { FocusEvent, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react';
 import styles from './Input.module.scss';
 
 export type InputVariant = 'default' | 'inline';
@@ -103,9 +98,7 @@ export const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputPro
           />
         )}
         {rightIcon ? (
-          <span className={cx(styles.adornment, styles['adornment-right'])}>
-            {rightIcon}
-          </span>
+          <span className={cx(styles.adornment, styles['adornment-right'])}>{rightIcon}</span>
         ) : null}
       </div>
     );

@@ -17,10 +17,7 @@ type ContentProps = ComponentPropsWithoutRef<typeof RadixTooltip.Content> & {
 };
 
 const Content = forwardRef<ElementRef<typeof RadixTooltip.Content>, ContentProps>(
-  function TooltipContent(
-    { className, sideOffset = 6, withArrow = true, children, ...rest },
-    ref,
-  ) {
+  function TooltipContent({ className, sideOffset = 6, withArrow = true, children, ...rest }, ref) {
     return (
       <RadixTooltip.Portal>
         <RadixTooltip.Content

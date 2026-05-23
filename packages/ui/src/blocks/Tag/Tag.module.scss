@@ -40,11 +40,21 @@
   background-color: var(--tag-dot);
 }
 
-.color-blue   { --tag-dot: var(--tag-blue); }
-.color-green  { --tag-dot: var(--tag-green); }
-.color-pink   { --tag-dot: var(--tag-pink); }
-.color-violet { --tag-dot: var(--tag-violet); }
-.color-neutral { --tag-dot: var(--tag-neutral); }
+.color-blue {
+  --tag-dot: var(--tag-blue);
+}
+.color-green {
+  --tag-dot: var(--tag-green);
+}
+.color-pink {
+  --tag-dot: var(--tag-pink);
+}
+.color-violet {
+  --tag-dot: var(--tag-violet);
+}
+.color-neutral {
+  --tag-dot: var(--tag-neutral);
+}
 
 // Translucent variant used when a parent surface is amber-tinted (active note
 // card from the prototype).

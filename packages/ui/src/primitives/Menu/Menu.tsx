@@ -34,11 +34,7 @@ const SubContent = forwardRef<
 >(function MenuSubContent({ className, ...rest }, ref) {
   return (
     <RadixMenu.Portal>
-      <RadixMenu.SubContent
-        ref={ref}
-        className={cx(styles.content, className)}
-        {...rest}
-      />
+      <RadixMenu.SubContent ref={ref} className={cx(styles.content, className)} {...rest} />
     </RadixMenu.Portal>
   );
 });
@@ -64,35 +60,21 @@ const CheckboxItem = forwardRef<
   ElementRef<typeof RadixMenu.CheckboxItem>,
   ComponentPropsWithoutRef<typeof RadixMenu.CheckboxItem>
 >(function MenuCheckboxItem({ className, ...rest }, ref) {
-  return (
-    <RadixMenu.CheckboxItem
-      ref={ref}
-      className={cx(styles.item, className)}
-      {...rest}
-    />
-  );
+  return <RadixMenu.CheckboxItem ref={ref} className={cx(styles.item, className)} {...rest} />;
 });
 
 const RadioItem = forwardRef<
   ElementRef<typeof RadixMenu.RadioItem>,
   ComponentPropsWithoutRef<typeof RadixMenu.RadioItem>
 >(function MenuRadioItem({ className, ...rest }, ref) {
-  return (
-    <RadixMenu.RadioItem ref={ref} className={cx(styles.item, className)} {...rest} />
-  );
+  return <RadixMenu.RadioItem ref={ref} className={cx(styles.item, className)} {...rest} />;
 });
 
 const SubTrigger = forwardRef<
   ElementRef<typeof RadixMenu.SubTrigger>,
   ComponentPropsWithoutRef<typeof RadixMenu.SubTrigger>
 >(function MenuSubTrigger({ className, ...rest }, ref) {
-  return (
-    <RadixMenu.SubTrigger
-      ref={ref}
-      className={cx(styles.item, className)}
-      {...rest}
-    />
-  );
+  return <RadixMenu.SubTrigger ref={ref} className={cx(styles.item, className)} {...rest} />;
 });
 
 const Label = forwardRef<
@@ -106,13 +88,7 @@ const Separator = forwardRef<
   ElementRef<typeof RadixMenu.Separator>,
   ComponentPropsWithoutRef<typeof RadixMenu.Separator>
 >(function MenuSeparator({ className, ...rest }, ref) {
-  return (
-    <RadixMenu.Separator
-      ref={ref}
-      className={cx(styles.separator, className)}
-      {...rest}
-    />
-  );
+  return <RadixMenu.Separator ref={ref} className={cx(styles.separator, className)} {...rest} />;
 });
 
 export const Menu = {

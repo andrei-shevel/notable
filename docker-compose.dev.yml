@@ -13,22 +13,22 @@
 services:
   db:
     ports:
-      - "127.0.0.1:5432:5432"
+      - '127.0.0.1:5432:5432'
 
   mailpit:
     image: axllent/mailpit:latest
     ports:
-      - "127.0.0.1:1025:1025"   # SMTP
-      - "127.0.0.1:8025:8025"   # web UI
+      - '127.0.0.1:1025:1025' # SMTP
+      - '127.0.0.1:8025:8025' # web UI
     environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: "true"
-      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+      MP_SMTP_AUTH_ACCEPT_ANY: 'true'
+      MP_SMTP_AUTH_ALLOW_INSECURE: 'true'
     restart: unless-stopped
 
   api:
-    command: ["pnpm", "run", "dev"]
+    command: ['pnpm', 'run', 'dev']
     ports:
-      - "127.0.0.1:3000:3000"
+      - '127.0.0.1:3000:3000'
     environment:
       NODE_ENV: development
       # Route outbound mail to mailpit on the compose network.

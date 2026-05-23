@@ -56,6 +56,7 @@ packages/ui/
 ```
 
 App-specific composites stay in `apps/web/src/components/` and import from `@notable/ui`:
+
 - `Brand`, `NavItem`, `NoteCard`, `SavedPill`, `Crumbs`, `Sidebar`, `NoteList`, `EditorToolbar`.
 - `SearchInput` becomes a thin wrapper around `<Input leftIcon={<Icon name="search"/>}>`.
 - `IconButton` is deleted — replaced by `<Button variant="ghost" size="sm" iconOnly>`.
@@ -114,33 +115,33 @@ Aliases primitives to roles. Components only reference these.
 ```scss
 :root {
   // Surfaces
-  --bg:             var(--color-stone-50);   // #fafaf9
-  --surface:        #ffffff;
-  --surface-2:      var(--color-stone-100);  // #f5f5f4
-  --border:         var(--color-stone-200);  // #e7e5e4
-  --border-strong:  var(--color-stone-300);  // #d6d3d1
+  --bg: var(--color-stone-50); // #fafaf9
+  --surface: #ffffff;
+  --surface-2: var(--color-stone-100); // #f5f5f4
+  --border: var(--color-stone-200); // #e7e5e4
+  --border-strong: var(--color-stone-300); // #d6d3d1
 
   // Text
-  --text:           var(--color-stone-900);  // #1c1917
-  --text-muted:     var(--color-stone-500);  // #78716c
-  --text-faint:     var(--color-stone-400);  // #a8a29e
+  --text: var(--color-stone-900); // #1c1917
+  --text-muted: var(--color-stone-500); // #78716c
+  --text-faint: var(--color-stone-400); // #a8a29e
 
   // Accent / status
-  --accent:         var(--color-amber-500);  // #f59e0b
-  --accent-soft:    var(--color-amber-100);  // #fef3c7
-  --accent-strong:  var(--color-amber-600);  // hover/pressed solid buttons
-  --danger:         var(--color-red-600);    // #dc2626
-  --danger-soft:    var(--color-red-100);
+  --accent: var(--color-amber-500); // #f59e0b
+  --accent-soft: var(--color-amber-100); // #fef3c7
+  --accent-strong: var(--color-amber-600); // hover/pressed solid buttons
+  --danger: var(--color-red-600); // #dc2626
+  --danger-soft: var(--color-red-100);
 
   // Tag dot palette
-  --tag-blue:   var(--color-blue-500);
-  --tag-green:  var(--color-emerald-500);
-  --tag-pink:   var(--color-pink-500);
+  --tag-blue: var(--color-blue-500);
+  --tag-green: var(--color-emerald-500);
+  --tag-pink: var(--color-pink-500);
   --tag-violet: var(--color-violet-500);
 
   // Semantic typography (used by component .module.scss directly)
-  --text-display-size:    var(--font-size-5xl);
-  --text-display-weight:  var(--font-weight-bold);
+  --text-display-size: var(--font-size-5xl);
+  --text-display-weight: var(--font-weight-bold);
   --text-display-leading: var(--line-height-tight);
   --text-display-tracking: var(--tracking-tight);
   // ... section (3xl/600), subsection (xl/600), body (lg/relaxed),
@@ -150,18 +151,18 @@ Aliases primitives to roles. Components only reference these.
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:            #0c0a09;
-    --surface:       var(--color-stone-900);  // #1c1917
-    --surface-2:     var(--color-stone-800);
-    --border:        var(--color-stone-700);
+    --bg: #0c0a09;
+    --surface: var(--color-stone-900); // #1c1917
+    --surface-2: var(--color-stone-800);
+    --border: var(--color-stone-700);
     --border-strong: var(--color-stone-600);
-    --text:          var(--color-stone-50);
-    --text-muted:    var(--color-stone-400);
-    --text-faint:    var(--color-stone-500);
-    --accent:        var(--color-amber-400);  // brighter for contrast
-    --accent-soft:   var(--color-amber-950);  // #422006-ish
+    --text: var(--color-stone-50);
+    --text-muted: var(--color-stone-400);
+    --text-faint: var(--color-stone-500);
+    --accent: var(--color-amber-400); // brighter for contrast
+    --accent-soft: var(--color-amber-950); // #422006-ish
     --accent-strong: var(--color-amber-300);
-    --danger:        var(--color-red-400);
+    --danger: var(--color-red-400);
   }
 }
 ```
@@ -171,9 +172,13 @@ A `[data-theme="dark"]` selector mirrors the media query so the showcase can for
 ### Reduced motion
 
 `reset.scss` ends with:
+
 ```scss
 @media (prefers-reduced-motion: reduce) {
-  * { transition-duration: 0ms !important; animation-duration: 0ms !important; }
+  * {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
 }
 ```
 

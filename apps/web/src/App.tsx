@@ -3,9 +3,7 @@ import { Route, Router, Switch } from 'wouter';
 import { Tooltip } from '@notable/ui';
 import { Workspace } from './routes/Workspace';
 
-const DesignSystem = import.meta.env.DEV
-  ? lazy(() => import('./routes/_design'))
-  : null;
+const DesignSystem = import.meta.env.DEV ? lazy(() => import('./routes/_design')) : null;
 
 // SPA mounts under /app — Caddy serves the marketing landing at the apex.
 // Strip the trailing slash from Vite's BASE_URL so wouter's matchers work.

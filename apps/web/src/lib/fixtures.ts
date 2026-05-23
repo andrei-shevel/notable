@@ -28,10 +28,10 @@ export const FIXTURE_USER = {
 } as const;
 
 export const FIXTURE_TAGS: FixtureTag[] = [
-  { id: 'work',     name: 'Work',     color: 'blue',   count: 34 },
-  { id: 'personal', name: 'Personal', color: 'green',  count: 21 },
-  { id: 'ideas',    name: 'Ideas',    color: 'pink',   count: 17 },
-  { id: 'reading',  name: 'Reading',  color: 'violet', count: 9 },
+  { id: 'work', name: 'Work', color: 'blue', count: 34 },
+  { id: 'personal', name: 'Personal', color: 'green', count: 21 },
+  { id: 'ideas', name: 'Ideas', color: 'pink', count: 17 },
+  { id: 'reading', name: 'Reading', color: 'violet', count: 9 },
 ];
 
 // Planning tag isn't in the sidebar but appears on the first note card and

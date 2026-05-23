@@ -10,7 +10,10 @@ const SHADOWS = [
 export function ShadowsPage() {
   return (
     <>
-      <PageHeader title="Shadows" description="Three steps of elevation. Tokens are colour-neutral so they sit well on both themes." />
+      <PageHeader
+        title="Shadows"
+        description="Three steps of elevation. Tokens are colour-neutral so they sit well on both themes."
+      />
       {SHADOWS.map((s) => (
         <Specimen key={s.token} label={`--shadow-${s.token}`} code={s.description}>
           <div

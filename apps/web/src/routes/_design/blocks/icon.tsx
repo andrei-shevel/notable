@@ -9,9 +9,7 @@ import styles from './icon.module.scss';
 // Build a sorted list of icon names from lucide-react's exports. lucide-react
 // exports each icon as both `Star` and `StarIcon`; we keep the plain name.
 function listIcons(): Array<{ name: string; component: Lucide.LucideIcon }> {
-  const entries = Object.entries(Lucide) as Array<
-    [string, Lucide.LucideIcon | unknown]
-  >;
+  const entries = Object.entries(Lucide) as Array<[string, Lucide.LucideIcon | unknown]>;
   const out: Array<{ name: string; component: Lucide.LucideIcon }> = [];
   for (const [name, value] of entries) {
     if (name.endsWith('Icon')) continue;
@@ -86,7 +84,12 @@ export function IconPage() {
         {[12, 14, 16, 20, 24, 32].map((size) => (
           <div
             key={size}
-            style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4,
+            }}
           >
             <Icon icon={Lucide.Star} size={size} />
             <code style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)' }}>

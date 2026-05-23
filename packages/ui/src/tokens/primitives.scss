@@ -4,7 +4,7 @@
 
 :root {
   // -- Color: stone (neutrals) ---------------------------------------------
-  --color-stone-50:  #fafaf9;
+  --color-stone-50: #fafaf9;
   --color-stone-100: #f5f5f4;
   --color-stone-200: #e7e5e4;
   --color-stone-300: #d6d3d1;
@@ -17,7 +17,7 @@
   --color-stone-950: #0c0a09;
 
   // -- Color: amber (accent) ------------------------------------------------
-  --color-amber-50:  #fffbeb;
+  --color-amber-50: #fffbeb;
   --color-amber-100: #fef3c7;
   --color-amber-200: #fde68a;
   --color-amber-300: #fcd34d;
@@ -30,7 +30,7 @@
   --color-amber-950: #422006;
 
   // -- Color: red (danger) --------------------------------------------------
-  --color-red-50:  #fef2f2;
+  --color-red-50: #fef2f2;
   --color-red-100: #fee2e2;
   --color-red-200: #fecaca;
   --color-red-300: #fca5a5;
@@ -43,24 +43,24 @@
   --color-red-950: #450a0a;
 
   // -- Color: tag dots (single hue each, no ramp) --------------------------
-  --color-blue-500:    #3b82f6;
+  --color-blue-500: #3b82f6;
   --color-emerald-500: #10b981;
-  --color-pink-500:    #ec4899;
-  --color-violet-500:  #8b5cf6;
+  --color-pink-500: #ec4899;
+  --color-violet-500: #8b5cf6;
 
   // -- Color: pure ----------------------------------------------------------
   --color-white: #ffffff;
   --color-black: #000000;
 
   // -- Space scale (4px base) ----------------------------------------------
-  --space-0:  0;
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
   --space-14: 56px;
@@ -69,47 +69,49 @@
   --space-30: 120px;
 
   // -- Font families --------------------------------------------------------
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
 
   // -- Font sizes -----------------------------------------------------------
-  --font-size-xs:   11px;
-  --font-size-sm:   12px;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
   --font-size-base: 13px;
-  --font-size-md:   14px;
-  --font-size-lg:   15px;
-  --font-size-xl:   16px;
-  --font-size-2xl:  18px;
-  --font-size-3xl:  22px;
-  --font-size-4xl:  28px;
-  --font-size-5xl:  36px;
+  --font-size-md: 14px;
+  --font-size-lg: 15px;
+  --font-size-xl: 16px;
+  --font-size-2xl: 18px;
+  --font-size-3xl: 22px;
+  --font-size-4xl: 28px;
+  --font-size-5xl: 36px;
 
   // -- Font weights ---------------------------------------------------------
-  --font-weight-regular:  400;
-  --font-weight-medium:   500;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --font-weight-bold:     700;
+  --font-weight-bold: 700;
 
   // -- Line heights ---------------------------------------------------------
-  --line-height-tight:   1.15;
-  --line-height-snug:    1.3;
-  --line-height-normal:  1.5;
+  --line-height-tight: 1.15;
+  --line-height-snug: 1.3;
+  --line-height-normal: 1.5;
   --line-height-relaxed: 1.6;
-  --line-height-loose:   1.75;
+  --line-height-loose: 1.75;
 
   // -- Letter spacing -------------------------------------------------------
-  --tracking-tight:   -0.02em;
+  --tracking-tight: -0.02em;
   --tracking-tighter: -0.01em;
-  --tracking-normal:  0;
-  --tracking-wide:    0.06em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.06em;
 
   // -- Radius ---------------------------------------------------------------
   --radius-none: 0;
-  --radius-sm:   6px;
-  --radius-md:   8px;
-  --radius-lg:   12px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-full: 999px;
 
   // Shadows are theme-dependent — see semantics.scss.
@@ -122,8 +124,8 @@
   --easing-emphasis: cubic-bezier(0.3, 0, 0, 1);
 
   // -- Z-index --------------------------------------------------------------
-  --z-base:     0;
+  --z-base: 0;
   --z-dropdown: 100;
-  --z-modal:    200;
-  --z-tooltip:  300;
+  --z-modal: 200;
+  --z-tooltip: 300;
 }

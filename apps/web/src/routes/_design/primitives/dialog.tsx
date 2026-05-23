@@ -14,8 +14,8 @@ function Demo({ size }: { size: DialogSize }) {
       <Dialog.Content size={size}>
         <Dialog.Title>Delete this note?</Dialog.Title>
         <Dialog.Description>
-          This will move the note to Trash. You can restore it later, or empty
-          Trash to remove it permanently.
+          This will move the note to Trash. You can restore it later, or empty Trash to remove it
+          permanently.
         </Dialog.Description>
         <div
           style={{

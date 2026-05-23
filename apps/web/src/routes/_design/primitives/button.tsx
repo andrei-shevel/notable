@@ -28,17 +28,23 @@ export function ButtonPage() {
       <SectionTitle>Sizes</SectionTitle>
       <Specimen label="size=sm">
         <Button size="sm">Small</Button>
-        <Button size="sm" variant="ghost">Small ghost</Button>
+        <Button size="sm" variant="ghost">
+          Small ghost
+        </Button>
       </Specimen>
       <Specimen label="size=md (default)">
         <Button size="md">Medium</Button>
-        <Button size="md" variant="ghost">Medium ghost</Button>
+        <Button size="md" variant="ghost">
+          Medium ghost
+        </Button>
       </Specimen>
 
       <SectionTitle>With icons</SectionTitle>
       <Specimen label="leftIcon">
         <Button leftIcon={<Icon icon={Plus} />}>New note</Button>
-        <Button variant="ghost" leftIcon={<Icon icon={Star} />}>Star</Button>
+        <Button variant="ghost" leftIcon={<Icon icon={Star} />}>
+          Star
+        </Button>
       </Specimen>
       <Specimen label="rightIcon">
         <Button rightIcon={<Icon icon={Plus} />}>Add tag</Button>
@@ -58,7 +64,9 @@ export function ButtonPage() {
       <SectionTitle>States</SectionTitle>
       <Specimen label="disabled">
         <Button disabled>Disabled</Button>
-        <Button variant="ghost" disabled>Disabled ghost</Button>
+        <Button variant="ghost" disabled>
+          Disabled ghost
+        </Button>
       </Specimen>
       <Specimen label="loading">
         <Button loading>Saving…</Button>

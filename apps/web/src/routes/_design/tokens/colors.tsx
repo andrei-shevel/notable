@@ -54,10 +54,7 @@ function SemanticList() {
     <div className={styles['semantic-card']}>
       {SEMANTIC_TOKENS.map((token) => (
         <div key={token} className={styles['semantic-row']}>
-          <span
-            className={styles['semantic-dot']}
-            style={{ backgroundColor: `var(${token})` }}
-          />
+          <span className={styles['semantic-dot']} style={{ backgroundColor: `var(${token})` }} />
           <span className={styles['semantic-name']}>{token}</span>
           <span className={styles['semantic-value']}>{token.replace(/^--/, '')}</span>
         </div>

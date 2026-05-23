@@ -17,11 +17,11 @@ A professional notes web app prototype. This document captures the visual langua
 
 Three-pane grid, fixed left-to-right:
 
-| Pane    | Width  | Role                                              |
-| ------- | ------ | ------------------------------------------------- |
-| Sidebar | 240px  | Brand, navigation, tags, user                     |
-| List    | 320px  | Search + scrollable note cards                    |
-| Editor  | 1fr    | Toolbar + centered reading column (max 720px)     |
+| Pane    | Width | Role                                          |
+| ------- | ----- | --------------------------------------------- |
+| Sidebar | 240px | Brand, navigation, tags, user                 |
+| List    | 320px | Search + scrollable note cards                |
+| Editor  | 1fr   | Toolbar + centered reading column (max 720px) |
 
 CSS: `grid-template-columns: 240px 320px 1fr;` on `.app`, full viewport height, `overflow: hidden` on body.
 
@@ -38,19 +38,19 @@ All tokens are declared as CSS custom properties on `:root`, with a dark variant
 
 ### Color — light
 
-| Token              | Value     | Use                                  |
-| ------------------ | --------- | ------------------------------------ |
-| `--bg`             | `#fafaf9` | App background (warm off-white)      |
-| `--surface`        | `#ffffff` | Cards, list, editor toolbar          |
-| `--surface-2`      | `#f5f5f4` | Sidebar, input fields, hover states  |
-| `--border`         | `#e7e5e4` | Default dividers and borders         |
-| `--border-strong`  | `#d6d3d1` | Focus and scrollbar thumb            |
-| `--text`           | `#1c1917` | Primary text                         |
-| `--text-muted`     | `#78716c` | Secondary text, nav items            |
-| `--text-faint`     | `#a8a29e` | Timestamps, counts, placeholder      |
-| `--accent`         | `#f59e0b` | Amber — selection, blockquote rule   |
-| `--accent-soft`    | `#fef3c7` | Selection background, focus ring     |
-| `--danger`         | `#dc2626` | Destructive actions (reserved)       |
+| Token             | Value     | Use                                 |
+| ----------------- | --------- | ----------------------------------- |
+| `--bg`            | `#fafaf9` | App background (warm off-white)     |
+| `--surface`       | `#ffffff` | Cards, list, editor toolbar         |
+| `--surface-2`     | `#f5f5f4` | Sidebar, input fields, hover states |
+| `--border`        | `#e7e5e4` | Default dividers and borders        |
+| `--border-strong` | `#d6d3d1` | Focus and scrollbar thumb           |
+| `--text`          | `#1c1917` | Primary text                        |
+| `--text-muted`    | `#78716c` | Secondary text, nav items           |
+| `--text-faint`    | `#a8a29e` | Timestamps, counts, placeholder     |
+| `--accent`        | `#f59e0b` | Amber — selection, blockquote rule  |
+| `--accent-soft`   | `#fef3c7` | Selection background, focus ring    |
+| `--danger`        | `#dc2626` | Destructive actions (reserved)      |
 
 ### Color — dark
 
@@ -58,12 +58,12 @@ Same token names, inverted lightness. Notable: `--bg: #0c0a09`, `--surface: #1c1
 
 ### Shape and elevation
 
-| Token         | Value                            |
-| ------------- | -------------------------------- |
-| `--radius`    | `8px`                            |
-| `--radius-sm` | `6px`                            |
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.04)`     |
-| `--shadow-md` | `0 4px 12px rgba(0,0,0,0.06)`    |
+| Token         | Value                         |
+| ------------- | ----------------------------- |
+| `--radius`    | `8px`                         |
+| `--radius-sm` | `6px`                         |
+| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.04)`  |
+| `--shadow-md` | `0 4px 12px rgba(0,0,0,0.06)` |
 
 ---
 
@@ -76,19 +76,19 @@ Same token names, inverted lightness. Notable: `--bg: #0c0a09`, `--surface: #1c1
 
 ### Type scale
 
-| Element          | Size  | Weight | Letter-spacing | Notes                           |
-| ---------------- | ----- | ------ | -------------- | ------------------------------- |
-| Editor H1        | 36px  | 700    | -0.02em        | Title; line-height 1.15         |
-| Editor H2        | 22px  | 600    | -0.01em        | Section                         |
-| Editor H3        | 16px  | 600    | normal         | Subsection                      |
-| Editor body      | 15px  | 400    | normal         | Line-height 1.75                |
-| List title       | 14px  | 600    | -0.005em       | Truncated with ellipsis         |
-| Brand name       | 14px  | 600    | -0.01em        |                                 |
-| Nav item         | 14px  | 500    | normal         |                                 |
-| Tag chip         | 11px  | 500    | normal         |                                 |
-| Nav section head | 11px  | 600    | 0.06em (caps)  | Uppercase                       |
-| Code / pre       | 13px  | 400    | normal         | JetBrains Mono                  |
-| Timestamp        | 11px  | 400    | normal         | `font-variant-numeric: tabular` |
+| Element          | Size | Weight | Letter-spacing | Notes                           |
+| ---------------- | ---- | ------ | -------------- | ------------------------------- |
+| Editor H1        | 36px | 700    | -0.02em        | Title; line-height 1.15         |
+| Editor H2        | 22px | 600    | -0.01em        | Section                         |
+| Editor H3        | 16px | 600    | normal         | Subsection                      |
+| Editor body      | 15px | 400    | normal         | Line-height 1.75                |
+| List title       | 14px | 600    | -0.005em       | Truncated with ellipsis         |
+| Brand name       | 14px | 600    | -0.01em        |                                 |
+| Nav item         | 14px | 500    | normal         |                                 |
+| Tag chip         | 11px | 500    | normal         |                                 |
+| Nav section head | 11px | 600    | 0.06em (caps)  | Uppercase                       |
+| Code / pre       | 13px | 400    | normal         | JetBrains Mono                  |
+| Timestamp        | 11px | 400    | normal         | `font-variant-numeric: tabular` |
 
 ---
 

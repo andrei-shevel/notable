@@ -25,7 +25,10 @@ const SEMANTIC_ROLES = [
   { role: 'display', sample: 'Notes that matter' },
   { role: 'section', sample: 'Section heading' },
   { role: 'subsection', sample: 'Subsection heading' },
-  { role: 'body', sample: 'Body copy reads at fifteen pixels with loose line-height for long-form prose.' },
+  {
+    role: 'body',
+    sample: 'Body copy reads at fifteen pixels with loose line-height for long-form prose.',
+  },
   { role: 'list-title', sample: 'Note list title — single line, ellipsised when long' },
   { role: 'nav', sample: 'Sidebar nav item' },
   { role: 'section-head', sample: 'Section heading' },
@@ -43,11 +46,7 @@ export function TypographyPage() {
 
       <SectionTitle>Size scale</SectionTitle>
       {SIZES.map((s) => (
-        <Specimen
-          key={s.token}
-          label={`--font-size-${s.token}`}
-          code={`${s.px}px`}
-        >
+        <Specimen key={s.token} label={`--font-size-${s.token}`} code={`${s.px}px`}>
           <div style={{ fontSize: `var(--font-size-${s.token})` }}>
             The quick brown fox jumps over the lazy dog
           </div>
@@ -56,11 +55,7 @@ export function TypographyPage() {
 
       <SectionTitle>Weights</SectionTitle>
       {WEIGHTS.map((w) => (
-        <Specimen
-          key={w.token}
-          label={`--font-weight-${w.token}`}
-          code={String(w.value)}
-        >
+        <Specimen key={w.token} label={`--font-weight-${w.token}`} code={String(w.value)}>
           <div style={{ fontWeight: w.value, fontSize: 'var(--font-size-xl)' }}>
             Inter — {w.token}
           </div>
@@ -76,8 +71,7 @@ export function TypographyPage() {
               fontWeight: `var(--text-${role}-weight)`,
               lineHeight: `var(--text-${role}-leading)`,
               letterSpacing: `var(--text-${role}-tracking, 0)`,
-              fontFamily:
-                role === 'code' ? 'var(--font-mono)' : 'var(--font-sans)',
+              fontFamily: role === 'code' ? 'var(--font-mono)' : 'var(--font-sans)',
               textTransform: role === 'section-head' ? 'uppercase' : 'none',
             }}
           >

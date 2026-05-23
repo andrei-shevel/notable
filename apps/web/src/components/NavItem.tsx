@@ -3,9 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Icon, type TagColor } from '@notable/ui';
 import styles from './NavItem.module.scss';
 
-type Lead =
-  | { icon: LucideIcon; dotColor?: never }
-  | { dotColor: TagColor; icon?: never };
+type Lead = { icon: LucideIcon; dotColor?: never } | { dotColor: TagColor; icon?: never };
 
 export type NavItemProps = Lead & {
   label: string;
@@ -35,9 +33,7 @@ export function NavItem({
   type,
   ...rest
 }: NavItemProps) {
-  const style = dotColor
-    ? ({ '--nav-dot-color': DOT_VAR[dotColor] } as CSSProperties)
-    : undefined;
+  const style = dotColor ? ({ '--nav-dot-color': DOT_VAR[dotColor] } as CSSProperties) : undefined;
 
   return (
     <button

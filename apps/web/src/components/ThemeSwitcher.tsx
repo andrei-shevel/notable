@@ -30,11 +30,7 @@ export function ThemeSwitcher() {
         {OPTIONS.map((opt) => {
           const selected = theme === opt.value;
           return (
-            <Menu.Item
-              key={opt.value}
-              onSelect={() => setTheme(opt.value)}
-              className={styles.item}
-            >
+            <Menu.Item key={opt.value} onSelect={() => setTheme(opt.value)} className={styles.item}>
               <Icon icon={opt.icon} />
               {opt.label}
               {selected ? (

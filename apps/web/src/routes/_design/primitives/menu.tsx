@@ -46,10 +46,7 @@ export function MenuPage() {
           </Menu.Trigger>
           <Menu.Content align="start">
             <Menu.Label>View</Menu.Label>
-            <Menu.CheckboxItem
-              checked={pinned}
-              onCheckedChange={setPinned}
-            >
+            <Menu.CheckboxItem checked={pinned} onCheckedChange={setPinned}>
               Show pinned first
             </Menu.CheckboxItem>
             <Menu.Separator />
