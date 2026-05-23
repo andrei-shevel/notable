@@ -11,7 +11,13 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "up": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
+    "down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
+    "logs": "docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f",
+    "restart": "docker compose -f docker-compose.yml -f docker-compose.dev.yml restart",
+    "ps": "docker compose -f docker-compose.yml -f docker-compose.dev.yml ps",
+    "rebuild": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build"
   },
   "devDependencies": {
     "prettier": "^3.3.3"
