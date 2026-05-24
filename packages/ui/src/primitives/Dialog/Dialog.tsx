@@ -1,6 +1,8 @@
 import { forwardRef } from 'react';
 import type { ComponentPropsWithoutRef, ElementRef, ReactNode } from 'react';
 import * as RadixDialog from '@radix-ui/react-dialog';
+import cx from 'clsx';
+
 import styles from './Dialog.module.scss';
 
 export type DialogSize = 'sm' | 'md' | 'lg' | 'full';
@@ -9,10 +11,6 @@ const Root = RadixDialog.Root;
 const Trigger = RadixDialog.Trigger;
 const Close = RadixDialog.Close;
 const Portal = RadixDialog.Portal;
-
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
 
 type ContentProps = ComponentPropsWithoutRef<typeof RadixDialog.Content> & {
   size?: DialogSize;

@@ -1,4 +1,6 @@
 import type { ButtonHTMLAttributes } from 'react';
+import cx from 'clsx';
+
 import { findFixtureTag, type FixtureNote } from '../lib/fixtures';
 import styles from './NoteCard.module.scss';
 
@@ -6,10 +8,6 @@ export type NoteCardProps = {
   note: FixtureNote;
   active?: boolean;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>;
-
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
 
 export function NoteCard({ note, active, className, type, ...rest }: NoteCardProps) {
   return (

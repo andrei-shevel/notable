@@ -10,12 +10,18 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "peerDependencies": {
+    "clsx": "^2.1.1"
+  },
   "dependencies": {
+    "@notable/shared": "workspace:*",
     "@notable/ui": "workspace:*",
+    "ky": "^1.7.5",
     "lucide-react": "^0.474.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "wouter": "^3.10.0"
+    "wouter": "^3.10.0",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

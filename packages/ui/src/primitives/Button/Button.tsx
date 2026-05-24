@@ -1,7 +1,10 @@
 import { forwardRef } from 'react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Slot, Slottable } from '@radix-ui/react-slot';
+import cx from 'clsx';
+
 import { Spinner } from '../../blocks/Spinner';
+
 import styles from './Button.module.scss';
 
 export type ButtonVariant = 'solid' | 'ghost' | 'outline' | 'danger';
@@ -16,10 +19,6 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
   asChild?: boolean;
 };
-
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {

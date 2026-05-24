@@ -1,11 +1,9 @@
 import { forwardRef } from 'react';
 import type { ComponentPropsWithoutRef, ElementRef, ReactNode } from 'react';
 import * as RadixTooltip from '@radix-ui/react-tooltip';
-import styles from './Tooltip.module.scss';
+import cx from 'clsx';
 
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
+import styles from './Tooltip.module.scss';
 
 const Provider = RadixTooltip.Provider;
 const Root = RadixTooltip.Root;

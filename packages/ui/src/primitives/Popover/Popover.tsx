@@ -1,11 +1,9 @@
 import { forwardRef } from 'react';
 import type { ComponentPropsWithoutRef, ElementRef } from 'react';
 import * as RadixPopover from '@radix-ui/react-popover';
-import styles from './Popover.module.scss';
+import cx from 'clsx';
 
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
+import styles from './Popover.module.scss';
 
 const Root = RadixPopover.Root;
 const Trigger = RadixPopover.Trigger;

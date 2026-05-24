@@ -1,6 +1,9 @@
 import type { ButtonHTMLAttributes, CSSProperties } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import cx from 'clsx';
+
 import { Icon, type TagColor } from '@notable/ui';
+
 import styles from './NavItem.module.scss';
 
 type Lead = { icon: LucideIcon; dotColor?: never } | { dotColor: TagColor; icon?: never };
@@ -18,10 +21,6 @@ const DOT_VAR: Record<TagColor, string> = {
   violet: 'var(--tag-violet)',
   neutral: 'var(--tag-neutral)',
 };
-
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
 
 export function NavItem({
   icon,

@@ -1,14 +1,12 @@
 import { Fragment } from 'react';
+import cx from 'clsx';
+
 import styles from './Kbd.module.scss';
 
 export type KbdProps = {
   keys: string[];
   className?: string;
 };
-
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
 
 export function Kbd({ keys, className }: KbdProps) {
   return (

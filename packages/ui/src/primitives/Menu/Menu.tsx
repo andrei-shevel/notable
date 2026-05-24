@@ -1,11 +1,10 @@
 import { forwardRef } from 'react';
 import type { ComponentPropsWithoutRef, ElementRef } from 'react';
-import * as RadixMenu from '@radix-ui/react-dropdown-menu';
-import styles from './Menu.module.scss';
+import cx from 'clsx';
 
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
+import * as RadixMenu from '@radix-ui/react-dropdown-menu';
+
+import styles from './Menu.module.scss';
 
 const Root = RadixMenu.Root;
 const Trigger = RadixMenu.Trigger;

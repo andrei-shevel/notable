@@ -1,5 +1,7 @@
 import { forwardRef, useState } from 'react';
 import type { FocusEvent, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react';
+import cx from 'clsx';
+
 import styles from './Input.module.scss';
 
 export type InputVariant = 'default' | 'inline';
@@ -25,10 +27,6 @@ type MultiLineProps = CommonProps &
   };
 
 export type InputProps = SingleLineProps | MultiLineProps;
-
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
 
 export const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
   function Input(props, ref) {

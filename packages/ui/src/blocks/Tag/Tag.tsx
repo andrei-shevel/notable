@@ -1,3 +1,5 @@
+import cx from 'clsx';
+
 import styles from './Tag.module.scss';
 
 export type TagColor = 'blue' | 'green' | 'pink' | 'violet' | 'neutral';
@@ -10,10 +12,6 @@ export type TagProps = {
   translucent?: boolean;
   className?: string;
 };
-
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
 
 export function Tag({
   label,

@@ -1,3 +1,5 @@
+import cx from 'clsx';
+
 import styles from './Avatar.module.scss';
 
 export type AvatarSize = 'sm' | 'md' | 'lg';
@@ -14,10 +16,6 @@ function initials(name: string): string {
   if (parts.length === 0) return '?';
   if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
   return ((parts[0]![0] ?? '') + (parts[parts.length - 1]![0] ?? '')).toUpperCase();
-}
-
-function cx(...parts: Array<string | false | undefined>): string {
-  return parts.filter(Boolean).join(' ');
 }
 
 export function Avatar({ name, src, size = 'md', className }: AvatarProps) {
