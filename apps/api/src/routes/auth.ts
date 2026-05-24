@@ -1,12 +1,15 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { and, eq, gt, isNull, sql } from 'drizzle-orm';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { z } from 'zod';
+
 import {
+  ErrorResponseSchema,
   LoginRequestSchema,
   LoginResponseSchema,
   LogoutResponseSchema,
   MeResponseSchema,
+  VerifyRequestSchema,
+  VerifyResponseSchema,
 } from '@notable/shared';
 import { db } from '../db/client.js';
 import { authTokens, users } from '../db/schema.js';
@@ -17,8 +20,6 @@ import { SESSION_COOKIE } from '../plugins/jwt.js';
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const TOKEN_TTL_MS = 15 * 60 * 1000; // 15 minutes
 const TOKEN_BYTES = 32;
-
-const VerifyQuerySchema = z.object({ token: z.string().min(1).max(256) });
 
 const authRoutes: FastifyPluginAsyncZod = async (app) => {
   const publicUrl = process.env.PUBLIC_URL;
@@ -32,13 +33,16 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         body: LoginRequestSchema,
-        response: { 200: LoginResponseSchema },
+        response: {
+          200: LoginResponseSchema,
+          500: ErrorResponseSchema,
+        },
       },
       // 5 attempts per 15 minutes per IP. Anti-enumeration is handled by
       // always returning 200 regardless of whether the email exists.
       config: { rateLimit: { max: 5, timeWindow: '15 minutes' } },
     },
-    async (req) => {
+    async (req, reply) => {
       const email = req.body.email.trim().toLowerCase();
 
       // Find-or-create in one round-trip. `DO UPDATE SET email = EXCLUDED.email`
@@ -51,9 +55,8 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         .returning();
       if (!user) {
         // Shouldn't happen — ON CONFLICT DO UPDATE always returns a row.
-        // Log loudly but stay quiet to the client.
         req.log.error({ email }, 'find-or-create user returned no row');
-        return { ok: true as const };
+        return reply.code(500).send({ error: 'Internal server error' });
       }
 
       const tokenBytes = randomBytes(TOKEN_BYTES);
@@ -67,9 +70,8 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         expiresAt,
       });
 
-      const url = `${publicUrl}/api/auth/verify?token=${token}`;
       try {
-        await sendMagicLink(email, url);
+        await sendMagicLink(email, `${publicUrl}/auth/verify?token=${token}`);
       } catch (err) {
         // SMTP failures are an infra issue, not a client one. Log and stay
         // silent to avoid leaking deliverability signal.
@@ -79,17 +81,23 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
     },
   );
 
-  app.get(
+  app.post(
     '/verify',
     {
-      schema: { querystring: VerifyQuerySchema },
+      schema: {
+        body: VerifyRequestSchema,
+        response: {
+          200: VerifyResponseSchema,
+          400: ErrorResponseSchema,
+        },
+      },
     },
     async (req, reply) => {
       // base64url decode is lenient; an invalid payload yields a short
       // buffer which we reject by length below.
-      const tokenBytes = Buffer.from(req.query.token, 'base64url');
+      const tokenBytes = Buffer.from(req.body.token, 'base64url');
       if (tokenBytes.length !== TOKEN_BYTES) {
-        return reply.redirect(`${publicUrl}/login?error=invalid`);
+        return reply.code(400).send({ error: 'invalid' });
       }
       const tokenHash = createHash('sha256').update(tokenBytes).digest();
 
@@ -110,7 +118,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         .returning({ userId: authTokens.userId });
 
       if (!consumed) {
-        return reply.redirect(`${publicUrl}/login?error=invalid`);
+        return reply.code(400).send({ error: 'Invalid token' });
       }
 
       const jwt = await reply.jwtSign({ sub: consumed.userId }, { expiresIn: '30d' });
@@ -121,7 +129,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         path: '/',
         maxAge: SESSION_MAX_AGE_SECONDS,
       });
-      return reply.redirect(`${publicUrl}/`);
+      return { ok: true as const };
     },
   );
 
@@ -141,7 +149,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
       schema: {
         response: {
           200: MeResponseSchema,
-          401: z.object({ error: z.string() }),
+          401: ErrorResponseSchema,
         },
       },
     },
@@ -153,7 +161,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
       if (!user) {
         // JWT valid but user row gone (account deletion / wiped DB). Treat
         // as unauthenticated rather than 500.
-        return reply.code(401).send({ error: 'unauthorized' });
+        return reply.code(401).send({ error: 'Unauthorized' });
       }
       return user;
     },
