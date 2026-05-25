@@ -29,18 +29,10 @@ export function EditorPane() {
 
   return (
     <main className={styles.pane}>
-      <EditorToolbar
-        trail={['Work', 'Q3 product roadmap — first draft']}
-        savedLabel="Saved 2m ago"
-      />
+      <EditorToolbar trail={['Q3 product roadmap — first draft']} savedLabel="Saved 2m ago" />
       <div className={styles.scroll}>
         <article className={styles.body}>
           <h1>Q3 product roadmap — first draft</h1>
-          <div className={styles.meta}>
-            <span>May 22, 2026 · 10:42</span>
-            <span className={styles['meta-tag']}>Work</span>
-            <span className={styles['meta-tag']}>Planning</span>
-          </div>
 
           <p>
             This is a working draft. The goal is to land on three pillars by end of week so each

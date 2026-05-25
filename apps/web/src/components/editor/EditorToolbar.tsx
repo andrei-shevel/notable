@@ -1,4 +1,4 @@
-import { FileText, MoreHorizontal, Share2, Star } from 'lucide-react';
+import { MoreHorizontal, Star } from 'lucide-react';
 import { Button, Icon, Tooltip } from '@notable/ui';
 import { Crumbs } from './Crumbs';
 import { SavedPill } from './SavedPill';
@@ -12,17 +12,9 @@ export type EditorToolbarProps = {
 export function EditorToolbar({ trail, savedLabel }: EditorToolbarProps) {
   return (
     <div className={styles.toolbar}>
-      <Crumbs icon={FileText} trail={trail} />
+      <Crumbs trail={trail} />
       <div className={styles.spacer} />
       <SavedPill label={savedLabel} />
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          <Button iconOnly variant="ghost" aria-label="Share">
-            <Icon icon={Share2} />
-          </Button>
-        </Tooltip.Trigger>
-        <Tooltip.Content>Share</Tooltip.Content>
-      </Tooltip.Root>
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
           <Button iconOnly variant="ghost" aria-label="Star note">

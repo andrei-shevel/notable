@@ -1,7 +1,8 @@
 import type { ButtonHTMLAttributes } from 'react';
+import { FileText } from 'lucide-react';
 import cx from 'clsx';
 
-import { findFixtureTag, type FixtureNote } from '@/lib/fixtures';
+import type { FixtureNote } from '@/lib/fixtures';
 
 import styles from './NoteCard.module.scss';
 
@@ -19,22 +20,12 @@ export function NoteCard({ note, active, className, type, ...rest }: NoteCardPro
       {...rest}
     >
       <div className={styles.row}>
-        <h3 className={styles.title}>{note.title}</h3>
+        <h3 className={styles.title}>
+          <FileText size={14} />
+          <span>{note.title}</span>
+        </h3>
         <time className={styles.time}>{note.timeLabel}</time>
       </div>
-      <p className={styles.preview}>{note.preview}</p>
-      {note.tagIds.length > 0 ? (
-        <div className={styles.tags}>
-          {note.tagIds.map((id) => {
-            const tag = findFixtureTag(id);
-            return tag ? (
-              <span key={id} className={styles.chip}>
-                {tag.name}
-              </span>
-            ) : null;
-          })}
-        </div>
-      ) : null}
     </button>
   );
 }

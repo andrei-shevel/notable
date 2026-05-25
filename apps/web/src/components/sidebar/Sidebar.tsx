@@ -1,4 +1,4 @@
-import { Clock, FileText, FolderRoot, Star, Trash2 } from 'lucide-react';
+import { Clock, FileText, Star, Trash2 } from 'lucide-react';
 
 import { Brand } from '@/components/common/Brand';
 import { NavItem } from '@/components/sidebar/NavItem';
@@ -18,7 +18,6 @@ export function Sidebar() {
         <NavItem icon={FileText} label="All Notes" count={FIXTURE_NAV_COUNTS.all} active />
         <NavItem icon={Star} label="Starred" count={FIXTURE_NAV_COUNTS.starred} />
         <NavItem icon={Clock} label="Recent" />
-        <NavItem icon={FolderRoot} label="Folders" />
         <NavItem icon={Trash2} label="Trash" />
       </div>
 

@@ -36,22 +36,32 @@
 .row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
 }
 
 .title {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: var(--text-list-title-size);
-  font-weight: var(--text-list-title-weight);
-  line-height: var(--text-list-title-leading);
-  letter-spacing: var(--text-list-title-tracking);
-  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: var(--text-list-title-size);
+    font-weight: var(--text-list-title-weight);
+    line-height: var(--text-list-title-leading);
+    letter-spacing: var(--text-list-title-tracking);
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .time {
