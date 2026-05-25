@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { MoreHorizontal, Share2, Star, Trash2, Tag as TagIcon } from 'lucide-react';
 import { Button, Menu, Icon } from '@notable/ui';
-import { PageHeader, SectionTitle } from '../_layout';
-import { Specimen } from '../_specimen';
+import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
+import { Specimen } from '@/routes/_design/_specimen';
 
 export function MenuPage() {
   const [pinned, setPinned] = useState(true);

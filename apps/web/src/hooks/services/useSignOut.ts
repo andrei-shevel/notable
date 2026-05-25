@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
-import { useAuthStore } from '../../stores/auth';
-import { authApi } from '../../lib/api/auth';
+import { useAuthStore } from '@/stores/auth';
+import { authApi } from '@/lib/api/auth';
 
 export function useSignOut() {
   const setUser = useAuthStore((state) => state.setUser);

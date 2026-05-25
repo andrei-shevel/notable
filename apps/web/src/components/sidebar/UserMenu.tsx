@@ -3,8 +3,8 @@ import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
 
 import { Menu } from '@notable/ui';
 
-import { useCurrentUser } from '../../hooks/data/useCurrentUser';
-import { useSignOut } from '../../hooks/services/useSignOut';
+import { useCurrentUser } from '@/hooks/data/useCurrentUser';
+import { useSignOut } from '@/hooks/services/useSignOut';
 
 import styles from './UserMenu.module.scss';
 

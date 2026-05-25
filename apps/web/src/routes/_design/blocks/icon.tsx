@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import * as Lucide from 'lucide-react';
 import { Icon, Input } from '@notable/ui';
 import { Search } from 'lucide-react';
-import { PageHeader, SectionTitle } from '../_layout';
-import { Specimen } from '../_specimen';
+import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
+import { Specimen } from '@/routes/_design/_specimen';
 import styles from './icon.module.scss';
 
 // Build a sorted list of icon names from lucide-react's exports. lucide-react

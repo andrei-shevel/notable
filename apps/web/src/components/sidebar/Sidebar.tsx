@@ -1,10 +1,10 @@
 import { Clock, FileText, FolderRoot, Star, Trash2 } from 'lucide-react';
 
-import { Brand } from '../common/Brand';
-import { NavItem } from './NavItem';
-import { UserMenu } from './UserMenu';
+import { Brand } from '@/components/common/Brand';
+import { NavItem } from '@/components/sidebar/NavItem';
+import { UserMenu } from '@/components/sidebar/UserMenu';
 
-import { FIXTURE_NAV_COUNTS, FIXTURE_TAGS } from '../../lib/fixtures';
+import { FIXTURE_NAV_COUNTS, FIXTURE_TAGS } from '@/lib/fixtures';
 
 import styles from './Sidebar.module.scss';
 

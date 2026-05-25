@@ -1,6 +1,6 @@
 import { Avatar } from '@notable/ui';
-import { PageHeader, SectionTitle } from '../_layout';
-import { Specimen } from '../_specimen';
+import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
+import { Specimen } from '@/routes/_design/_specimen';
 
 export function AvatarPage() {
   return (

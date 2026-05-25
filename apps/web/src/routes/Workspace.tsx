@@ -1,8 +1,8 @@
-import { Sidebar } from '../components/sidebar/Sidebar';
-import { NoteList } from '../components/notes/NoteList';
-import { EditorPane } from '../components/editor/EditorPane';
+import { Sidebar } from '@/components/sidebar/Sidebar';
+import { NoteList } from '@/components/notes/NoteList';
+import { EditorPane } from '@/components/editor/EditorPane';
 
-import { FIXTURE_ACTIVE_NOTE_ID } from '../lib/fixtures';
+import { FIXTURE_ACTIVE_NOTE_ID } from '@/lib/fixtures';
 
 import styles from './Workspace.module.scss';
 

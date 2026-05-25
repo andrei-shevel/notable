@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 
-import { ThemeSwitcher } from '../../components/common/ThemeSwitcher';
+import { ThemeSwitcher } from '@/components/common/ThemeSwitcher';
 
 import styles from './_layout.module.scss';
 

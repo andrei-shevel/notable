@@ -1,7 +1,7 @@
 import { Tag } from '@notable/ui';
 import type { TagColor } from '@notable/ui';
-import { PageHeader, SectionTitle } from '../_layout';
-import { Specimen } from '../_specimen';
+import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
+import { Specimen } from '@/routes/_design/_specimen';
 
 const COLORS: TagColor[] = ['blue', 'green', 'pink', 'violet', 'neutral'];
 

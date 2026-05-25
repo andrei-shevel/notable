@@ -1,5 +1,5 @@
-import { PageHeader } from '../_layout';
-import { Specimen } from '../_specimen';
+import { PageHeader } from '@/routes/_design/_layout';
+import { Specimen } from '@/routes/_design/_specimen';
 
 const SHADOWS = [
   { token: 'sm', description: 'Subtle lift (active nav item, button hover)' },

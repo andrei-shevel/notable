@@ -1,7 +1,8 @@
 import { Check, Monitor, Moon, Sun } from 'lucide-react';
+
 import { Button, Icon, Menu, Tooltip } from '@notable/ui';
-import { useTheme } from '../../hooks/useTheme';
-import type { Theme } from '../../hooks/useTheme';
+import { useTheme, type Theme } from '@/hooks/useTheme';
+
 import styles from './ThemeSwitcher.module.scss';
 
 const OPTIONS: Array<{ value: Theme; label: string; icon: typeof Sun }> = [

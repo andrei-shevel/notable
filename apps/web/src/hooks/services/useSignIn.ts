@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { HTTPError } from 'ky';
 
 import { LoginRequestSchema } from '@notable/shared';
-import { authApi } from '../../lib/api/auth';
+import { authApi } from '@/lib/api/auth';
 
 export function useSignIn() {
   return useCallback(async (email: string) => {

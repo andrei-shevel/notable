@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react';
 import cx from 'clsx';
 
-import { findFixtureTag, type FixtureNote } from '../../lib/fixtures';
+import { findFixtureTag, type FixtureNote } from '@/lib/fixtures';
 
 import styles from './NoteCard.module.scss';
 

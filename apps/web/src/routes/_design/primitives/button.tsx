@@ -1,7 +1,7 @@
 import { Plus, Star, Trash2 } from 'lucide-react';
 import { Button, Icon } from '@notable/ui';
-import { PageHeader, SectionTitle } from '../_layout';
-import { Specimen } from '../_specimen';
+import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
+import { Specimen } from '@/routes/_design/_specimen';
 
 export function ButtonPage() {
   return (

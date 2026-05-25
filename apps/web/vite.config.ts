@@ -1,9 +1,16 @@
+import { fileURLToPath, URL } from 'node:url';
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
   // The SPA is mounted under /app/ in production (Caddy serves the landing at
   // the apex). Vite needs to prefix generated asset URLs so dev and prod use
   // the same paths — open http://localhost:5173/app/ in dev.

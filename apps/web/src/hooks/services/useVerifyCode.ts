@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { HTTPError } from 'ky';
 
 import { VerifyRequestSchema } from '@notable/shared';
-import { authApi } from '../../lib/api/auth';
+import { authApi } from '@/lib/api/auth';
 import { useLoadUser } from './useLoadUser';
 
 export function useVerifyCode() {
