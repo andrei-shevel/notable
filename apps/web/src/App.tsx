@@ -3,9 +3,9 @@ import { Route, Router, Switch } from 'wouter';
 
 import { Tooltip } from '@notable/ui';
 import { Workspace } from './routes/Workspace';
-import { AuthGate } from './components/AuthGate';
+import { AuthGate } from './components/auth/AuthGate';
 import { Login } from './routes/Login';
-import { FullPageSpinner } from './components/FullPageSpinner';
+import { FullPageSpinner } from './components/common/FullPageSpinner';
 
 import { useLoadUser } from './hooks/services/useLoadUser';
 

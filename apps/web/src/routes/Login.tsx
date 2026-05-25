@@ -2,7 +2,7 @@ import { useCallback, useState, type SubmitEvent } from 'react';
 import { Mail } from 'lucide-react';
 
 import { Button, Input } from '@notable/ui';
-import { AuthLayout } from '../components/AuthLayout';
+import { AuthLayout } from '../components/auth/AuthLayout';
 
 import { useSignIn } from '../hooks/services/useSignIn';
 import { useVerifyCode } from '../hooks/services/useVerifyCode';

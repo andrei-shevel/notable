@@ -1,7 +1,10 @@
 import { Plus, Search } from 'lucide-react';
+
 import { Button, Icon, Input, Tooltip } from '@notable/ui';
 import { NoteCard } from './NoteCard';
-import { FIXTURE_NOTES, type FixtureNote } from '../lib/fixtures';
+
+import { FIXTURE_NOTES, type FixtureNote } from '../../lib/fixtures';
+
 import styles from './NoteList.module.scss';
 
 export type NoteListProps = {

@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 
-import { Brand } from './Brand';
+import { Brand } from '../common/Brand';
 
 import styles from './AuthLayout.module.scss';
 

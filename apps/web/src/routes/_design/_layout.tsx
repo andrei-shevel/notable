@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
-import { ThemeSwitcher } from '../../components/ThemeSwitcher';
+
+import { ThemeSwitcher } from '../../components/common/ThemeSwitcher';
+
 import styles from './_layout.module.scss';
 
 type NavLink = { href: string; label: string };

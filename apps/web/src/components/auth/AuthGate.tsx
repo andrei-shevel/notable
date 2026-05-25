@@ -1,9 +1,9 @@
 import { useEffect, type PropsWithChildren } from 'react';
 import { useLocation } from 'wouter';
 
-import { FullPageSpinner } from './FullPageSpinner';
+import { FullPageSpinner } from '../common/FullPageSpinner';
 
-import { useAuth } from '../hooks/data/useAuth';
+import { useAuth } from '../../hooks/data/useAuth';
 
 type AuthGateProps = PropsWithChildren<{
   isGuest?: boolean;
