@@ -1,0 +1,57 @@
+.trigger {
+  margin-top: auto;
+  padding: 10px 8px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  // Span the parent's horizontal padding so the hover state hits the chrome
+  // edge instead of leaving an awkward gutter.
+  width: calc(100% + 24px);
+  margin-inline: -12px;
+  margin-bottom: -4px;
+  padding-inline: 20px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition: background-color 100ms ease;
+
+  &:hover,
+  &[data-state='open'] {
+    background-color: var(--surface);
+  }
+
+  &:focus-visible {
+    outline: none;
+    outline-offset: -2px;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.email {
+  font-size: var(--font-size-xs);
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chevron {
+  margin-left: auto;
+  color: var(--text-faint);
+  flex-shrink: 0;
+}
+
+.menu {
+  min-width: 200px;
+}

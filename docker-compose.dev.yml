@@ -26,7 +26,7 @@ services:
     restart: unless-stopped
 
   api:
-    command: ['pnpm', 'run', 'dev']
+    command: ['sh', '-c', 'pnpm run db:migrate && pnpm run dev']
     ports:
       - '127.0.0.1:3000:3000'
     environment:

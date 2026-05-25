@@ -1,8 +1,11 @@
 import { Clock, FileText, Star, Trash2 } from 'lucide-react';
-import { Avatar } from '@notable/ui';
+
 import { Brand } from './Brand';
 import { NavItem } from './NavItem';
-import { FIXTURE_NAV_COUNTS, FIXTURE_TAGS, FIXTURE_USER } from '../lib/fixtures';
+import { UserMenu } from './UserMenu';
+
+import { FIXTURE_NAV_COUNTS, FIXTURE_TAGS } from '../lib/fixtures';
+
 import styles from './Sidebar.module.scss';
 
 export function Sidebar() {
@@ -25,13 +28,7 @@ export function Sidebar() {
         ))}
       </div>
 
-      <div className={styles.foot}>
-        <Avatar name={FIXTURE_USER.name} className={styles.avatar} />
-        <div className={styles['user-meta']}>
-          <span className={styles['user-name']}>{FIXTURE_USER.name}</span>
-          <span className={styles['user-email']}>{FIXTURE_USER.email}</span>
-        </div>
-      </div>
+      <UserMenu />
     </aside>
   );
 }

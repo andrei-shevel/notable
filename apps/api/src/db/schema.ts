@@ -3,6 +3,7 @@ import {
   boolean,
   customType,
   index,
+  integer,
   jsonb,
   pgTable,
   primaryKey,
@@ -44,6 +45,7 @@ export const authTokens = pgTable('auth_tokens', {
     .references(() => users.id, { onDelete: 'cascade' }),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
   consumedAt: timestamp('consumed_at', { withTimezone: true }),
+  attempts: integer('attempts').notNull().default(0),
 });
 
 export const notes = pgTable(

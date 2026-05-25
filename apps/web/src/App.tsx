@@ -1,7 +1,13 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Route, Router, Switch } from 'wouter';
+
 import { Tooltip } from '@notable/ui';
 import { Workspace } from './routes/Workspace';
+import { AuthGate } from './components/AuthGate';
+import { Login } from './routes/Login';
+import { FullPageSpinner } from './components/FullPageSpinner';
+
+import { useLoadUser } from './hooks/services/useLoadUser';
 
 const DesignSystem = import.meta.env.DEV ? lazy(() => import('./routes/_design')) : null;
 
@@ -10,35 +16,39 @@ const DesignSystem = import.meta.env.DEV ? lazy(() => import('./routes/_design')
 const ROUTER_BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 export function App() {
+  const loadUser = useLoadUser();
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadUser(controller.signal);
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
   return (
     <Router base={ROUTER_BASE}>
       <Tooltip.Provider delayDuration={400} skipDelayDuration={200}>
         <Switch>
+          <Route path="/login">
+            <AuthGate isGuest>
+              <Login />
+            </AuthGate>
+          </Route>
           {DesignSystem ? (
             <Route path="/_design" nest>
-              <Suspense fallback={<DesignLoading />}>
+              <Suspense fallback={<FullPageSpinner label="Loading design system…" />}>
                 <DesignSystem />
               </Suspense>
             </Route>
           ) : null}
           <Route>
-            <Workspace />
+            <AuthGate>
+              <Workspace />
+            </AuthGate>
           </Route>
         </Switch>
       </Tooltip.Provider>
     </Router>
-  );
-}
-
-function DesignLoading() {
-  return (
-    <div
-      style={{
-        padding: 'var(--space-12)',
-        color: 'var(--text-muted)',
-      }}
-    >
-      Loading design system…
-    </div>
   );
 }

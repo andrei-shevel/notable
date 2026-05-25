@@ -23,41 +23,6 @@
   padding: 4px 8px 8px;
 }
 
-.foot {
-  margin-top: auto;
-  padding: 12px 8px 4px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-meta {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.user-name {
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-base);
-  color: var(--text);
-}
-
-.user-email {
-  font-size: var(--font-size-xs);
-  color: var(--text-faint);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-// Override the Avatar's default amber gradient with the prototype's
-// indigo→violet for the user chip.
-.avatar {
-  background: linear-gradient(135deg, #818cf8, #c084fc);
-}
-
 @media (max-width: 960px) {
   .sidebar {
     display: none;
