@@ -13,8 +13,11 @@ import cookiePlugin from './plugins/cookie';
 import jwtPlugin from './plugins/jwt';
 import ratelimitPlugin from './plugins/ratelimit';
 import { createAuthRepository } from './repositories/auth.repository';
+import { createNotesRepository } from './repositories/notes.repository';
 import { authRoutes } from './routes/auth.routes';
+import { notesRoutes } from './routes/notes.routes';
 import { createAuthService } from './services/auth.service';
+import { createNotesService } from './services/notes.service';
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({
@@ -53,7 +56,11 @@ export async function buildApp(): Promise<FastifyInstance> {
   const authRepository = createAuthRepository(db);
   const authService = createAuthService({ repo: authRepository, logger: app.log });
 
+  const notesRepository = createNotesRepository(db);
+  const notesService = createNotesService({ repo: notesRepository });
+
   await app.register(authRoutes, { prefix: '/api/auth', authService });
+  await app.register(notesRoutes, { prefix: '/api/notes', notesService });
 
   return app;
 }

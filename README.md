@@ -92,16 +92,16 @@ Caddy comes up on `:80` / `:443`, serves everything under `${PUBLIC_HOSTNAME}`. 
 
 ### Common commands
 
-| Command            | What it does                                          |
-| ------------------ | ----------------------------------------------------- |
-| `pnpm up`          | Bring up dev stack (db + api + mailpit)               |
-| `pnpm down`        | Tear it down                                          |
-| `pnpm logs`        | Tail all compose service logs                         |
-| `pnpm rebuild`     | Rebuild images + restart                              |
-| `pnpm dev`         | Vite dev server for the SPA                           |
-| `pnpm build`       | Build every workspace package                         |
-| `pnpm typecheck`   | `tsc --noEmit` across the workspace                   |
-| `pnpm format`      | Prettier write                                        |
+| Command          | What it does                            |
+| ---------------- | --------------------------------------- |
+| `pnpm up`        | Bring up dev stack (db + api + mailpit) |
+| `pnpm down`      | Tear it down                            |
+| `pnpm logs`      | Tail all compose service logs           |
+| `pnpm rebuild`   | Rebuild images + restart                |
+| `pnpm dev`       | Vite dev server for the SPA             |
+| `pnpm build`     | Build every workspace package           |
+| `pnpm typecheck` | `tsc --noEmit` across the workspace     |
+| `pnpm format`    | Prettier write                          |
 
 ---
 
