@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Inbox, Plus, Search } from 'lucide-react';
 
 import { Button, Icon, Input, Tooltip } from '@notable/ui';
+import { CreateNoteModal } from './CreateNoteModal';
 import { NoteCard } from './NoteCard';
 
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
@@ -31,6 +32,7 @@ function matchesQuery(note: FixtureNote, q: string): boolean {
 
 export function NoteList() {
   const { scope, query, noteId, setQuery, linkTo } = useWorkspaceNav();
+  const [createOpen, setCreateOpen] = useState(false);
 
   const notes = useMemo(
     () => notesForScope(scope).filter((n) => matchesQuery(n, query)),
@@ -43,12 +45,18 @@ export function NoteList() {
         <h2 className={styles.title}>{scopeTitle(scope)}</h2>
         <Tooltip.Root>
           <Tooltip.Trigger asChild>
-            <Button iconOnly variant="ghost" aria-label="New note">
+            <Button
+              iconOnly
+              variant="ghost"
+              aria-label="New note"
+              onClick={() => setCreateOpen(true)}
+            >
               <Icon icon={Plus} />
             </Button>
           </Tooltip.Trigger>
           <Tooltip.Content>New note</Tooltip.Content>
         </Tooltip.Root>
+        <CreateNoteModal open={createOpen} onOpenChange={setCreateOpen} />
       </div>
 
       <div className={styles.search}>
