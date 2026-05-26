@@ -1,5 +1,6 @@
 import fp from 'fastify-plugin';
 import jwt from '@fastify/jwt';
+import { config } from '../config';
 
 // Tell @fastify/jwt how to type request.user. We sign `{ sub: user_id }` to
 // stay aligned with standard JWT claims, then re-shape it in `formatUser`
@@ -14,16 +15,8 @@ declare module '@fastify/jwt' {
 export const SESSION_COOKIE = 'session';
 
 export default fp(async (app) => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error('JWT_SECRET is required');
-  }
-  if (secret.length < 32) {
-    throw new Error('JWT_SECRET must be at least 32 characters');
-  }
-
   await app.register(jwt, {
-    secret,
+    secret: config.JWT_SECRET,
     // Read the JWT from the session cookie instead of an Authorization
     // header. The cookie itself is unsigned at the cookie layer (`signed:
     // false`) because the JWT is already integrity-protected.

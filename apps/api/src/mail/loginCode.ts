@@ -1,10 +1,9 @@
-import { mailer } from './transport.js';
-
-const from = process.env.MAIL_FROM ?? 'Notable <noreply@notable.local>';
+import { config } from '../config';
+import { mailer } from './transport';
 
 export async function sendLoginCode(email: string, code: string) {
   await mailer.sendMail({
-    from,
+    from: config.MAIL_FROM,
     to: email,
     subject: `${code} is your Notable sign-in code`,
     text: [
