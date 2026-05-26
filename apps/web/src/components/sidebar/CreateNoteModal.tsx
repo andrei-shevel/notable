@@ -4,6 +4,8 @@ import { z } from 'zod';
 
 import { Button, Dialog, Input } from '@notable/ui';
 
+import { useCreateNote } from '@/hooks/services/useCreateNote';
+
 import styles from './CreateNoteModal.module.scss';
 
 export type CreateNoteModalProps = {
@@ -20,17 +22,27 @@ type FormValues = z.infer<typeof createNoteFormSchema>;
 const DEFAULT_VALUES: FormValues = { title: '' };
 
 export function CreateNoteModal({ open, onOpenChange }: CreateNoteModalProps) {
+  const createNote = useCreateNote();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    setError,
+    formState: { errors, isValid, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: DEFAULT_VALUES,
     resolver: zodResolver(createNoteFormSchema),
     mode: 'onChange',
   });
 
-  const onSubmit = handleSubmit(() => onOpenChange(false));
+  const onSubmit = handleSubmit(async ({ title }) => {
+    try {
+      await createNote({ title });
+      onOpenChange(false);
+    } catch (err) {
+      setError('root', { message: (err as Error).message });
+    }
+  });
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -50,16 +62,21 @@ export function CreateNoteModal({ open, onOpenChange }: CreateNoteModalProps) {
               autoFocus
               placeholder="e.g. Q4 product roadmap"
               error={Boolean(errors.title)}
+              disabled={isSubmitting}
               {...register('title')}
             />
             {errors.title ? <span className={styles.error}>{errors.title.message}</span> : null}
           </div>
 
+          {errors.root ? <div className={styles.error}>{errors.root.message}</div> : null}
+
           <div className={styles.footer}>
             <Dialog.Close asChild>
-              <Button variant="ghost">Cancel</Button>
+              <Button variant="ghost" disabled={isSubmitting}>
+                Cancel
+              </Button>
             </Dialog.Close>
-            <Button type="submit" variant="solid" disabled={!isValid}>
+            <Button type="submit" variant="solid" disabled={!isValid} loading={isSubmitting}>
               Create note
             </Button>
           </div>
