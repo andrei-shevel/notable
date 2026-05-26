@@ -3,12 +3,14 @@ import { FileText } from 'lucide-react';
 import { Link } from 'wouter';
 import cx from 'clsx';
 
-import type { FixtureNote } from '@/lib/fixtures';
+import type { Note } from '@notable/shared';
+
+import { formatRelativeShort } from '@/lib/date';
 
 import styles from './NoteCard.module.scss';
 
 export type NoteCardProps = {
-  note: FixtureNote;
+  note: Note;
   href: string;
   active?: boolean;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'children' | 'href'>;
@@ -27,7 +29,9 @@ export function NoteCard({ note, href, active, className, ...rest }: NoteCardPro
           <FileText size={14} />
           <span>{note.title}</span>
         </h3>
-        <time className={styles.time}>{note.timeLabel}</time>
+        <time className={styles.time} dateTime={note.updatedAt}>
+          {formatRelativeShort(note.updatedAt)}
+        </time>
       </div>
     </Link>
   );

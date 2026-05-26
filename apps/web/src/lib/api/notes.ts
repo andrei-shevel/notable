@@ -4,6 +4,6 @@ import type { CreateNoteRequest, Note, NoteListQuery, NoteListResponse } from '@
 
 export const notesApi = {
   create: (body: CreateNoteRequest) => ky.post<Note>('/api/notes', { json: body }),
-  list: (query: NoteListQuery) =>
-    ky.get<NoteListResponse>('/api/notes', { searchParams: query }),
+  list: (query: NoteListQuery, signal?: AbortSignal) =>
+    ky.get<NoteListResponse>('/api/notes', { searchParams: query, signal }),
 };

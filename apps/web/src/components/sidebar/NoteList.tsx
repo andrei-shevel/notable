@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Inbox, Plus, Search } from 'lucide-react';
 
 import { Button, Icon, Input, Tooltip } from '@notable/ui';
@@ -6,7 +6,8 @@ import { CreateNoteModal } from './CreateNoteModal';
 import { NoteCard } from './NoteCard';
 
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
-import { FIXTURE_NOTES, FIXTURE_TAGS, type FixtureNote } from '@/lib/fixtures';
+import { useNotes } from '@/hooks/services/useNotes.ts';
+import { FIXTURE_TAGS } from '@/lib/fixtures';
 import { libraryScope, type WorkspaceScope } from '@/lib/scopes';
 
 import styles from './NoteList.module.scss';
@@ -19,25 +20,11 @@ function scopeTitle(scope: WorkspaceScope): string {
   return libraryScope(scope.id).label;
 }
 
-function notesForScope(scope: WorkspaceScope): FixtureNote[] {
-  if (scope.kind === 'tag') return FIXTURE_NOTES.filter((n) => n.tagIds.includes(scope.id));
-  return scope.id === 'all' ? FIXTURE_NOTES : [];
-}
-
-function matchesQuery(note: FixtureNote, q: string): boolean {
-  if (!q) return true;
-  const needle = q.toLowerCase();
-  return note.title.toLowerCase().includes(needle) || note.preview.toLowerCase().includes(needle);
-}
-
 export function NoteList() {
+  const { notes } = useNotes();
+
   const { scope, query, noteId, setQuery, linkTo } = useWorkspaceNav();
   const [createOpen, setCreateOpen] = useState(false);
-
-  const notes = useMemo(
-    () => notesForScope(scope).filter((n) => matchesQuery(n, query)),
-    [scope, query],
-  );
 
   return (
     <section className={styles.list}>

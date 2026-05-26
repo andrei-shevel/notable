@@ -85,12 +85,27 @@ export function createNotesRepository(db: DrizzleDB) {
         view === 'trash' ? isNotNull(notes.trashedAt) : isNull(notes.trashedAt);
       const starredFilter: SQL | undefined =
         view === 'starred' ? eq(notes.starred, true) : undefined;
-      // websearch_to_tsquery accepts user-facing syntax (quoted phrases, OR,
-      // -negation) and tolerates malformed input without throwing, unlike
-      // to_tsquery. Backed by notes_search_idx (GIN on search_tsv).
-      const searchFilter: SQL | undefined = q
-        ? sql`${notes.searchTsv} @@ websearch_to_tsquery('english', ${q})`
-        : undefined;
+      // Search ORs two strategies so search-as-you-type and natural-language
+      // queries both work:
+      //   1. websearch_to_tsquery on search_tsv — stemming + quoted phrases +
+      //      OR + -negation. Misses substrings ("te" doesn't match "test")
+      //      because tsvectors store whole lexemes.
+      //   2. ILIKE on title + body_text — catches substring/prefix. Wildcards
+      //      in user input are escaped so a literal `%` doesn't sweep up
+      //      everything.
+      // Indexes: notes_search_idx (GIN on search_tsv) serves branch 1,
+      // notes_trgm_idx (GIN on body_text gin_trgm_ops) serves the body half
+      // of branch 2. Title ILIKE falls back to a seq scan, bounded by the
+      // per-user filter — add `gin (title gin_trgm_ops)` if latency shows up.
+      let searchFilter: SQL | undefined;
+      if (q) {
+        const pattern = `%${q.replace(/[\\%_]/g, '\\$&')}%`;
+        searchFilter = sql`(
+          ${notes.searchTsv} @@ websearch_to_tsquery('english', ${q})
+          OR ${notes.title} ILIKE ${pattern}
+          OR ${notes.bodyText} ILIKE ${pattern}
+        )`;
+      }
 
       // Cursor row comparison must agree with the ORDER BY direction so each
       // page is strictly past the previous one. id is the tiebreaker that
