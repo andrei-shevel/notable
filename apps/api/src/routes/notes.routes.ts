@@ -35,7 +35,14 @@ export const notesRoutes: FastifyPluginAsyncZod<NotesRoutesOptions> = async (app
       },
     },
     async (req) => {
-      return await notesService.list(req.user.id, req.query.view);
+      return await notesService.list(req.user.id, {
+        orderBy: req.query.orderBy,
+        orderDir: req.query.orderDir,
+        view: req.query.view,
+        q: req.query.q,
+        limit: req.query.limit,
+        cursor: req.query.cursor,
+      });
     },
   );
 

@@ -1,6 +1,14 @@
-import type { CreateNoteRequest, Note, NoteView, UpdateNoteRequest } from '@notable/shared';
-import { NotFoundError } from '../errors/AppError';
-import type { NoteRow, NotesRepository } from '../repositories/notes.repository';
+import type {
+  CreateNoteRequest,
+  Note,
+  NoteListResponse,
+  NoteOrderField,
+  NoteView,
+  SortDirection,
+  UpdateNoteRequest,
+} from '@notable/shared';
+import { BadRequestError, NotFoundError } from '../errors/AppError';
+import type { ListCursor, NoteRow, NotesRepository } from '../repositories/notes.repository';
 
 // Drizzle returns Date instances for timestamptz; the API contract is ISO
 // strings. Centralising the mapping here keeps routes thin and means the
@@ -18,13 +26,77 @@ function toApiShape(row: NoteRow): Note {
   };
 }
 
+// Opaque cursor format: base64url(JSON({ f, d, v, i })). Short keys keep the
+// URL parameter compact. f (field) and d (direction) are embedded so the
+// server can reject a cursor reused with a different ordering — flipping
+// either silently would skip or duplicate rows.
+function encodeCursor(row: NoteRow, field: NoteOrderField, dir: SortDirection): string {
+  const value = field === 'title' ? row.title : row[field].toISOString();
+  return Buffer.from(JSON.stringify({ f: field, d: dir, v: value, i: row.id })).toString(
+    'base64url',
+  );
+}
+
+function decodeCursor(
+  cursor: string,
+  expectedField: NoteOrderField,
+  expectedDir: SortDirection,
+): ListCursor {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8'));
+  } catch {
+    throw new BadRequestError('Invalid cursor');
+  }
+  if (typeof parsed !== 'object' || parsed === null) {
+    throw new BadRequestError('Invalid cursor');
+  }
+  const p = parsed as { f?: unknown; d?: unknown; v?: unknown; i?: unknown };
+  if (typeof p.i !== 'string' || typeof p.v !== 'string') {
+    throw new BadRequestError('Invalid cursor');
+  }
+  if (p.f !== expectedField || p.d !== expectedDir) {
+    throw new BadRequestError('Cursor does not match order');
+  }
+
+  if (expectedField === 'title') {
+    return { field: 'title', value: p.v, id: p.i };
+  }
+  const date = new Date(p.v);
+  if (Number.isNaN(date.getTime())) throw new BadRequestError('Invalid cursor');
+  return { field: expectedField, value: date, id: p.i };
+}
+
 export function createNotesService(deps: { repo: NotesRepository }) {
   const { repo } = deps;
 
   return {
-    async list(userId: string, view: NoteView): Promise<Note[]> {
-      const rows = await repo.listByView(userId, view);
-      return rows.map(toApiShape);
+    async list(
+      userId: string,
+      opts: {
+        orderBy: NoteOrderField;
+        orderDir: SortDirection;
+        view?: NoteView;
+        q?: string;
+        limit?: number;
+        cursor?: string;
+      },
+    ): Promise<NoteListResponse> {
+      const { orderBy, orderDir } = opts;
+      const decoded = opts.cursor ? decodeCursor(opts.cursor, orderBy, orderDir) : undefined;
+      const { rows, hasMore } = await repo.list(userId, {
+        orderBy,
+        orderDir,
+        view: opts.view,
+        q: opts.q,
+        limit: opts.limit,
+        cursor: decoded,
+      });
+      const lastRow = rows[rows.length - 1];
+      return {
+        items: rows.map(toApiShape),
+        nextCursor: hasMore && lastRow ? encodeCursor(lastRow, orderBy, orderDir) : null,
+      };
     },
 
     async get(userId: string, id: string): Promise<Note> {

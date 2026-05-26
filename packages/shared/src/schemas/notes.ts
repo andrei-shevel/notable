@@ -1,11 +1,19 @@
 import { z } from 'zod';
 
-// Which slice of the user's notes the list endpoint should return.
-//   all      → not in trash
+// Optional filter applied to the list endpoint.
+//   omitted  → not in trash
 //   starred  → not in trash AND starred = true
 //   trash    → trashed_at IS NOT NULL
-export const NoteViewSchema = z.enum(['all', 'starred', 'trash']);
+export const NoteViewSchema = z.enum(['starred', 'trash']);
 export type NoteView = z.infer<typeof NoteViewSchema>;
+
+// Allow-list of sortable columns. Bounded so the parameter cannot be turned
+// into arbitrary SQL via the API, and so we can pre-declare matching indexes.
+export const NoteOrderFieldSchema = z.enum(['updatedAt', 'createdAt', 'title']);
+export type NoteOrderField = z.infer<typeof NoteOrderFieldSchema>;
+
+export const SortDirectionSchema = z.enum(['asc', 'desc']);
+export type SortDirection = z.infer<typeof SortDirectionSchema>;
 
 // Tiptap doc payload. Deliberately loose: Tiptap controls the shape on both
 // ends, the server only stores it and derives FTS from the sibling body_text
@@ -26,11 +34,23 @@ export const NoteSchema = z.object({
 export type Note = z.infer<typeof NoteSchema>;
 
 export const NoteListQuerySchema = z.object({
-  view: NoteViewSchema.default('all'),
+  view: NoteViewSchema.optional(),
+  orderBy: NoteOrderFieldSchema.default('updatedAt'),
+  orderDir: SortDirectionSchema.default('desc'),
+  q: z.string().trim().min(1).max(200).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+  // Opaque cursor returned by a previous list call. Clients should treat as
+  // a black box. Encoding embeds the field+direction it was issued under; the
+  // server rejects cursors paired with a different (orderBy, orderDir).
+  cursor: z.string().optional(),
 });
 export type NoteListQuery = z.infer<typeof NoteListQuerySchema>;
 
-export const NoteListResponseSchema = z.array(NoteSchema);
+export const NoteListResponseSchema = z.object({
+  items: z.array(NoteSchema),
+  // null when the current page is the last one.
+  nextCursor: z.string().nullable(),
+});
 export type NoteListResponse = z.infer<typeof NoteListResponseSchema>;
 
 export const NoteIdParamsSchema = z.object({ id: z.uuid() });
