@@ -1,5 +1,6 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { AnchorHTMLAttributes } from 'react';
 import { FileText } from 'lucide-react';
+import { Link } from 'wouter';
 import cx from 'clsx';
 
 import type { FixtureNote } from '@/lib/fixtures';
@@ -8,15 +9,17 @@ import styles from './NoteCard.module.scss';
 
 export type NoteCardProps = {
   note: FixtureNote;
+  href: string;
   active?: boolean;
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>;
+} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'children' | 'href'>;
 
-export function NoteCard({ note, active, className, type, ...rest }: NoteCardProps) {
+export function NoteCard({ note, href, active, className, ...rest }: NoteCardProps) {
   return (
-    <button
-      type={type ?? 'button'}
+    <Link
+      href={href}
+      replace
       className={cx(styles.card, active && styles.active, className)}
-      aria-pressed={active ?? undefined}
+      aria-current={active ? 'true' : undefined}
       {...rest}
     >
       <div className={styles.row}>
@@ -26,6 +29,6 @@ export function NoteCard({ note, active, className, type, ...rest }: NoteCardPro
         </h3>
         <time className={styles.time}>{note.timeLabel}</time>
       </div>
-    </button>
+    </Link>
   );
 }

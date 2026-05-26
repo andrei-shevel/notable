@@ -115,8 +115,6 @@ export const FIXTURE_NOTES: FixtureNote[] = [
   },
 ];
 
-export const FIXTURE_ACTIVE_NOTE_ID: string = FIXTURE_NOTES[0]!.id;
-
 // Tag lookup that also resolves the implicit Planning tag used by the active
 // note. Keeps callers terse.
 export function findFixtureTag(id: string): FixtureTag | undefined {

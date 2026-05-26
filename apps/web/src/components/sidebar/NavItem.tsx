@@ -1,18 +1,23 @@
-import type { ButtonHTMLAttributes, CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
+import { Link } from 'wouter';
 import type { LucideIcon } from 'lucide-react';
 import cx from 'clsx';
 
 import { Icon, type TagColor } from '@notable/ui';
+
+import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
+import { scopesEqual, type WorkspaceScope } from '@/lib/scopes';
 
 import styles from './NavItem.module.scss';
 
 type Lead = { icon: LucideIcon; dotColor?: never } | { dotColor: TagColor; icon?: never };
 
 export type NavItemProps = Lead & {
+  scope: WorkspaceScope;
   label: string;
   count?: number;
-  active?: boolean;
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>;
+  className?: string;
+};
 
 const DOT_VAR: Record<TagColor, string> = {
   blue: 'var(--tag-blue)',
@@ -22,25 +27,18 @@ const DOT_VAR: Record<TagColor, string> = {
   neutral: 'var(--tag-neutral)',
 };
 
-export function NavItem({
-  icon,
-  dotColor,
-  label,
-  count,
-  active,
-  className,
-  type,
-  ...rest
-}: NavItemProps) {
+export function NavItem({ scope, icon, dotColor, label, count, className }: NavItemProps) {
+  const { scope: currentScope, linkTo } = useWorkspaceNav();
+  const isActive = scopesEqual(currentScope, scope);
+
   const style = dotColor ? ({ '--nav-dot-color': DOT_VAR[dotColor] } as CSSProperties) : undefined;
 
   return (
-    <button
-      type={type ?? 'button'}
-      className={cx(styles.item, active && styles.active, className)}
-      aria-current={active ? 'page' : undefined}
+    <Link
+      href={linkTo({ scope })}
+      className={cx(styles.item, isActive && styles.active, className)}
+      aria-current={isActive ? 'page' : undefined}
       style={style}
-      {...rest}
     >
       {icon ? (
         <span className={styles.icon}>
@@ -51,6 +49,6 @@ export function NavItem({
       )}
       <span className={styles.label}>{label}</span>
       {count !== undefined ? <span className={styles.count}>{count}</span> : null}
-    </button>
+    </Link>
   );
 }
