@@ -15,4 +15,5 @@ export const notesApi = {
   get: (id: string, signal?: AbortSignal) => ky.get<Note>(`/api/notes/${id}`, { signal }),
   update: (id: string, body: UpdateNoteRequest, signal?: AbortSignal) =>
     ky.patch<Note>(`/api/notes/${id}`, { json: body, signal }),
+  delete: (id: string) => ky.delete(`/api/notes/${id}`),
 };

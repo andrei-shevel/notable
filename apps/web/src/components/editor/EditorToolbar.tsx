@@ -1,5 +1,5 @@
-import { MoreHorizontal, Star } from 'lucide-react';
-import { Button, Icon, Tooltip } from '@notable/ui';
+import { MoreHorizontal, Star, Trash2 } from 'lucide-react';
+import { Button, Icon, Menu, Tooltip } from '@notable/ui';
 import { Crumbs } from './Crumbs';
 import { SavedPill } from './SavedPill';
 import styles from './EditorToolbar.module.scss';
@@ -11,6 +11,7 @@ export type EditorToolbarProps = {
   starred?: boolean;
   onTitleClick?: () => void;
   onToggleStar?: () => void;
+  onDelete?: () => void;
 };
 
 export function EditorToolbar({
@@ -20,6 +21,7 @@ export function EditorToolbar({
   starred,
   onTitleClick,
   onToggleStar,
+  onDelete,
 }: EditorToolbarProps) {
   return (
     <div className={styles.toolbar}>
@@ -41,14 +43,18 @@ export function EditorToolbar({
         </Tooltip.Trigger>
         <Tooltip.Content>{starred ? 'Unstar' : 'Star'}</Tooltip.Content>
       </Tooltip.Root>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
+      <Menu.Root>
+        <Menu.Trigger asChild>
           <Button iconOnly variant="ghost" aria-label="More actions">
             <Icon icon={MoreHorizontal} />
           </Button>
-        </Tooltip.Trigger>
-        <Tooltip.Content>More</Tooltip.Content>
-      </Tooltip.Root>
+        </Menu.Trigger>
+        <Menu.Content align="end">
+          <Menu.Item danger onSelect={onDelete}>
+            <Icon icon={Trash2} /> Delete
+          </Menu.Item>
+        </Menu.Content>
+      </Menu.Root>
     </div>
   );
 }

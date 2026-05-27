@@ -5,9 +5,11 @@ import type { Note } from '@notable/shared';
 
 import { EditorToolbar } from './EditorToolbar';
 import { NoteTitleModal } from '@/components/notes/NoteTitleModal';
+import { DeleteNoteModal } from '@/components/notes/DeleteNoteModal';
 import { FormatToolbar } from '@/components/editor/FormatToolbar.tsx';
 
 import { useUpdateNote } from '@/hooks/services/useUpdateNote';
+import { useDeleteNote } from '@/hooks/services/useDeleteNote';
 import { useNoteEditor } from '@/hooks/useNoteEditor';
 import { savedLabel } from '@/lib/savedLabel';
 
@@ -19,7 +21,9 @@ type EditorProps = {
 
 export function Editor({ note }: EditorProps) {
   const updateNote = useUpdateNote();
+  const deleteNote = useDeleteNote();
   const [titleOpen, setTitleOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const { editor, isSaving } = useNoteEditor({ note, bodyClass: styles.body });
 
   return (
@@ -33,6 +37,7 @@ export function Editor({ note }: EditorProps) {
         onToggleStar={() => {
           void updateNote(note.id, { starred: !note.starred });
         }}
+        onDelete={() => setDeleteOpen(true)}
       />
       <div className={styles.scroll}>
         <FormatToolbar editor={editor} />
@@ -48,6 +53,12 @@ export function Editor({ note }: EditorProps) {
         onSubmit={async (title) => {
           await updateNote(note.id, { title });
         }}
+      />
+      <DeleteNoteModal
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={note.title || 'Untitled'}
+        onConfirm={async () => deleteNote(note.id)}
       />
     </>
   );

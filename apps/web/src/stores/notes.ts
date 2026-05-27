@@ -7,6 +7,7 @@ type NotesState = {
   ids: string[];
   setNote: (notes: Note) => void;
   patchNote: (id: string, patch: Partial<Note>) => void;
+  removeNote: (id: string) => void;
   setNotes: (notes: Note[]) => void;
   appendNotes: (notes: Note[]) => void;
 };
@@ -22,6 +23,14 @@ export const useNotesStore = create<NotesState>((set) => ({
       const current = state.byId[id];
       if (!current) return state;
       return { byId: { ...state.byId, [id]: { ...current, ...patch } } };
+    });
+  },
+  removeNote: (id) => {
+    set((state) => {
+      if (!state.byId[id]) return state;
+      const byId = { ...state.byId };
+      delete byId[id];
+      return { byId, ids: state.ids.filter((n) => n !== id) };
     });
   },
   setNotes: (notes) =>
