@@ -88,13 +88,7 @@ export function LinkEditPopover({ editor, active }: LinkEditPopoverProps) {
 
   const remove = () => {
     if (!savedRange) return;
-    editor
-      .chain()
-      .focus()
-      .setTextSelection(savedRange)
-      .extendMarkRange('link')
-      .unsetLink()
-      .run();
+    editor.chain().focus().setTextSelection(savedRange).extendMarkRange('link').unsetLink().run();
     setOpen(false);
   };
 

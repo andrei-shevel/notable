@@ -64,9 +64,7 @@ export function NoteTitleModal({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content size="md">
         <Dialog.Title>{dialogTitle}</Dialog.Title>
-        {dialogDescription ? (
-          <Dialog.Description>{dialogDescription}</Dialog.Description>
-        ) : null}
+        {dialogDescription ? <Dialog.Description>{dialogDescription}</Dialog.Description> : null}
 
         <form className={styles.form} onSubmit={submit}>
           <div className={styles.field}>

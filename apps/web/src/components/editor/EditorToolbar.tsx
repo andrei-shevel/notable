@@ -8,10 +8,19 @@ export type EditorToolbarProps = {
   trail: string[];
   savedLabel?: string;
   isSaving?: boolean;
+  starred?: boolean;
   onTitleClick?: () => void;
+  onToggleStar?: () => void;
 };
 
-export function EditorToolbar({ trail, savedLabel, isSaving, onTitleClick }: EditorToolbarProps) {
+export function EditorToolbar({
+  trail,
+  savedLabel,
+  isSaving,
+  starred,
+  onTitleClick,
+  onToggleStar,
+}: EditorToolbarProps) {
   return (
     <div className={styles.toolbar}>
       <Crumbs trail={trail} onLeafClick={onTitleClick} />
@@ -19,11 +28,18 @@ export function EditorToolbar({ trail, savedLabel, isSaving, onTitleClick }: Edi
       <SavedPill label={savedLabel} isSaving={isSaving} />
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
-          <Button iconOnly variant="ghost" aria-label="Star note">
-            <Icon icon={Star} />
+          <Button
+            iconOnly
+            variant="ghost"
+            aria-label={starred ? 'Unstar note' : 'Star note'}
+            aria-pressed={starred}
+            className={starred ? styles.starred : undefined}
+            onClick={onToggleStar}
+          >
+            <Icon icon={Star} fill={starred ? 'currentColor' : 'none'} />
           </Button>
         </Tooltip.Trigger>
-        <Tooltip.Content>Star</Tooltip.Content>
+        <Tooltip.Content>{starred ? 'Unstar' : 'Star'}</Tooltip.Content>
       </Tooltip.Root>
       <Tooltip.Root>
         <Tooltip.Trigger asChild>

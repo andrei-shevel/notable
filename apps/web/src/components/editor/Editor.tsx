@@ -28,7 +28,11 @@ export function Editor({ note }: EditorProps) {
         trail={[note.title || 'Untitled']}
         savedLabel={savedLabel(note.updatedAt)}
         isSaving={isSaving}
+        starred={note.starred}
         onTitleClick={() => setTitleOpen(true)}
+        onToggleStar={() => {
+          void updateNote(note.id, { starred: !note.starred });
+        }}
       />
       <div className={styles.scroll}>
         <FormatToolbar editor={editor} />

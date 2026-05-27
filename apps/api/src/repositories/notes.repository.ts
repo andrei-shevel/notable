@@ -117,7 +117,8 @@ export function createNotesRepository(db: DrizzleDB) {
 
       let cursorFilter: SQL | undefined;
       if (cursor && cursor.field === orderBy) {
-        const cursorValue = cursor.value instanceof Date ? cursor.value.toISOString() : cursor.value;
+        const cursorValue =
+          cursor.value instanceof Date ? cursor.value.toISOString() : cursor.value;
         const cmp = orderDir === 'desc' ? sql`<` : sql`>`;
         cursorFilter = sql`(${orderColumn}, ${notes.id}) ${cmp} (${cursorValue}, ${cursor.id})`;
       }
