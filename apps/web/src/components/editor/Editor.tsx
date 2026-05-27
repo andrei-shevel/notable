@@ -23,7 +23,7 @@ export function Editor({ note }: EditorProps) {
   const { editor, isSaving } = useNoteEditor({ note, bodyClass: styles.body });
 
   return (
-    <main className={styles.pane}>
+    <>
       <EditorToolbar
         trail={[note.title || 'Untitled']}
         savedLabel={savedLabel(note.updatedAt)}
@@ -49,6 +49,6 @@ export function Editor({ note }: EditorProps) {
           await updateNote(note.id, { title });
         }}
       />
-    </main>
+    </>
   );
 }

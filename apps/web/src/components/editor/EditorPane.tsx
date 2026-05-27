@@ -28,5 +28,9 @@ export function EditorPane() {
     );
   }
 
-  return <Editor note={note} />;
+  return (
+    <main className={styles.pane}>
+      <Editor note={note} />
+    </main>
+  );
 }

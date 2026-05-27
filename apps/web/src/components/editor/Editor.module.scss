@@ -1,3 +1,9 @@
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 // Wraps the contenteditable. Layout-only: the typography lives on `.body`,
 // which Tiptap applies to the ProseMirror element via editorProps.attributes.
 .host {
