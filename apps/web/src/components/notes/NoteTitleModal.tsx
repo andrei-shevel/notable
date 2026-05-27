@@ -1,43 +1,59 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 import { Button, Dialog, Input } from '@notable/ui';
 
-import { useCreateNote } from '@/hooks/services/useCreateNote';
+import styles from './NoteTitleModal.module.scss';
 
-import styles from './CreateNoteModal.module.scss';
-
-export type CreateNoteModalProps = {
+export type NoteTitleModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  dialogTitle: string;
+  dialogDescription?: string;
+  submitLabel: string;
+  placeholder?: string;
+  initialTitle?: string;
+  onSubmit: (title: string) => Promise<void>;
 };
 
-const createNoteFormSchema = z.object({
+const titleFormSchema = z.object({
   title: z.string().trim().min(1, 'Title is required').max(500, 'Title is too long'),
 });
+type FormValues = z.infer<typeof titleFormSchema>;
 
-type FormValues = z.infer<typeof createNoteFormSchema>;
-
-const DEFAULT_VALUES: FormValues = { title: '' };
-
-export function CreateNoteModal({ open, onOpenChange }: CreateNoteModalProps) {
-  const createNote = useCreateNote();
-
+export function NoteTitleModal({
+  open,
+  onOpenChange,
+  dialogTitle,
+  dialogDescription,
+  submitLabel,
+  placeholder = 'e.g. Q4 product roadmap',
+  initialTitle = '',
+  onSubmit,
+}: NoteTitleModalProps) {
   const {
     register,
     handleSubmit,
+    reset,
     setError,
     formState: { errors, isValid, isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: DEFAULT_VALUES,
-    resolver: zodResolver(createNoteFormSchema),
+    defaultValues: { title: initialTitle },
+    resolver: zodResolver(titleFormSchema),
     mode: 'onChange',
   });
 
-  const onSubmit = handleSubmit(async ({ title }) => {
+  // Re-seed the form each time the modal opens so the field reflects the
+  // current note's title (rename flow) or resets to blank (create flow).
+  useEffect(() => {
+    if (open) reset({ title: initialTitle });
+  }, [open, initialTitle, reset]);
+
+  const submit = handleSubmit(async ({ title }) => {
     try {
-      await createNote({ title });
+      await onSubmit(title);
       onOpenChange(false);
     } catch (err) {
       setError('root', { message: (err as Error).message });
@@ -47,20 +63,20 @@ export function CreateNoteModal({ open, onOpenChange }: CreateNoteModalProps) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content size="md">
-        <Dialog.Title>New note</Dialog.Title>
-        <Dialog.Description>
-          Give it a working title. You can add details after it's created.
-        </Dialog.Description>
+        <Dialog.Title>{dialogTitle}</Dialog.Title>
+        {dialogDescription ? (
+          <Dialog.Description>{dialogDescription}</Dialog.Description>
+        ) : null}
 
-        <form className={styles.form} onSubmit={onSubmit}>
+        <form className={styles.form} onSubmit={submit}>
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="create-note-title">
+            <label className={styles.label} htmlFor="note-title-modal-input">
               Title
             </label>
             <Input
-              id="create-note-title"
+              id="note-title-modal-input"
               autoFocus
-              placeholder="e.g. Q4 product roadmap"
+              placeholder={placeholder}
               error={Boolean(errors.title)}
               disabled={isSubmitting}
               {...register('title')}
@@ -77,7 +93,7 @@ export function CreateNoteModal({ open, onOpenChange }: CreateNoteModalProps) {
               </Button>
             </Dialog.Close>
             <Button type="submit" variant="solid" disabled={!isValid} loading={isSubmitting}>
-              Create note
+              {submitLabel}
             </Button>
           </div>
         </form>

@@ -7,12 +7,13 @@ import styles from './EditorToolbar.module.scss';
 export type EditorToolbarProps = {
   trail: string[];
   savedLabel?: string;
+  onTitleClick?: () => void;
 };
 
-export function EditorToolbar({ trail, savedLabel }: EditorToolbarProps) {
+export function EditorToolbar({ trail, savedLabel, onTitleClick }: EditorToolbarProps) {
   return (
     <div className={styles.toolbar}>
-      <Crumbs trail={trail} />
+      <Crumbs trail={trail} onLeafClick={onTitleClick} />
       <div className={styles.spacer} />
       <SavedPill label={savedLabel} />
       <Tooltip.Root>

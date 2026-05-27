@@ -1,0 +1,39 @@
+.bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 32px;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.divider {
+  width: 1px;
+  height: 18px;
+  background-color: var(--border);
+  margin: 0 4px;
+  flex: 0 0 auto;
+}
+
+.btn {
+  // Lift Button's default min-height for a denser toolbar.
+  min-height: 28px;
+  min-width: 28px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+
+  &[data-active='true'] {
+    background-color: var(--accent-soft);
+    color: var(--accent);
+  }
+}

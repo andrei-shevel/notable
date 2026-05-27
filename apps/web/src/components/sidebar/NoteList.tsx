@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Inbox, Plus, Search } from 'lucide-react';
 
 import { Button, Icon, Input, Tooltip } from '@notable/ui';
-import { CreateNoteModal } from './CreateNoteModal';
 import { NoteCard } from './NoteCard';
 import { NoteListSkeleton } from './NoteListSkeleton';
+import { NoteTitleModal } from '@/components/notes/NoteTitleModal';
 
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
 import { useLoadNotes } from '@/hooks/services/useLoadNotes';
+import { useCreateNote } from '@/hooks/services/useCreateNote';
 import { FIXTURE_TAGS } from '@/lib/fixtures';
 import { libraryScope, type WorkspaceScope } from '@/lib/scopes';
 
@@ -25,6 +26,7 @@ export function NoteList() {
   const { notes, isLoading, isLoadingMore, hasMore, error, loadMore } = useLoadNotes();
 
   const { scope, query, noteId, setQuery, linkTo } = useWorkspaceNav();
+  const createNote = useCreateNote();
   const [createOpen, setCreateOpen] = useState(false);
 
   const showSkeleton = isLoading && notes.length === 0 && !error;
@@ -70,7 +72,14 @@ export function NoteList() {
           </Tooltip.Trigger>
           <Tooltip.Content>New note</Tooltip.Content>
         </Tooltip.Root>
-        <CreateNoteModal open={createOpen} onOpenChange={setCreateOpen} />
+        <NoteTitleModal
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          dialogTitle="New note"
+          dialogDescription="Give it a working title. You can add details after it's created."
+          submitLabel="Create note"
+          onSubmit={(title) => createNote({ title })}
+        />
       </div>
 
       <div className={styles.search}>

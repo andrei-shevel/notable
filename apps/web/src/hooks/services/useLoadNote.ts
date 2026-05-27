@@ -11,8 +11,6 @@ export function useLoadNote() {
   const [isLoading, setIsLoading] = useState(noteId && !note);
   const [error, setError] = useState<string | null>(null);
 
-  const setNote = useNotesStore((s) => s.setNote);
-
   useEffect(() => {
     if (note || !noteId) {
       return;
@@ -27,7 +25,7 @@ export function useLoadNote() {
       .json()
       .then((note) => {
         if (controller.signal.aborted) return;
-        setNote(note);
+        useNotesStore.getState().setNote(note);
         setIsLoading(false);
       })
       .catch(() => {
