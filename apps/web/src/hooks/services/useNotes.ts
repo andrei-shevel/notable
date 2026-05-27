@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
-import type { Note, NoteListQuery } from '@notable/shared';
+import type { NoteListQuery } from '@notable/shared';
+import type { WorkspaceScope } from '@/lib/scopes';
 
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
+import { useNotesStore } from '@/stores/notes';
 import { notesApi } from '@/lib/api/notes';
-import type { WorkspaceScope } from '@/lib/scopes';
 
 const SEARCH_DEBOUNCE_MS = 250;
 const PAGE_SIZE = 30;
@@ -40,7 +42,15 @@ export function useNotes() {
   const { scope, query } = useWorkspaceNav();
   const debouncedQuery = useDebounced(query.trim(), SEARCH_DEBOUNCE_MS);
 
-  const [notes, setNotes] = useState<Note[]>([]);
+  const { byId, ids, setNotes, appendNotes } = useNotesStore(
+    useShallow((s) => ({
+      byId: s.byId,
+      ids: s.ids,
+      setNotes: s.setNotes,
+      appendNotes: s.appendNotes,
+    })),
+  );
+  const notes = useMemo(() => ids.map((id) => byId[id]!), [ids, byId]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -89,7 +99,7 @@ export function useNotes() {
       });
 
     return () => controller.abort();
-  }, [baseParams]);
+  }, [baseParams, setNotes]);
 
   const loadMore = useCallback(async () => {
     if (!nextCursor || isLoadingMore || isLoading) return;
@@ -99,11 +109,9 @@ export function useNotes() {
     const signal = abortRef.current?.signal;
     setIsLoadingMore(true);
     try {
-      const res = await notesApi
-        .list({ ...baseParams, cursor: nextCursor }, signal)
-        .json();
+      const res = await notesApi.list({ ...baseParams, cursor: nextCursor }, signal).json();
       if (signal?.aborted) return;
-      setNotes((prev) => [...prev, ...res.items]);
+      appendNotes(res.items);
       setNextCursor(res.nextCursor);
     } catch {
       if (signal?.aborted) return;
@@ -111,7 +119,7 @@ export function useNotes() {
     } finally {
       if (!signal?.aborted) setIsLoadingMore(false);
     }
-  }, [baseParams, nextCursor, isLoadingMore, isLoading]);
+  }, [baseParams, nextCursor, isLoadingMore, isLoading, appendNotes]);
 
   return {
     notes,
