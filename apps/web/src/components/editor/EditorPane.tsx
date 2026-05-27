@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { Spinner } from '@notable/ui';
 import { EditorToolbar } from './EditorToolbar';
 
 import { useLoadNote } from '@/hooks/services/useLoadNote';
@@ -26,11 +27,21 @@ const INITIAL_CHECKLIST: ChecklistItem[] = [
 
 export function EditorPane() {
   const [items, setItems] = useState<ChecklistItem[]>(INITIAL_CHECKLIST);
-  const { note } = useLoadNote();
+  const { note, isLoading } = useLoadNote();
 
   const toggle = (id: string) => {
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, done: !item.done } : item)));
   };
+
+  if (isLoading) {
+    return (
+      <main className={styles.pane} aria-busy="true">
+        <div className={styles.loading}>
+          <Spinner size={20} label="Loading note" />
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className={styles.pane}>

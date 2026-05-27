@@ -11,6 +11,14 @@
   overflow-y: auto;
 }
 
+.loading {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
 .body {
   max-width: 720px;
   margin: 0 auto;
