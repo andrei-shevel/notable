@@ -2,23 +2,25 @@ import { useState } from 'react';
 
 import { Button, Dialog } from '@notable/ui';
 
-import styles from './DeleteNoteModal.module.scss';
+import styles from './ConfirmModal.module.scss';
 
-export type DeleteNoteModalProps = {
+export type ConfirmModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  trashed?: boolean;
+  description: string;
+  confirmButton: string;
   onConfirm: () => Promise<void>;
 };
 
-export function DeleteNoteModal({
+export function ConfirmModal({
   open,
   onOpenChange,
   title,
-  trashed,
+  description,
+  confirmButton,
   onConfirm,
-}: DeleteNoteModalProps) {
+}: ConfirmModalProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,12 +47,8 @@ export function DeleteNoteModal({
       }}
     >
       <Dialog.Content size="sm">
-        <Dialog.Title>{trashed ? 'Delete forever?' : 'Delete note?'}</Dialog.Title>
-        <Dialog.Description>
-          {trashed
-            ? `“${title}” will be permanently deleted. This can't be undone.`
-            : `“${title}” will be moved to Recently deleted. You can restore it from there.`}
-        </Dialog.Description>
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Description>{description}</Dialog.Description>
 
         {error ? <div className={styles.error}>{error}</div> : null}
 
@@ -61,7 +59,7 @@ export function DeleteNoteModal({
             </Button>
           </Dialog.Close>
           <Button variant="danger" loading={busy} onClick={handleConfirm}>
-            {trashed ? 'Delete forever' : 'Delete'}
+            {confirmButton}
           </Button>
         </div>
       </Dialog.Content>

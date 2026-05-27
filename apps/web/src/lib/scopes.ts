@@ -1,7 +1,7 @@
-import { Clock, FileText, Star, Trash2 } from 'lucide-react';
+import { FileText, Star, Trash2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-export type LibraryScopeId = 'all' | 'starred' | 'recent' | 'trash';
+export type LibraryScopeId = 'all' | 'starred' | 'trash';
 
 export type LibraryScope = {
   id: LibraryScopeId;
@@ -15,7 +15,6 @@ export type WorkspaceScope = { kind: 'library'; id: LibraryScopeId } | { kind: '
 export const LIBRARY_SCOPES: LibraryScope[] = [
   { id: 'all', label: 'All Notes', path: '/', icon: FileText },
   { id: 'starred', label: 'Starred', path: '/starred', icon: Star },
-  { id: 'recent', label: 'Recent', path: '/recent', icon: Clock },
   { id: 'trash', label: 'Trash', path: '/trash', icon: Trash2 },
 ];
 

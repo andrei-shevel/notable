@@ -58,7 +58,7 @@ export const notes = pgTable(
     title: text('title').notNull().default(''),
     bodyJson: jsonb('body_json')
       .notNull()
-      .default(sql`'{"type":"doc","content":[]}'::jsonb`),
+      .default(sql`'{"type":"doc","content":[{"type":"paragraph"}]}'::jsonb`),
     bodyText: text('body_text').notNull().default(''),
     starred: boolean('starred').notNull().default(false),
     trashedAt: timestamp('trashed_at', { withTimezone: true }),

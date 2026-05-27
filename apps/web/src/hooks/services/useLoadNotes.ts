@@ -29,13 +29,11 @@ function scopeToParams(scope: WorkspaceScope): ScopeParams {
   if (scope.kind === 'tag') return { orderBy: 'updatedAt', orderDir: 'desc' };
   switch (scope.id) {
     case 'all':
-      return { orderBy: 'title', orderDir: 'asc' };
+      return { orderBy: 'updatedAt', orderDir: 'desc' };
     case 'starred':
       return { orderBy: 'updatedAt', orderDir: 'desc', view: 'starred' };
     case 'trash':
       return { orderBy: 'updatedAt', orderDir: 'desc', view: 'trash' };
-    case 'recent':
-      return { orderBy: 'updatedAt', orderDir: 'desc' };
   }
 }
 
@@ -55,9 +53,6 @@ export function useLoadNotes() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Memoise the base query so loadMore can reference the same params the
-  // initial page was loaded with. Deps are primitives so identity is stable
-  // until scope or debounced query actually change.
   const baseParams = useMemo<NoteListQuery>(
     () => ({
       ...scopeToParams(scope),
@@ -67,8 +62,6 @@ export function useLoadNotes() {
     [scope.kind, scope.id, debouncedQuery],
   );
 
-  // A single AbortController per "page set" so a scope/query change cancels
-  // both the initial fetch and any in-flight loadMore from the previous set.
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {

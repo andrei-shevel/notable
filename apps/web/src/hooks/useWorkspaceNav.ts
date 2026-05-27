@@ -31,10 +31,9 @@ export function useWorkspaceNav(): WorkspaceNav {
   const linkTo = useCallback(
     ({ scope: nextScope, noteId: nextNoteId }: LinkTarget) => {
       const next = new URLSearchParams(searchParams);
-      // Switching scope drops the search query — the previous query rarely
-      // makes sense against a different folder/tag.
       if (nextScope) {
         next.delete('q');
+        next.delete('n');
       }
       if (nextNoteId !== undefined) {
         next.set('n', nextNoteId);

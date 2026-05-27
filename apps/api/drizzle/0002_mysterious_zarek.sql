@@ -1,0 +1,1 @@
+ALTER TABLE "notes" ALTER COLUMN "body_json" SET DEFAULT '{"type":"doc","content":[{"type":"paragraph"}]}'::jsonb;
