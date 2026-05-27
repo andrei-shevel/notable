@@ -8,10 +8,17 @@ export type DeleteNoteModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
+  trashed?: boolean;
   onConfirm: () => Promise<void>;
 };
 
-export function DeleteNoteModal({ open, onOpenChange, title, onConfirm }: DeleteNoteModalProps) {
+export function DeleteNoteModal({
+  open,
+  onOpenChange,
+  title,
+  trashed,
+  onConfirm,
+}: DeleteNoteModalProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,9 +45,11 @@ export function DeleteNoteModal({ open, onOpenChange, title, onConfirm }: Delete
       }}
     >
       <Dialog.Content size="sm">
-        <Dialog.Title>Delete note?</Dialog.Title>
+        <Dialog.Title>{trashed ? 'Delete forever?' : 'Delete note?'}</Dialog.Title>
         <Dialog.Description>
-          “{title}” will be permanently deleted. This can't be undone.
+          {trashed
+            ? `“${title}” will be permanently deleted. This can't be undone.`
+            : `“${title}” will be moved to Recently deleted. You can restore it from there.`}
         </Dialog.Description>
 
         {error ? <div className={styles.error}>{error}</div> : null}
@@ -52,7 +61,7 @@ export function DeleteNoteModal({ open, onOpenChange, title, onConfirm }: Delete
             </Button>
           </Dialog.Close>
           <Button variant="danger" loading={busy} onClick={handleConfirm}>
-            Delete
+            {trashed ? 'Delete forever' : 'Delete'}
           </Button>
         </div>
       </Dialog.Content>

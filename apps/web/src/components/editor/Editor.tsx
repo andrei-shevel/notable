@@ -33,9 +33,13 @@ export function Editor({ note }: EditorProps) {
         savedLabel={savedLabel(note.updatedAt)}
         isSaving={isSaving}
         starred={note.starred}
+        trashed={note.trashedAt !== null}
         onTitleClick={() => setTitleOpen(true)}
         onToggleStar={() => {
           void updateNote(note.id, { starred: !note.starred });
+        }}
+        onRestore={() => {
+          void updateNote(note.id, { trashedAt: null });
         }}
         onDelete={() => setDeleteOpen(true)}
       />
@@ -58,6 +62,7 @@ export function Editor({ note }: EditorProps) {
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title={note.title || 'Untitled'}
+        trashed={note.trashedAt !== null}
         onConfirm={async () => deleteNote(note.id)}
       />
     </>

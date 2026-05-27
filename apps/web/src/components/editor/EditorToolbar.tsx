@@ -1,4 +1,4 @@
-import { MoreHorizontal, Star, Trash2 } from 'lucide-react';
+import { ArchiveRestore, MoreHorizontal, Star, Trash2 } from 'lucide-react';
 import { Button, Icon, Menu, Tooltip } from '@notable/ui';
 import { Crumbs } from './Crumbs';
 import { SavedPill } from './SavedPill';
@@ -9,8 +9,10 @@ export type EditorToolbarProps = {
   savedLabel?: string;
   isSaving?: boolean;
   starred?: boolean;
+  trashed?: boolean;
   onTitleClick?: () => void;
   onToggleStar?: () => void;
+  onRestore?: () => void;
   onDelete?: () => void;
 };
 
@@ -19,8 +21,10 @@ export function EditorToolbar({
   savedLabel,
   isSaving,
   starred,
+  trashed,
   onTitleClick,
   onToggleStar,
+  onRestore,
   onDelete,
 }: EditorToolbarProps) {
   return (
@@ -50,8 +54,13 @@ export function EditorToolbar({
           </Button>
         </Menu.Trigger>
         <Menu.Content align="end">
+          {trashed ? (
+            <Menu.Item onSelect={onRestore}>
+              <Icon icon={ArchiveRestore} /> Restore
+            </Menu.Item>
+          ) : null}
           <Menu.Item danger onSelect={onDelete}>
-            <Icon icon={Trash2} /> Delete
+            <Icon icon={Trash2} /> {trashed ? 'Delete forever' : 'Delete'}
           </Menu.Item>
         </Menu.Content>
       </Menu.Root>

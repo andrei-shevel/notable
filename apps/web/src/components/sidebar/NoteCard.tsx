@@ -33,6 +33,7 @@ export function NoteCard({ note, href, active, className, ...rest }: NoteCardPro
           {formatRelativeShort(note.updatedAt)}
         </time>
       </div>
+      <p className={styles.preview}>{note.bodyText.slice(0, 200)}</p>
     </Link>
   );
 }

@@ -132,8 +132,15 @@ export function createNotesService(deps: { repo: NotesRepository }) {
     },
 
     async delete(userId: string, id: string): Promise<void> {
-      const deleted = await repo.delete(userId, id);
-      if (!deleted) throw new NotFoundError();
+      const existing = await repo.findById(userId, id);
+      if (!existing) {
+        throw new NotFoundError();
+      }
+      if (existing.trashedAt === null) {
+        await repo.update(userId, id, { trashedAt: new Date() });
+      } else {
+        await repo.delete(userId, id);
+      }
     },
   };
 }

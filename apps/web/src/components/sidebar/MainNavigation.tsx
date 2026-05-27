@@ -2,7 +2,7 @@ import { Brand } from '@/components/common/Brand';
 import { NavItem } from '@/components/sidebar/NavItem';
 import { UserMenu } from '@/components/sidebar/UserMenu';
 
-import { FIXTURE_NAV_COUNTS, FIXTURE_TAGS } from '@/lib/fixtures';
+import { FIXTURE_NAV_COUNTS } from '@/lib/fixtures';
 import { LIBRARY_SCOPES, type LibraryScopeId } from '@/lib/scopes';
 
 import styles from './MainNavigation.module.scss';
@@ -26,19 +26,6 @@ export function MainNavigation() {
             icon={scope.icon}
             label={scope.label}
             count={SCOPE_COUNTS[scope.id]}
-          />
-        ))}
-      </div>
-
-      <div className={styles.section}>
-        <div className={styles['section-title']}>Tags</div>
-        {FIXTURE_TAGS.map((tag) => (
-          <NavItem
-            key={tag.id}
-            scope={{ kind: 'tag', id: tag.id }}
-            dotColor={tag.color}
-            label={tag.name}
-            count={tag.count}
           />
         ))}
       </div>
