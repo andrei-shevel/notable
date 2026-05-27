@@ -5,6 +5,7 @@ import type { Note } from '@notable/shared';
 type NotesState = {
   byId: Record<string, Note>;
   ids: string[];
+  setNote: (notes: Note) => void;
   setNotes: (notes: Note[]) => void;
   appendNotes: (notes: Note[]) => void;
 };
@@ -12,6 +13,9 @@ type NotesState = {
 export const useNotesStore = create<NotesState>((set) => ({
   byId: {},
   ids: [],
+  setNote: (note) => {
+    set((state) => ({ byId: { ...state.byId, [note.id]: note } }));
+  },
   setNotes: (notes) =>
     set((state) => {
       const byId = { ...state.byId };
