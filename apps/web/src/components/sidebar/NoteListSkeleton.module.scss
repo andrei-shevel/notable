@@ -1,0 +1,44 @@
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 2px;
+}
+
+.bar,
+.time {
+  background-color: var(--surface-2);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.bar {
+  height: 12px;
+  flex: 1 1 auto;
+  max-width: 85%;
+}
+
+.time {
+  height: 10px;
+  width: 36px;
+  flex: 0 0 auto;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .time {
+    animation: none;
+  }
+}

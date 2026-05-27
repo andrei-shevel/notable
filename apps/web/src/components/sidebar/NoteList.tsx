@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Inbox, Plus, Search } from 'lucide-react';
 
 import { Button, Icon, Input, Tooltip } from '@notable/ui';
 import { CreateNoteModal } from './CreateNoteModal';
 import { NoteCard } from './NoteCard';
+import { NoteListSkeleton } from './NoteListSkeleton';
 
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
 import { useNotes } from '@/hooks/services/useNotes.ts';
@@ -21,10 +22,36 @@ function scopeTitle(scope: WorkspaceScope): string {
 }
 
 export function NoteList() {
-  const { notes } = useNotes();
+  const { notes, isLoading, isLoadingMore, hasMore, error, loadMore } = useNotes();
 
   const { scope, query, noteId, setQuery, linkTo } = useWorkspaceNav();
   const [createOpen, setCreateOpen] = useState(false);
+
+  const showSkeleton = isLoading && notes.length === 0 && !error;
+  const showEmpty = !isLoading && !error && notes.length === 0;
+
+  // Route the observer callback through a ref so the effect below only
+  // re-binds when the sentinel actually needs to appear/disappear, not on
+  // every loadMore identity change.
+  const loadMoreRef = useRef(loadMore);
+  loadMoreRef.current = loadMore;
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!hasMore || isLoading) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) loadMoreRef.current();
+      },
+      // Pre-fetch a viewport before the user reaches the bottom so scrolling
+      // feels seamless.
+      { rootMargin: '200px' },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [hasMore, isLoading]);
 
   return (
     <section className={styles.list}>
@@ -58,21 +85,33 @@ export function NoteList() {
         />
       </div>
 
-      <div className={styles.notes}>
-        {notes.length === 0 ? (
+      <div className={styles.notes} aria-busy={isLoading}>
+        {showSkeleton ? (
+          <NoteListSkeleton />
+        ) : error ? (
+          <div className={styles.empty} role="alert">
+            <p className={styles['empty-title']}>{error}</p>
+          </div>
+        ) : showEmpty ? (
           <div className={styles.empty}>
             <Icon icon={Inbox} size={28} />
             <p className={styles['empty-title']}>No notes here</p>
           </div>
         ) : (
-          notes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              href={linkTo({ noteId: note.id })}
-              active={note.id === noteId}
-            />
-          ))
+          <>
+            {notes.map((note) => (
+              <NoteCard
+                key={note.id}
+                note={note}
+                href={linkTo({ noteId: note.id })}
+                active={note.id === noteId}
+              />
+            ))}
+            {hasMore && !isLoadingMore && (
+              <div ref={sentinelRef} className={styles.sentinel} aria-hidden="true" />
+            )}
+            {isLoadingMore && <NoteListSkeleton count={2} />}
+          </>
         )}
       </div>
     </section>

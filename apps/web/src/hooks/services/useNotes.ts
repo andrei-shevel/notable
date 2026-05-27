@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Note, NoteListQuery } from '@notable/shared';
 
@@ -7,6 +7,7 @@ import { notesApi } from '@/lib/api/notes';
 import type { WorkspaceScope } from '@/lib/scopes';
 
 const SEARCH_DEBOUNCE_MS = 250;
+const PAGE_SIZE = 30;
 
 function useDebounced<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -40,24 +41,45 @@ export function useNotes() {
   const debouncedQuery = useDebounced(query.trim(), SEARCH_DEBOUNCE_MS);
 
   const [notes, setNotes] = useState<Note[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    setIsLoading(true);
-    setError(null);
-
-    const params: NoteListQuery = {
+  // Memoise the base query so loadMore can reference the same params the
+  // initial page was loaded with. Deps are primitives so identity is stable
+  // until scope or debounced query actually change.
+  const baseParams = useMemo<NoteListQuery>(
+    () => ({
       ...scopeToParams(scope),
       ...(debouncedQuery ? { q: debouncedQuery } : {}),
-    };
+      limit: PAGE_SIZE,
+    }),
+    [scope.kind, scope.id, debouncedQuery],
+  );
+
+  // A single AbortController per "page set" so a scope/query change cancels
+  // both the initial fetch and any in-flight loadMore from the previous set.
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setIsLoading(true);
+    setIsLoadingMore(false);
+    setError(null);
+    setNotes([]);
+    setNextCursor(null);
 
     notesApi
-      .list(params, controller.signal)
+      .list(baseParams, controller.signal)
       .json()
       .then((res) => {
+        if (controller.signal.aborted) return;
         setNotes(res.items);
+        setNextCursor(res.nextCursor);
         setIsLoading(false);
       })
       .catch(() => {
@@ -67,7 +89,36 @@ export function useNotes() {
       });
 
     return () => controller.abort();
-  }, [scope.kind, scope.id, debouncedQuery]);
+  }, [baseParams]);
 
-  return { notes, isLoading, error };
+  const loadMore = useCallback(async () => {
+    if (!nextCursor || isLoadingMore || isLoading) return;
+
+    // Capture the current page set's signal. If params change mid-flight,
+    // the effect aborts this controller and we drop the result.
+    const signal = abortRef.current?.signal;
+    setIsLoadingMore(true);
+    try {
+      const res = await notesApi
+        .list({ ...baseParams, cursor: nextCursor }, signal)
+        .json();
+      if (signal?.aborted) return;
+      setNotes((prev) => [...prev, ...res.items]);
+      setNextCursor(res.nextCursor);
+    } catch {
+      if (signal?.aborted) return;
+      setError("Couldn't load more notes.");
+    } finally {
+      if (!signal?.aborted) setIsLoadingMore(false);
+    }
+  }, [baseParams, nextCursor, isLoadingMore, isLoading]);
+
+  return {
+    notes,
+    isLoading,
+    isLoadingMore,
+    hasMore: nextCursor !== null,
+    error,
+    loadMore,
+  };
 }
