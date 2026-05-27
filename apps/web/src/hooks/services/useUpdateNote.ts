@@ -11,7 +11,6 @@ import { useNotesStore } from '@/stores/notes';
 // current scope is dropped from the local list (e.g. unstar while in
 // "starred", restore while in "trash").
 function noteMatchesScope(note: Note, scope: WorkspaceScope): boolean {
-  if (scope.kind === 'tag') return note.trashedAt === null;
   switch (scope.id) {
     case 'all':
       return note.trashedAt === null;

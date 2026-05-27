@@ -10,7 +10,7 @@ export type LibraryScope = {
   icon: LucideIcon;
 };
 
-export type WorkspaceScope = { kind: 'library'; id: LibraryScopeId } | { kind: 'tag'; id: string };
+export type WorkspaceScope = { kind: 'library'; id: LibraryScopeId };
 
 export const LIBRARY_SCOPES: LibraryScope[] = [
   { id: 'all', label: 'All Notes', path: '/', icon: FileText },
@@ -21,18 +21,12 @@ export const LIBRARY_SCOPES: LibraryScope[] = [
 export const DEFAULT_LIBRARY_SCOPE: LibraryScope = LIBRARY_SCOPES[0]!;
 export const DEFAULT_SCOPE: WorkspaceScope = { kind: 'library', id: DEFAULT_LIBRARY_SCOPE.id };
 
-const TAG_PATH = /^\/tags\/([^/]+)$/;
-
-export function tagPath(id: string): string {
-  return `/tags/${id}`;
-}
-
 export function libraryScope(id: LibraryScopeId): LibraryScope {
   return LIBRARY_SCOPES.find((s) => s.id === id) ?? DEFAULT_LIBRARY_SCOPE;
 }
 
 export function scopeToPath(scope: WorkspaceScope): string {
-  return scope.kind === 'tag' ? tagPath(scope.id) : libraryScope(scope.id).path;
+  return libraryScope(scope.id).path;
 }
 
 export function scopesEqual(a: WorkspaceScope, b: WorkspaceScope): boolean {
@@ -40,8 +34,6 @@ export function scopesEqual(a: WorkspaceScope, b: WorkspaceScope): boolean {
 }
 
 export function parseScope(pathname: string): WorkspaceScope {
-  const tag = TAG_PATH.exec(pathname);
-  if (tag) return { kind: 'tag', id: decodeURIComponent(tag[1]!) };
   const lib = LIBRARY_SCOPES.find((s) => s.path === pathname);
   return lib ? { kind: 'library', id: lib.id } : DEFAULT_SCOPE;
 }

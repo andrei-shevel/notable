@@ -9,16 +9,11 @@ import { NoteTitleModal } from '@/components/notes/NoteTitleModal';
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
 import { useLoadNotes } from '@/hooks/services/useLoadNotes';
 import { useCreateNote } from '@/hooks/services/useCreateNote';
-import { FIXTURE_TAGS } from '@/lib/fixtures';
 import { libraryScope, type WorkspaceScope } from '@/lib/scopes';
 
 import styles from './NoteList.module.scss';
 
 function scopeTitle(scope: WorkspaceScope): string {
-  if (scope.kind === 'tag') {
-    const tag = FIXTURE_TAGS.find((t) => t.id === scope.id);
-    return tag ? `#${tag.name}` : `#${scope.id}`;
-  }
   return libraryScope(scope.id).label;
 }
 
@@ -45,7 +40,9 @@ export function NoteList() {
     if (!el) return;
     const obs = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting) loadMoreRef.current();
+        if (entries[0]?.isIntersecting) {
+          void loadMoreRef.current();
+        }
       },
       // Pre-fetch a viewport before the user reaches the bottom so scrolling
       // feels seamless.

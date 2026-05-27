@@ -24,9 +24,6 @@ function useDebounced<T>(value: T, delayMs: number): T {
 type ScopeParams = Pick<NoteListQuery, 'orderBy' | 'orderDir' | 'view'>;
 
 function scopeToParams(scope: WorkspaceScope): ScopeParams {
-  // Tag filtering isn't wired through the API yet — fall through to the
-  // recent view so the panel shows something sensible.
-  if (scope.kind === 'tag') return { orderBy: 'updatedAt', orderDir: 'desc' };
   switch (scope.id) {
     case 'all':
       return { orderBy: 'updatedAt', orderDir: 'desc' };
