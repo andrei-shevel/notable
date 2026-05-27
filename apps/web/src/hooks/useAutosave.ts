@@ -1,54 +1,56 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import type { Editor } from '@tiptap/react';
+
+import type { UpdateNoteRequest } from '@notable/shared';
 
 import { useUpdateNote } from '@/hooks/services/useUpdateNote';
 
-const AUTOSAVE_DEBOUNCE_MS = 500;
-
-// Debounced autosave: listens for editor `update` events and, 500ms after the
-// last keystroke, PATCHes the note with the current `{ bodyJson, bodyText }`.
-// Switching notes loads content via `editor.commands.setContent(doc, false)`
-// — the `false` flag suppresses the `update` event so we never autosave on
-// load. The same flush-on-unmount semantics apply when noteId changes: the
-// pending timer is cleared and an immediate save fires for the outgoing note.
+// TODO state should be moved to store, currently save A -> B -> A and second A doesn't know about first one
 export function useAutosave(editor: Editor | null, noteId: string | undefined) {
+  const [isSaving, setIsSaving] = useState(false);
+
   const updateNote = useUpdateNote();
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Track the id the current timer was scheduled for, so we save against the
-  // right note even if the user switches mid-debounce.
-  const pendingForRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     if (!editor || !noteId) return;
 
-    const flush = (id: string) => {
-      if (!editor || editor.isDestroyed) return;
-      void updateNote(id, {
-        bodyJson: editor.getJSON(),
-        bodyText: editor.getText(),
-      });
+    let content: UpdateNoteRequest | null = null;
+    let inFlight = false;
+    let isMounted = true;
+
+    const flush = async () => {
+      if (inFlight || !content) {
+        return;
+      }
+
+      inFlight = true;
+      isMounted && setIsSaving(true);
+
+      const contentToSave = content;
+      content = null;
+      try {
+        await updateNote(noteId, contentToSave);
+      } catch {}
+
+      inFlight = false;
+      isMounted && setIsSaving(false);
+
+      void flush();
     };
 
     const handleUpdate = () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      pendingForRef.current = noteId;
-      timerRef.current = setTimeout(() => {
-        timerRef.current = null;
-        flush(noteId);
-      }, AUTOSAVE_DEBOUNCE_MS);
+      content = { bodyJson: editor.getJSON(), bodyText: editor.getText() };
+      void flush();
     };
 
     editor.on('update', handleUpdate);
 
     return () => {
       editor.off('update', handleUpdate);
-      // If a save is pending for *this* noteId when we tear down (note change
-      // or unmount), flush it synchronously so the keystrokes aren't lost.
-      if (timerRef.current && pendingForRef.current === noteId) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-        flush(noteId);
-      }
+      isMounted = false;
+      setIsSaving(false);
     };
   }, [editor, noteId, updateNote]);
+
+  return { isSaving };
 }
