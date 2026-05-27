@@ -1,5 +1,9 @@
 import { useState } from 'react';
+
 import { EditorToolbar } from './EditorToolbar';
+
+import { useLoadNote } from '@/hooks/services/useLoadNote';
+
 import styles from './EditorPane.module.scss';
 
 type ChecklistItem = { id: string; label: string; done: boolean };
@@ -22,6 +26,7 @@ const INITIAL_CHECKLIST: ChecklistItem[] = [
 
 export function EditorPane() {
   const [items, setItems] = useState<ChecklistItem[]>(INITIAL_CHECKLIST);
+  const { note } = useLoadNote();
 
   const toggle = (id: string) => {
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, done: !item.done } : item)));
@@ -29,7 +34,7 @@ export function EditorPane() {
 
   return (
     <main className={styles.pane}>
-      <EditorToolbar trail={['Q3 product roadmap — first draft']} savedLabel="Saved 2m ago" />
+      <EditorToolbar trail={note ? [note.title] : []} savedLabel="Saved 2m ago" />
       <div className={styles.scroll}>
         <article className={styles.body}>
           <h1>Q3 product roadmap — first draft</h1>

@@ -7,7 +7,7 @@ import { NoteCard } from './NoteCard';
 import { NoteListSkeleton } from './NoteListSkeleton';
 
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
-import { useNotes } from '@/hooks/services/useNotes.ts';
+import { useLoadNotes } from '@/hooks/services/useLoadNotes';
 import { FIXTURE_TAGS } from '@/lib/fixtures';
 import { libraryScope, type WorkspaceScope } from '@/lib/scopes';
 
@@ -22,7 +22,7 @@ function scopeTitle(scope: WorkspaceScope): string {
 }
 
 export function NoteList() {
-  const { notes, isLoading, isLoadingMore, hasMore, error, loadMore } = useNotes();
+  const { notes, isLoading, isLoadingMore, hasMore, error, loadMore } = useLoadNotes();
 
   const { scope, query, noteId, setQuery, linkTo } = useWorkspaceNav();
   const [createOpen, setCreateOpen] = useState(false);

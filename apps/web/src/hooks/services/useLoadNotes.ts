@@ -5,6 +5,7 @@ import type { NoteListQuery } from '@notable/shared';
 import type { WorkspaceScope } from '@/lib/scopes';
 
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
+import { useNotes } from '@/hooks/data/useNotes';
 import { useNotesStore } from '@/stores/notes';
 import { notesApi } from '@/lib/api/notes';
 
@@ -38,19 +39,17 @@ function scopeToParams(scope: WorkspaceScope): ScopeParams {
   }
 }
 
-export function useNotes() {
+export function useLoadNotes() {
   const { scope, query } = useWorkspaceNav();
   const debouncedQuery = useDebounced(query.trim(), SEARCH_DEBOUNCE_MS);
 
-  const { byId, ids, setNotes, appendNotes } = useNotesStore(
+  const notes = useNotes();
+  const { setNotes, appendNotes } = useNotesStore(
     useShallow((s) => ({
-      byId: s.byId,
-      ids: s.ids,
       setNotes: s.setNotes,
       appendNotes: s.appendNotes,
     })),
   );
-  const notes = useMemo(() => ids.map((id) => byId[id]!), [ids, byId]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
