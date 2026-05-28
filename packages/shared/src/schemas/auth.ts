@@ -30,3 +30,26 @@ export const MeResponseSchema = z.object({
   email: z.email(),
 });
 export type MeResponse = z.infer<typeof MeResponseSchema>;
+
+// Two-step email change. Step 1 sends a 6-digit code to the new address —
+// proves the user actually controls it before we swap. Same shape as the
+// login flow so the verify endpoints stay easy to reason about together.
+export const RequestEmailChangeRequestSchema = z.object({
+  email: z.email().max(254),
+});
+export type RequestEmailChangeRequest = z.infer<typeof RequestEmailChangeRequestSchema>;
+
+export const RequestEmailChangeResponseSchema = z.object({ ok: z.literal(true) });
+export type RequestEmailChangeResponse = z.infer<typeof RequestEmailChangeResponseSchema>;
+
+export const ConfirmEmailChangeRequestSchema = z.object({
+  email: z.email().max(254),
+  code: z.string().regex(/^\d{6}$/),
+});
+export type ConfirmEmailChangeRequest = z.infer<typeof ConfirmEmailChangeRequestSchema>;
+
+export const ConfirmEmailChangeResponseSchema = MeResponseSchema;
+export type ConfirmEmailChangeResponse = z.infer<typeof ConfirmEmailChangeResponseSchema>;
+
+export const DeleteAccountResponseSchema = z.object({ ok: z.literal(true) });
+export type DeleteAccountResponse = z.infer<typeof DeleteAccountResponseSchema>;

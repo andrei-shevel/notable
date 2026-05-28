@@ -1,6 +1,13 @@
 import { createHash, randomInt } from 'node:crypto';
 import type { FastifyBaseLogger } from 'fastify';
-import { InternalError, InvalidCredentialsError, UnauthorizedError } from '../errors/AppError';
+import {
+  BadRequestError,
+  ConflictError,
+  InternalError,
+  InvalidCredentialsError,
+  UnauthorizedError,
+} from '../errors/AppError';
+import { sendEmailChangeCode } from '../mail/emailChangeCode';
 import { sendLoginCode } from '../mail/loginCode';
 import type { AuthRepository, User } from '../repositories/auth.repository';
 
@@ -21,6 +28,13 @@ function generateCode(): string {
 
 function hashCode(userId: string, code: string): Buffer {
   return createHash('sha256').update(`${userId}:${code}`).digest();
+}
+
+// Distinct prefix + new-email binding keeps email-change codes from being
+// usable as login codes (and vice versa), and from being redirected to a
+// different target address.
+function hashEmailChangeCode(userId: string, newEmail: string, code: string): Buffer {
+  return createHash('sha256').update(`emailchange:${userId}:${newEmail}:${code}`).digest();
 }
 
 function normalizeEmail(email: string): string {
@@ -84,6 +98,66 @@ export function createAuthService(deps: { repo: AuthRepository; logger: FastifyB
       // as unauthenticated rather than 500.
       if (!user) throw new UnauthorizedError();
       return user;
+    },
+
+    async requestEmailChange(userId: string, rawEmail: string): Promise<void> {
+      const email = normalizeEmail(rawEmail);
+
+      const user = await repo.findUserById(userId);
+      if (!user) throw new UnauthorizedError();
+      if (user.email.toLowerCase() === email) {
+        throw new BadRequestError('That is already your email');
+      }
+      if (await repo.isEmailTakenByOther(email, userId)) {
+        throw new ConflictError('Email is already in use');
+      }
+
+      // Supersede any prior pending change for this user so there's only one
+      // live target email at a time.
+      await repo.deleteLiveEmailChangeTokens(userId);
+
+      const code = generateCode();
+      const tokenHash = hashEmailChangeCode(userId, email, code);
+      const expiresAt = new Date(Date.now() + CODE_TTL_MS);
+
+      await repo.createEmailChangeToken({ tokenHash, userId, newEmail: email, expiresAt });
+
+      // Code goes to the *new* address — that's the whole point: prove the
+      // user controls it before we cut over.
+      try {
+        await sendEmailChangeCode(email, code);
+      } catch (err) {
+        logger.error({ err }, 'email-change code email failed');
+      }
+    },
+
+    async confirmEmailChange(userId: string, rawEmail: string, code: string): Promise<User> {
+      const email = normalizeEmail(rawEmail);
+      const tokenHash = hashEmailChangeCode(userId, email, code);
+
+      const consumed = await repo.consumeEmailChangeToken(tokenHash, userId, MAX_ATTEMPTS);
+      if (!consumed) {
+        await repo.incrementLiveEmailChangeAttempts(userId);
+        throw new InvalidCredentialsError();
+      }
+
+      // Re-check uniqueness at swap time: someone else could have claimed
+      // this email between request and confirm.
+      if (await repo.isEmailTakenByOther(consumed.newEmail, userId)) {
+        throw new ConflictError('Email is already in use');
+      }
+
+      const updated = await repo.setUserEmail(userId, consumed.newEmail);
+      if (!updated) throw new InternalError();
+
+      // Old email can no longer mint a session.
+      await repo.deleteLiveTokens(userId);
+
+      return updated;
+    },
+
+    async deleteAccount(userId: string): Promise<void> {
+      await repo.deleteUser(userId);
     },
   };
 }

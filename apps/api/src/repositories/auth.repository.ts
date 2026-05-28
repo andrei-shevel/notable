@@ -1,6 +1,6 @@
-import { and, eq, gt, isNull, lt, sql } from 'drizzle-orm';
+import { and, eq, gt, isNull, lt, ne, sql } from 'drizzle-orm';
 import type { db as DrizzleDb } from '../db/client';
-import { authTokens, users } from '../db/schema';
+import { authTokens, emailChangeTokens, users } from '../db/schema';
 
 export type DrizzleDB = typeof DrizzleDb;
 
@@ -82,6 +82,84 @@ export function createAuthRepository(db: DrizzleDB) {
         .from(users)
         .where(eq(users.id, id));
       return user ?? null;
+    },
+
+    // True when some *other* user already owns that email. citext unique
+    // index handles case-insensitive matching for us.
+    async isEmailTakenByOther(email: string, selfUserId: string): Promise<boolean> {
+      const [row] = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(and(eq(users.email, email), ne(users.id, selfUserId)));
+      return Boolean(row);
+    },
+
+    async setUserEmail(userId: string, email: string): Promise<User | null> {
+      const [updated] = await db
+        .update(users)
+        .set({ email })
+        .where(eq(users.id, userId))
+        .returning({ id: users.id, email: users.email });
+      return updated ?? null;
+    },
+
+    // Cascade FKs (notes, tags, note_tags, auth_tokens, email_change_tokens)
+    // wipe owned rows.
+    async deleteUser(userId: string): Promise<void> {
+      await db.delete(users).where(eq(users.id, userId));
+    },
+
+    // --- email-change tokens ------------------------------------------------
+    // Mirrors the login-token lifecycle (create → consume / increment-attempts
+    // → expire) but each row carries the prospective `new_email`. Consuming
+    // returns it so the service can update users.email in one step.
+    async deleteLiveEmailChangeTokens(userId: string): Promise<void> {
+      await db
+        .delete(emailChangeTokens)
+        .where(and(eq(emailChangeTokens.userId, userId), isNull(emailChangeTokens.consumedAt)));
+    },
+
+    async createEmailChangeToken(input: {
+      tokenHash: Buffer;
+      userId: string;
+      newEmail: string;
+      expiresAt: Date;
+    }): Promise<void> {
+      await db.insert(emailChangeTokens).values(input);
+    },
+
+    async consumeEmailChangeToken(
+      tokenHash: Buffer,
+      userId: string,
+      maxAttempts: number,
+    ): Promise<{ newEmail: string } | null> {
+      const [consumed] = await db
+        .update(emailChangeTokens)
+        .set({ consumedAt: new Date() })
+        .where(
+          and(
+            eq(emailChangeTokens.tokenHash, tokenHash),
+            eq(emailChangeTokens.userId, userId),
+            gt(emailChangeTokens.expiresAt, sql`now()`),
+            isNull(emailChangeTokens.consumedAt),
+            lt(emailChangeTokens.attempts, maxAttempts),
+          ),
+        )
+        .returning({ newEmail: emailChangeTokens.newEmail });
+      return consumed ?? null;
+    },
+
+    async incrementLiveEmailChangeAttempts(userId: string): Promise<void> {
+      await db
+        .update(emailChangeTokens)
+        .set({ attempts: sql`${emailChangeTokens.attempts} + 1` })
+        .where(
+          and(
+            eq(emailChangeTokens.userId, userId),
+            gt(emailChangeTokens.expiresAt, sql`now()`),
+            isNull(emailChangeTokens.consumedAt),
+          ),
+        );
     },
   };
 }

@@ -48,6 +48,20 @@ export const authTokens = pgTable('auth_tokens', {
   attempts: integer('attempts').notNull().default(0),
 });
 
+// Email-change codes. Kept separate from auth_tokens because the lifecycle
+// differs: each row carries the prospective new_email, and consuming a row
+// triggers an UPDATE on users.email rather than minting a session.
+export const emailChangeTokens = pgTable('email_change_tokens', {
+  tokenHash: bytea('token_hash').primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  newEmail: citext('new_email').notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  consumedAt: timestamp('consumed_at', { withTimezone: true }),
+  attempts: integer('attempts').notNull().default(0),
+});
+
 export const notes = pgTable(
   'notes',
   {

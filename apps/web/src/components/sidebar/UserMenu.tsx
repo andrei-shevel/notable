@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useLocation } from 'wouter';
 import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
 
 import { Menu } from '@notable/ui';
@@ -10,6 +11,7 @@ import styles from './UserMenu.module.scss';
 
 export function UserMenu() {
   const [isPending, setIsPending] = useState(false);
+  const [, setLocation] = useLocation();
 
   const user = useCurrentUser();
   const logout = useSignOut();
@@ -31,7 +33,7 @@ export function UserMenu() {
         </button>
       </Menu.Trigger>
       <Menu.Content align="start" side="top" sideOffset={8} className={styles.menu}>
-        <Menu.Item>
+        <Menu.Item onSelect={() => setLocation('/settings')}>
           <Settings size={14} aria-hidden />
           Settings
         </Menu.Item>

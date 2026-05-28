@@ -5,6 +5,7 @@ import { Tooltip } from '@notable/ui';
 import { Workspace } from './routes/Workspace';
 import { AuthGate } from './components/auth/AuthGate';
 import { Login } from './routes/Login';
+import { Settings } from './routes/Settings';
 import { FullPageSpinner } from './components/common/FullPageSpinner';
 
 import { useLoadUser } from './hooks/services/useLoadUser';
@@ -33,6 +34,11 @@ export function App() {
           <Route path="/login">
             <AuthGate isGuest>
               <Login />
+            </AuthGate>
+          </Route>
+          <Route path="/settings">
+            <AuthGate>
+              <Settings />
             </AuthGate>
           </Route>
           {DesignSystem ? (

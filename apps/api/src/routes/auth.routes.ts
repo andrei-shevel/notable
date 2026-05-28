@@ -1,11 +1,16 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 
 import {
+  ConfirmEmailChangeRequestSchema,
+  ConfirmEmailChangeResponseSchema,
+  DeleteAccountResponseSchema,
   ErrorResponseSchema,
   LoginRequestSchema,
   LoginResponseSchema,
   LogoutResponseSchema,
   MeResponseSchema,
+  RequestEmailChangeRequestSchema,
+  RequestEmailChangeResponseSchema,
   VerifyRequestSchema,
   VerifyResponseSchema,
 } from '@notable/shared';
@@ -93,6 +98,67 @@ export const authRoutes: FastifyPluginAsyncZod<AuthRoutesOptions> = async (app, 
     },
     async (req) => {
       return await authService.getCurrentUser(req.user.id);
+    },
+  );
+
+  app.post(
+    '/me/email/request',
+    {
+      preHandler: requireUser,
+      schema: {
+        body: RequestEmailChangeRequestSchema,
+        response: {
+          200: RequestEmailChangeResponseSchema,
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          409: ErrorResponseSchema,
+        },
+      },
+      // Cap requests so a logged-in account can't be used to spam arbitrary
+      // addresses with our codes.
+      config: { rateLimit: { max: 5, timeWindow: '15 minutes' } },
+    },
+    async (req) => {
+      await authService.requestEmailChange(req.user.id, req.body.email);
+      return { ok: true as const };
+    },
+  );
+
+  app.post(
+    '/me/email/confirm',
+    {
+      preHandler: requireUser,
+      schema: {
+        body: ConfirmEmailChangeRequestSchema,
+        response: {
+          200: ConfirmEmailChangeResponseSchema,
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          409: ErrorResponseSchema,
+        },
+      },
+      config: { rateLimit: { max: 10, timeWindow: '15 minutes' } },
+    },
+    async (req) => {
+      return await authService.confirmEmailChange(req.user.id, req.body.email, req.body.code);
+    },
+  );
+
+  app.delete(
+    '/me',
+    {
+      preHandler: requireUser,
+      schema: {
+        response: {
+          200: DeleteAccountResponseSchema,
+          401: ErrorResponseSchema,
+        },
+      },
+    },
+    async (req, reply) => {
+      await authService.deleteAccount(req.user.id);
+      reply.clearCookie(SESSION_COOKIE, { path: '/' });
+      return { ok: true as const };
     },
   );
 };
