@@ -7,6 +7,7 @@ import type {
   SortDirection,
   UpdateNoteRequest,
 } from '@notable/shared';
+import type { JSONContent } from '@notable/editor';
 import { BadRequestError, NotFoundError } from '../errors/AppError';
 import type { ListCursor, NoteRow, NotesRepository } from '../repositories/notes.repository';
 
@@ -17,7 +18,10 @@ function toApiShape(row: NoteRow): Note {
   return {
     id: row.id,
     title: row.title,
-    bodyJson: row.bodyJson,
+    // Asserted at the DB→API boundary: Drizzle returns the jsonb column as
+    // `unknown` since the database can't enforce structure, but every write
+    // path stores a Tiptap doc, so callers can rely on the typed shape.
+    bodyJson: row.bodyJson as JSONContent,
     bodyText: row.bodyText,
     starred: row.starred,
     trashedAt: row.trashedAt ? row.trashedAt.toISOString() : null,

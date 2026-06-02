@@ -16,6 +16,7 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY apps/landing/package.json apps/landing/package.json
+COPY packages/editor/package.json packages/editor/package.json
 COPY packages/shared/package.json packages/shared/package.json
 COPY packages/ui/package.json packages/ui/package.json
 
@@ -24,6 +25,7 @@ RUN pnpm install --frozen-lockfile --filter @notable/api...
 
 # Source for the packages this image actually runs.
 COPY apps/api apps/api
+COPY packages/editor packages/editor
 COPY packages/shared packages/shared
 
 WORKDIR /repo/apps/api

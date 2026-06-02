@@ -1,3 +1,4 @@
+import type { JSONContent } from '@tiptap/core';
 import { z } from 'zod';
 
 // Optional filter applied to the list endpoint.
@@ -15,11 +16,11 @@ export type NoteOrderField = z.infer<typeof NoteOrderFieldSchema>;
 export const SortDirectionSchema = z.enum(['asc', 'desc']);
 export type SortDirection = z.infer<typeof SortDirectionSchema>;
 
-// Tiptap doc payload. Deliberately loose: Tiptap controls the shape on both
-// ends, the server only stores it and derives FTS from the sibling body_text
-// snapshot. Tightening this would just break harmlessly when Tiptap adds new
-// node types.
-export const TiptapDocSchema = z.unknown();
+// Tiptap doc payload. Runtime validation is deliberately loose (Tiptap
+// controls the shape on both ends, the server only stores it and derives FTS
+// from the sibling body_text snapshot) but we annotate the inferred TS type
+// as JSONContent so callers get useful completion without an extra cast.
+export const TiptapDocSchema = z.custom<JSONContent>();
 
 export const NoteSchema = z.object({
   id: z.uuid(),
