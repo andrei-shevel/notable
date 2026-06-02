@@ -1,5 +1,5 @@
-import { FileText, Star, Trash2 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { FileText, Star, Trash2 } from '@notable/ui/icons';
+import type { LucideIcon } from '@notable/ui/icons';
 
 export type LibraryScopeId = 'all' | 'starred' | 'trash';
 

@@ -1,11 +1,11 @@
 import { useCallback, useState, type FormEvent } from 'react';
 import { Link } from 'wouter';
-import { ArrowLeft, Check, Monitor, Moon, Sun } from 'lucide-react';
 import cx from 'clsx';
 
+import { ArrowLeft, Check, Monitor, Moon, Sun } from '@notable/ui/icons';
 import { Button, Icon, Input } from '@notable/ui';
-
 import { ConfirmModal } from '@/components/notes/ConfirmModal';
+
 import { useCurrentUser } from '@/hooks/data/useCurrentUser';
 import { useConfirmEmailChange } from '@/hooks/services/useConfirmEmailChange';
 import { useDeleteAccount } from '@/hooks/services/useDeleteAccount';
@@ -136,8 +136,7 @@ export function Settings() {
           {step === 'verify' ? (
             <form className={styles.form} onSubmit={handleConfirm} noValidate>
               <p className={styles.sectionLede}>
-                Enter the code we sent to <strong>{pendingEmail}</strong>. It expires in 10
-                minutes.
+                Enter the code we sent to <strong>{pendingEmail}</strong>. It expires in 10 minutes.
               </p>
               <div className={styles.field}>
                 <label className={styles.label} htmlFor="settings-code">

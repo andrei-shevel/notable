@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useLocation } from 'wouter';
-import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
 
+import { ChevronsUpDown, LogOut, Settings } from '@notable/ui/icons';
 import { Menu } from '@notable/ui';
 
 import { useCurrentUser } from '@/hooks/data/useCurrentUser';

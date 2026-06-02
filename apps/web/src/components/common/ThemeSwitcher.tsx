@@ -1,5 +1,4 @@
-import { Check, Monitor, Moon, Sun } from 'lucide-react';
-
+import { Check, Monitor, Moon, Sun } from '@notable/ui/icons';
 import { Button, Icon, Menu, Tooltip } from '@notable/ui';
 import { useTheme, type Theme } from '@/hooks/useTheme';
 

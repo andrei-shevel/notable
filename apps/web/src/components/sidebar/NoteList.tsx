@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Inbox, Plus, Search } from 'lucide-react';
 
+import { Inbox, Plus, Search } from '@notable/ui/icons';
 import { Button, Icon, Input, Tooltip } from '@notable/ui';
 import { NoteCard } from './NoteCard';
 import { NoteListSkeleton } from './NoteListSkeleton';

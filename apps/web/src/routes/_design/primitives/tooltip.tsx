@@ -1,4 +1,4 @@
-import { Star, Trash2, Share2, Plus } from 'lucide-react';
+import { Star, Trash2, Share2, Plus } from '@notable/ui/icons';
 import { Button, Tooltip, Icon } from '@notable/ui';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';

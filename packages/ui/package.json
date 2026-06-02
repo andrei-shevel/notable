@@ -9,6 +9,7 @@
   ],
   "exports": {
     ".": "./src/index.ts",
+    "./icons": "./src/icons.ts",
     "./tokens": "./src/tokens/index.scss",
     "./tokens/*": "./src/tokens/*.scss",
     "./mixins": "./src/mixins/_index.scss"
@@ -27,7 +28,7 @@
     "@radix-ui/react-popover": "^1.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
-    "lucide-react": "^0.474.0"
+    "lucide-react": "^1.17.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

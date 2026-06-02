@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { Editor } from '@tiptap/react';
-import { Link as LinkIcon } from 'lucide-react';
 
+import { Link as LinkIcon } from '@notable/ui/icons';
 import { Button, Icon, Input, Popover, Tooltip } from '@notable/ui';
 
 import styles from './LinkEditPopover.module.scss';

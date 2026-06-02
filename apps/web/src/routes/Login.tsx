@@ -1,6 +1,6 @@
 import { useCallback, useState, type SubmitEvent } from 'react';
-import { Mail } from 'lucide-react';
 
+import { Mail } from '@notable/ui/icons';
 import { Button, Input } from '@notable/ui';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 

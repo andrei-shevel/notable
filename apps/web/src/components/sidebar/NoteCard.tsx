@@ -1,9 +1,10 @@
 import type { AnchorHTMLAttributes } from 'react';
-import { FileText } from 'lucide-react';
 import { Link } from 'wouter';
 import cx from 'clsx';
 
 import type { Note } from '@notable/shared';
+
+import { FileText } from '@notable/ui/icons';
 
 import { formatRelativeShort } from '@/lib/date';
 

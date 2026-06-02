@@ -19,7 +19,6 @@
     "@notable/shared": "workspace:*",
     "@notable/ui": "workspace:*",
     "ky": "^1.7.5",
-    "lucide-react": "^0.474.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.76.1",

@@ -1,4 +1,4 @@
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from '@notable/ui/icons';
 import { Button, Icon, Spinner, Tooltip } from '@notable/ui';
 
 export type SavedPillProps = {

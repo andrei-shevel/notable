@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Search, Mail } from 'lucide-react';
+
+import { Search, Mail } from '@notable/ui/icons';
 import { Input, Icon } from '@notable/ui';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';

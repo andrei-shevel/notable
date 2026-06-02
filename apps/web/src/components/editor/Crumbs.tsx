@@ -1,6 +1,9 @@
 import { Fragment } from 'react';
-import type { LucideIcon } from 'lucide-react';
+
+import type { LucideIcon } from '@notable/ui/icons';
+
 import { Icon } from '@notable/ui';
+
 import styles from './Crumbs.module.scss';
 
 export type CrumbsProps = {

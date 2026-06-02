@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react';
-import * as Lucide from 'lucide-react';
+
+import * as Lucide from '@notable/ui/icons';
+import { Search } from '@notable/ui/icons';
 import { Icon, Input } from '@notable/ui';
-import { Search } from 'lucide-react';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
+
 import styles from './icon.module.scss';
 
 // Build a sorted list of icon names from lucide-react's exports. lucide-react
