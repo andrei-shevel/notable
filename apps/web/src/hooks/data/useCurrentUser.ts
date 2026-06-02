@@ -1,6 +1,6 @@
 import type { MeResponse } from '@notable/shared';
 
-import { useAuth } from './useAuth.ts';
+import { useAuth } from './useAuth';
 
 export function useCurrentUser(): MeResponse {
   const { user } = useAuth();

@@ -7,7 +7,7 @@ import type {
   SortDirection,
   UpdateNoteRequest,
 } from '@notable/shared';
-import type { JSONContent } from '@notable/editor';
+import type { JSONContent } from '@notable/editor/server';
 import { BadRequestError, NotFoundError } from '../errors/AppError';
 import type { ListCursor, NoteRow, NotesRepository } from '../repositories/notes.repository';
 

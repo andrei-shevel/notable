@@ -1,16 +1,20 @@
 {
   "compilerOptions": {
     "target": "ES2023",
-    "lib": ["ES2023"],
-    "module": "Preserve",
-    "moduleResolution": "Bundler",
+    "lib": ["ES2023", "DOM"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "isolatedModules": true,
+    "moduleDetection": "force",
     "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src"]
 }

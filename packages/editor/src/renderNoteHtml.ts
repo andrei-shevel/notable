@@ -1,11 +1,11 @@
 import type { JSONContent } from '@tiptap/core';
 import { generateHTML } from '@tiptap/html';
 
-import { extensions } from './extensions';
+import { htmlExtensions } from './extensions';
 import { escapeHtml } from './lib/utils';
 
 export function renderNoteHtml(note: { title: string; bodyJson: JSONContent }): string {
-  const body = generateHTML(note.bodyJson, extensions);
+  const body = generateHTML(note.bodyJson, htmlExtensions);
   const safeTitle = escapeHtml(note.title.trim() || 'Untitled');
 
   return `<!doctype html>

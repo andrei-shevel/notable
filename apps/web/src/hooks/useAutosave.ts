@@ -1,56 +1,43 @@
-import { useEffect, useState } from 'react';
-import type { Editor } from '@tiptap/react';
+import { useCallback, useRef, useState } from 'react';
 
-import type { UpdateNoteRequest } from '@notable/shared';
+import type { JSONContent } from '@notable/editor/client';
+import type { Note, UpdateNoteRequest } from '@notable/shared';
 
-import { useUpdateNote } from '@/hooks/services/useUpdateNote';
+type UpdateNoteFn = (id: string, patch: UpdateNoteRequest) => Promise<Note | null>;
 
 // TODO state should be moved to store, currently save A -> B -> A and second A doesn't know about first one
-export function useAutosave(editor: Editor | null, noteId: string | undefined) {
+export function useAutosave(noteId: string | undefined, onUpdate: UpdateNoteFn) {
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateNote = useUpdateNote();
+  const contentRef = useRef<UpdateNoteRequest | null>(null);
+  const inFlightRef = useRef(false);
 
-  useEffect(() => {
-    if (!editor || !noteId) return;
+  const flush = useCallback(async () => {
+    if (!noteId || inFlightRef.current || !contentRef.current) return;
 
-    let content: UpdateNoteRequest | null = null;
-    let inFlight = false;
-    let isMounted = true;
+    inFlightRef.current = true;
+    setIsSaving(true);
 
-    const flush = async () => {
-      if (inFlight || !content) {
-        return;
-      }
+    const contentToSave = contentRef.current;
+    contentRef.current = null;
+    try {
+      await onUpdate(noteId, contentToSave);
+    } catch {}
 
-      inFlight = true;
-      isMounted && setIsSaving(true);
+    inFlightRef.current = false;
+    setIsSaving(false);
 
-      const contentToSave = content;
-      content = null;
-      try {
-        await updateNote(noteId, contentToSave);
-      } catch {}
+    void flush();
+  }, [noteId, onUpdate]);
 
-      inFlight = false;
-      isMounted && setIsSaving(false);
-
+  const handleUpdate = useCallback(
+    (bodyJson: JSONContent, bodyText: string) => {
+      if (!noteId) return;
+      contentRef.current = { bodyJson, bodyText };
       void flush();
-    };
+    },
+    [noteId, flush],
+  );
 
-    const handleUpdate = () => {
-      content = { bodyJson: editor.getJSON(), bodyText: editor.getText() };
-      void flush();
-    };
-
-    editor.on('update', handleUpdate);
-
-    return () => {
-      editor.off('update', handleUpdate);
-      isMounted = false;
-      setIsSaving(false);
-    };
-  }, [editor, noteId, updateNote]);
-
-  return { isSaving };
+  return { isSaving, handleUpdate };
 }

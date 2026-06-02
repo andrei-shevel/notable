@@ -1,5 +1,5 @@
 import { Spinner } from '@notable/ui';
-import { Editor } from '@/components/editor/Editor.tsx';
+import { Editor } from '@/components/editor/Editor';
 
 import { useLoadNote } from '@/hooks/services/useLoadNote';
 

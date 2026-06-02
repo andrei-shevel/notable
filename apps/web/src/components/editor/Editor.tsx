@@ -1,20 +1,17 @@
 import { useState } from 'react';
-import { EditorContent } from '@tiptap/react';
 
 import type { Note } from '@notable/shared';
 
+import { Editor as EditorComponent } from '@notable/editor/client';
 import { EditorToolbar } from './EditorToolbar';
 import { NoteTitleModal } from '@/components/notes/NoteTitleModal';
-import { FormatToolbar } from '@/components/editor/FormatToolbar.tsx';
-import { ConfirmModal } from '@/components/notes/ConfirmModal.tsx';
+import { ConfirmModal } from '@/components/notes/ConfirmModal';
 
 import { useUpdateNote } from '@/hooks/services/useUpdateNote';
 import { useDeleteNote } from '@/hooks/services/useDeleteNote';
 import { useRestoreNote } from '@/hooks/services/useRestoreNote';
-import { useNoteEditor } from '@/hooks/useNoteEditor';
+import { useAutosave } from '@/hooks/useAutosave';
 import { savedLabel } from '@/lib/savedLabel';
-
-import styles from './Editor.module.scss';
 
 type EditorProps = {
   note: Note;
@@ -27,7 +24,8 @@ export function Editor({ note }: EditorProps) {
   const [titleOpen, setTitleOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [restoreOpen, setRestoreOpen] = useState(false);
-  const { editor, isSaving } = useNoteEditor({ note, bodyClass: styles.body });
+
+  const { isSaving, handleUpdate } = useAutosave(note.id, updateNote);
 
   const noteTitle = note.title || 'Untitled';
   const noteTrashed = note.trashedAt !== null;
@@ -47,10 +45,8 @@ export function Editor({ note }: EditorProps) {
         onRestore={() => setRestoreOpen(true)}
         onDelete={() => setDeleteOpen(true)}
       />
-      <div className={styles.scroll}>
-        <FormatToolbar editor={editor} />
-        <EditorContent editor={editor} className={styles.host} />
-      </div>
+      <EditorComponent note={note} onUpdate={handleUpdate} />
+
       <NoteTitleModal
         open={titleOpen}
         onOpenChange={setTitleOpen}
