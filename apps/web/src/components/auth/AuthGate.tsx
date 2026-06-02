@@ -22,7 +22,7 @@ export function AuthGate({ children, isGuest }: AuthGateProps) {
         return setLocation('/login', { replace: true });
       }
     }
-  }, [isLoading, user, setLocation]);
+  }, [isLoading, isGuest, user, setLocation]);
 
   if (isLoading || (user && isGuest) || (!user && !isGuest)) {
     return <FullPageSpinner label="Loading…" />;

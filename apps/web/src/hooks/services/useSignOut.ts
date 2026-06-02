@@ -10,6 +10,8 @@ export function useSignOut() {
     try {
       await authApi.logout();
       setUser(null);
-    } catch (e) {}
-  }, []);
+    } catch {
+      // TODO introduce some logger
+    }
+  }, [setUser]);
 }

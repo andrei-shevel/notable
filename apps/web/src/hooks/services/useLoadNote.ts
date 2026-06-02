@@ -18,6 +18,7 @@ export function useLoadNote() {
 
     const controller = new AbortController();
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
 
     notesApi
@@ -37,6 +38,7 @@ export function useLoadNote() {
     return () => {
       controller.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noteId]);
 
   return { note, isLoading, error };

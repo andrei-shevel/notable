@@ -17,16 +17,16 @@ export function useRequestEmailChange() {
     } catch (err) {
       if (err instanceof HTTPError) {
         if (err.response.status === 409) {
-          throw new Error('That email is already in use.');
+          throw new Error('That email is already in use.', { cause: err });
         }
         if (err.response.status === 400) {
-          throw new Error('That is already your email.');
+          throw new Error('That is already your email.', { cause: err });
         }
         if (err.response.status === 429) {
-          throw new Error('Too many attempts. Try again in a few minutes.');
+          throw new Error('Too many attempts. Try again in a few minutes.', { cause: err });
         }
       }
-      throw new Error("Couldn't send the code. Try again.");
+      throw new Error("Couldn't send the code. Try again.", { cause: err });
     }
   }, []);
 }

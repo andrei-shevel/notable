@@ -15,5 +15,5 @@ export function useDeleteAccount() {
     // Server already cleared the session cookie; sync local state so the
     // AuthGate redirects to /login on the next render.
     setUser(null);
-  }, []);
+  }, [setUser]);
 }

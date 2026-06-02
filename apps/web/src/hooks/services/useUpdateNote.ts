@@ -47,6 +47,6 @@ export function useUpdateNote() {
         throw new Error("Couldn't save changes.");
       }
     },
-    [scope.kind, scope.id],
+    [scope],
   );
 }

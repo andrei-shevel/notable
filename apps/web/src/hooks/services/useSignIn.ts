@@ -15,9 +15,9 @@ export function useSignIn() {
       await authApi.login(parsed.data);
     } catch (err) {
       if (err instanceof HTTPError && err.response.status === 429) {
-        throw new Error('Too many attempts. Try again in a few minutes.');
+        throw new Error('Too many attempts. Try again in a few minutes.', { cause: err });
       }
-      throw new Error("Couldn't send the link. Try again.");
+      throw new Error("Couldn't send the link. Try again.", { cause: err });
     }
   }, []);
 }

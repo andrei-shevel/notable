@@ -18,16 +18,18 @@ export function useAutosave(noteId: string | undefined, onUpdate: UpdateNoteFn) 
     inFlightRef.current = true;
     setIsSaving(true);
 
-    const contentToSave = contentRef.current;
-    contentRef.current = null;
-    try {
-      await onUpdate(noteId, contentToSave);
-    } catch {}
+    while (contentRef.current) {
+      const contentToSave = contentRef.current;
+      contentRef.current = null;
+      try {
+        await onUpdate(noteId, contentToSave);
+      } catch {
+        // TODO introduce some logger
+      }
+    }
 
     inFlightRef.current = false;
     setIsSaving(false);
-
-    void flush();
   }, [noteId, onUpdate]);
 
   const handleUpdate = useCallback(

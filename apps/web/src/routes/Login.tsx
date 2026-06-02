@@ -35,7 +35,7 @@ export function Login() {
         setIsSubmitting(false);
       }
     },
-    [email],
+    [email, signIn],
   );
 
   const handleVerify = useCallback(
@@ -50,7 +50,7 @@ export function Login() {
         setIsSubmitting(false);
       }
     },
-    [email, code],
+    [email, code, verifyCode],
   );
 
   if (step === 'code') {

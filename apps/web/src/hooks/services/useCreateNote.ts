@@ -18,7 +18,7 @@ export function useCreateNote() {
         useNotesStore.getState().prependNotes([note]);
         setLocation(linkTo({ noteId: note.id }));
       } catch (err) {
-        throw new Error("Couldn't create the note. Try again.");
+        throw new Error("Couldn't create the note. Try again.", { cause: err });
       }
     },
     [linkTo, setLocation],

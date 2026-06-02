@@ -56,7 +56,7 @@ export function useLoadNotes() {
       ...(debouncedQuery ? { q: debouncedQuery } : {}),
       limit: PAGE_SIZE,
     }),
-    [scope.kind, scope.id, debouncedQuery],
+    [scope, debouncedQuery],
   );
 
   const abortRef = useRef<AbortController | null>(null);
@@ -66,6 +66,7 @@ export function useLoadNotes() {
     const controller = new AbortController();
     abortRef.current = controller;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setIsLoadingMore(false);
     setError(null);

@@ -31,7 +31,10 @@ export function NoteList() {
   // re-binds when the sentinel actually needs to appear/disappear, not on
   // every loadMore identity change.
   const loadMoreRef = useRef(loadMore);
-  loadMoreRef.current = loadMore;
+
+  useEffect(() => {
+    loadMoreRef.current = loadMore;
+  }, [loadMore]);
 
   const sentinelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
