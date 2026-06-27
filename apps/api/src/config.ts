@@ -8,6 +8,11 @@ const ConfigSchema = z.object({
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   SMTP_URL: z.string().min(1),
   MAIL_FROM: z.string().default('Notable <noreply@notable.local>'),
+  S3_ENDPOINT: z.string().url(),
+  S3_REGION: z.string().min(1).default('us-east-1'),
+  S3_BUCKET: z.string().min(1),
+  S3_ACCESS_KEY: z.string().min(1),
+  S3_SECRET_KEY: z.string().min(1),
 });
 
 const parsed = ConfigSchema.safeParse(process.env);
