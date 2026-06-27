@@ -9,6 +9,11 @@ export default defineConfig({
   test: {
     include: ['test/**/*.test.ts'],
     globalSetup: ['./test/globalSetup.ts'],
+    // All files share one Postgres container, and each truncates between tests.
+    // Running files in parallel would let one file's TRUNCATE wipe another's
+    // seeded data mid-test, so serialize at the file level. Tests within a file
+    // already run sequentially.
+    fileParallelism: false,
     // Container start + migrate on a cold image pull is slow; give hooks room.
     hookTimeout: 120_000,
     testTimeout: 30_000,
