@@ -71,8 +71,15 @@ function decodeCursor(
   return { field: expectedField, value: date, id: p.i };
 }
 
-export function createNotesService(deps: { repo: NotesRepository }) {
-  const { repo } = deps;
+// Minimal slice of FilesService that notes deletion needs. Kept as a local
+// interface (rather than importing FilesService) so the notes service has no
+// dependency on the files service's shape beyond this one call.
+type NoteFilesCleanup = {
+  deleteForNote(userId: string, noteId: string): Promise<void>;
+};
+
+export function createNotesService(deps: { repo: NotesRepository; files: NoteFilesCleanup }) {
+  const { repo, files } = deps;
 
   return {
     async list(
@@ -141,8 +148,14 @@ export function createNotesService(deps: { repo: NotesRepository }) {
         throw new NotFoundError();
       }
       if (existing.trashedAt === null) {
+        // Soft delete (move to trash). Files are kept — the note can be
+        // restored — and are only purged on the hard delete below.
         await repo.update(userId, id, { trashedAt: new Date() });
       } else {
+        // Hard delete. Remove the note's files (DB rows + blobs) first; the FK
+        // cascade would drop the rows anyway, but only this reclaims the blobs
+        // from object storage.
+        await files.deleteForNote(userId, id);
         await repo.delete(userId, id);
       }
     },

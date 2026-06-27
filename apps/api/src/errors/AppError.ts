@@ -47,3 +47,9 @@ export class ConflictError extends AppError {
     super(409, 'conflict', message);
   }
 }
+
+export class PayloadTooLargeError extends AppError {
+  constructor(message = 'Payload too large') {
+    super(413, 'payload_too_large', message);
+  }
+}
