@@ -1,4 +1,4 @@
-import { config } from '../config';
+import { config } from '@/config';
 import { mailer } from './transport';
 
 export async function sendLoginCode(email: string, code: string) {

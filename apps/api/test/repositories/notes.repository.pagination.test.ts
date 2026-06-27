@@ -1,12 +1,12 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
-import { notes, users } from '../../src/db/schema';
+import { notes, users } from '@/db/schema';
 import {
   createNotesRepository,
   type ListCursor,
   type NoteOrderField,
   type NoteRow,
   type SortDirection,
-} from '../../src/repositories/notes.repository';
+} from '@/repositories/notes.repository';
 import { connectTestDb, truncateAll } from '../helpers/db';
 
 // Distinct day-of-month timestamps for the two date fields. Kept apart (Jan vs

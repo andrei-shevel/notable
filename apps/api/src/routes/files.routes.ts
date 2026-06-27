@@ -7,9 +7,9 @@ import {
   FileSchema,
   FileUploadQuerySchema,
 } from '@notable/shared';
-import { BadRequestError, PayloadTooLargeError } from '../errors/AppError';
-import { requireUser } from '../plugins/auth';
-import type { FilesService } from '../services/files.service';
+import { BadRequestError, PayloadTooLargeError } from '@/errors/AppError';
+import { requireUser } from '@/plugins/auth';
+import type { FilesService } from '@/services/files.service';
 
 type FilesRoutesOptions = { filesService: FilesService };
 

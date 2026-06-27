@@ -8,7 +8,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { config } from '../config';
+import { config } from '@/config';
 
 // MinIO (and most self-hosted S3 endpoints) only support path-style addressing
 // — `http://host/bucket/key` rather than the virtual-host `bucket.host/key`

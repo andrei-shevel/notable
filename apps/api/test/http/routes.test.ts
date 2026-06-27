@@ -6,14 +6,14 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { InvalidCredentialsError, NotFoundError } from '../../src/errors/AppError';
-import { registerErrorHandler } from '../../src/errors/handler';
-import cookiePlugin from '../../src/plugins/cookie';
-import jwtPlugin from '../../src/plugins/jwt';
-import { authRoutes } from '../../src/routes/auth.routes';
-import { notesRoutes } from '../../src/routes/notes.routes';
-import type { AuthService } from '../../src/services/auth.service';
-import type { NotesService } from '../../src/services/notes.service';
+import { InvalidCredentialsError, NotFoundError } from '@/errors/AppError';
+import { registerErrorHandler } from '@/errors/handler';
+import cookiePlugin from '@/plugins/cookie';
+import jwtPlugin from '@/plugins/jwt';
+import { authRoutes } from '@/routes/auth.routes';
+import { notesRoutes } from '@/routes/notes.routes';
+import type { AuthService } from '@/services/auth.service';
+import type { NotesService } from '@/services/notes.service';
 
 // Real UUIDs: the response serializer and the :id param both enforce
 // z.uuid()'s RFC variant/version check, so hand-rolled ids like 1111… would

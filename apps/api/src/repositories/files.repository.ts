@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
-import type { db as DrizzleDb } from '../db/client';
-import { files } from '../db/schema';
+import type { db as DrizzleDb } from '@/db/client';
+import { files } from '@/db/schema';
 
 type DrizzleDB = typeof DrizzleDb;
 

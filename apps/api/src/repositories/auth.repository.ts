@@ -1,6 +1,6 @@
 import { and, eq, gt, isNull, lt, ne, sql } from 'drizzle-orm';
-import type { db as DrizzleDb } from '../db/client';
-import { authTokens, emailChangeTokens, users } from '../db/schema';
+import type { db as DrizzleDb } from '@/db/client';
+import { authTokens, emailChangeTokens, users } from '@/db/schema';
 
 export type DrizzleDB = typeof DrizzleDb;
 

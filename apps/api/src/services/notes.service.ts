@@ -8,8 +8,8 @@ import type {
   UpdateNoteRequest,
 } from '@notable/shared';
 import type { JSONContent } from '@notable/editor/server';
-import { BadRequestError, NotFoundError } from '../errors/AppError';
-import type { ListCursor, NoteRow, NotesRepository } from '../repositories/notes.repository';
+import { BadRequestError, NotFoundError } from '@/errors/AppError';
+import type { ListCursor, NoteRow, NotesRepository } from '@/repositories/notes.repository';
 
 // Drizzle returns Date instances for timestamptz; the API contract is ISO
 // strings. Centralising the mapping here keeps routes thin and means the

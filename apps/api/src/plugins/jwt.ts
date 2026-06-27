@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 import jwt from '@fastify/jwt';
-import { config } from '../config';
+import { config } from '@/config';
 
 // Tell @fastify/jwt how to type request.user. We sign `{ sub: user_id }` to
 // stay aligned with standard JWT claims, then re-shape it in `formatUser`

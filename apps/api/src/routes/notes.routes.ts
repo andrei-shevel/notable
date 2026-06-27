@@ -10,8 +10,8 @@ import {
   NoteSchema,
   UpdateNoteRequestSchema,
 } from '@notable/shared';
-import { requireUser } from '../plugins/auth';
-import type { NotesService } from '../services/notes.service';
+import { requireUser } from '@/plugins/auth';
+import type { NotesService } from '@/services/notes.service';
 
 type NotesRoutesOptions = { notesService: NotesService };
 

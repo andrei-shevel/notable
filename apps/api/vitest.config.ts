@@ -1,3 +1,5 @@
+import { fileURLToPath, URL } from 'node:url';
+
 import { defineConfig } from 'vitest/config';
 
 // The suite runs against a real Postgres (via Testcontainers) so the
@@ -6,6 +8,11 @@ import { defineConfig } from 'vitest/config';
 // actually exercised rather than mocked away. One container is started in
 // globalSetup and shared across files; see test/globalSetup.ts.
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
   test: {
     include: ['test/**/*.test.ts'],
     globalSetup: ['./test/globalSetup.ts'],

@@ -3,10 +3,10 @@ import { Transform, type Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
 import type { FileMeta } from '@notable/shared';
-import { NotFoundError } from '../errors/AppError';
-import type { FileRow, FilesRepository } from '../repositories/files.repository';
-import type { NotesRepository } from '../repositories/notes.repository';
-import type { Storage } from '../lib/storage';
+import { NotFoundError } from '@/errors/AppError';
+import type { FileRow, FilesRepository } from '@/repositories/files.repository';
+import type { NotesRepository } from '@/repositories/notes.repository';
+import type { Storage } from '@/lib/storage';
 
 // Drizzle returns a Date for created_at; the API contract is an ISO string.
 // `key` is dropped here so the storage layout never leaks to clients.

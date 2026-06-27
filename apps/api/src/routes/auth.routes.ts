@@ -14,10 +14,10 @@ import {
   VerifyRequestSchema,
   VerifyResponseSchema,
 } from '@notable/shared';
-import { config } from '../config';
-import { requireUser } from '../plugins/auth';
-import { SESSION_COOKIE } from '../plugins/jwt';
-import type { AuthService } from '../services/auth.service';
+import { config } from '@/config';
+import { requireUser } from '@/plugins/auth';
+import { SESSION_COOKIE } from '@/plugins/jwt';
+import type { AuthService } from '@/services/auth.service';
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
 

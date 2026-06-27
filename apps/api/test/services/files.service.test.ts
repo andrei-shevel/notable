@@ -1,10 +1,10 @@
 import { Readable } from 'node:stream';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { NotFoundError } from '../../src/errors/AppError';
-import type { FileRow, FilesRepository } from '../../src/repositories/files.repository';
-import type { NotesRepository } from '../../src/repositories/notes.repository';
-import type { Storage } from '../../src/lib/storage';
-import { createFilesService } from '../../src/services/files.service';
+import { NotFoundError } from '@/errors/AppError';
+import type { FileRow, FilesRepository } from '@/repositories/files.repository';
+import type { NotesRepository } from '@/repositories/notes.repository';
+import type { Storage } from '@/lib/storage';
+import { createFilesService } from '@/services/files.service';
 
 const USER = 'user-1';
 const KEY_RE = /^user-1\/[0-9a-f-]{36}$/; // `${userId}/${uuid}`
@@ -46,7 +46,7 @@ function makeStorage() {
 
 function makeDeps() {
   const repo = {
-    create: vi.fn(async (_userId: string, input: import('../../src/repositories/files.repository').CreateFileInput) =>
+    create: vi.fn(async (_userId: string, input: import('@/repositories/files.repository').CreateFileInput) =>
       fileRow({
         noteId: input.noteId,
         key: input.key,

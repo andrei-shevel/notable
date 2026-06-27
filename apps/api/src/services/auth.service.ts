@@ -6,10 +6,10 @@ import {
   InternalError,
   InvalidCredentialsError,
   UnauthorizedError,
-} from '../errors/AppError';
-import { sendEmailChangeCode } from '../mail/emailChangeCode';
-import { sendLoginCode } from '../mail/loginCode';
-import type { AuthRepository, User } from '../repositories/auth.repository';
+} from '@/errors/AppError';
+import { sendEmailChangeCode } from '@/mail/emailChangeCode';
+import { sendLoginCode } from '@/mail/loginCode';
+import type { AuthRepository, User } from '@/repositories/auth.repository';
 
 const CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const MAX_ATTEMPTS = 5;

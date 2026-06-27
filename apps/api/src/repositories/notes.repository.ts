@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, isNotNull, isNull, sql, type AnyColumn, type SQL } from 'drizzle-orm';
-import type { db as DrizzleDb } from '../db/client';
-import { notes } from '../db/schema';
+import type { db as DrizzleDb } from '@/db/client';
+import { notes } from '@/db/schema';
 
 type DrizzleDB = typeof DrizzleDb;
 

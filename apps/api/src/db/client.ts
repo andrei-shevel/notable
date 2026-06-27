@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { config } from '../config';
+import { config } from '@/config';
 import * as schema from './schema';
 
 // One pooled connection per server process. The pool size is conservative so

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
-import { createAuthRepository } from '../../src/repositories/auth.repository';
+import { createAuthRepository } from '@/repositories/auth.repository';
 import { connectTestDb, truncateAll } from '../helpers/db';
 
 // Mirror of the service's hashCode: the digest is bound to the user id so a

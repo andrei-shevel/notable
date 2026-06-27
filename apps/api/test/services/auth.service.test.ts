@@ -6,9 +6,9 @@ import {
   InternalError,
   InvalidCredentialsError,
   UnauthorizedError,
-} from '../../src/errors/AppError';
-import type { AuthRepository } from '../../src/repositories/auth.repository';
-import { createAuthService } from '../../src/services/auth.service';
+} from '@/errors/AppError';
+import type { AuthRepository } from '@/repositories/auth.repository';
+import { createAuthService } from '@/services/auth.service';
 
 // Mock the mail layer: the service imports these directly rather than taking
 // them as deps, so this is the only seam. Mocking them also keeps the real
@@ -17,8 +17,8 @@ import { createAuthService } from '../../src/services/auth.service';
 vi.mock('../../src/mail/loginCode', () => ({ sendLoginCode: vi.fn() }));
 vi.mock('../../src/mail/emailChangeCode', () => ({ sendEmailChangeCode: vi.fn() }));
 
-import { sendEmailChangeCode } from '../../src/mail/emailChangeCode';
-import { sendLoginCode } from '../../src/mail/loginCode';
+import { sendEmailChangeCode } from '@/mail/emailChangeCode';
+import { sendLoginCode } from '@/mail/loginCode';
 
 const USER = { id: 'user-1', email: 'alice@example.com' };
 
