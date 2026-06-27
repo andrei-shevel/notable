@@ -1,3 +1,4 @@
+import type { FastifyBaseLogger } from 'fastify';
 import type {
   CreateNoteRequest,
   Note,
@@ -78,8 +79,12 @@ type NoteFilesCleanup = {
   deleteForNote(userId: string, noteId: string): Promise<void>;
 };
 
-export function createNotesService(deps: { repo: NotesRepository; files: NoteFilesCleanup }) {
-  const { repo, files } = deps;
+export function createNotesService(deps: {
+  repo: NotesRepository;
+  files: NoteFilesCleanup;
+  logger: FastifyBaseLogger;
+}) {
+  const { repo, files, logger } = deps;
 
   return {
     async list(
@@ -118,6 +123,7 @@ export function createNotesService(deps: { repo: NotesRepository; files: NoteFil
 
     async create(userId: string, input: CreateNoteRequest): Promise<Note> {
       const row = await repo.create(userId, input);
+      logger.debug({ userId, noteId: row.id }, 'note created');
       return toApiShape(row);
     },
 
@@ -139,6 +145,7 @@ export function createNotesService(deps: { repo: NotesRepository; files: NoteFil
         trashedAt,
       });
       if (!row) throw new NotFoundError();
+      logger.debug({ userId, noteId: id }, 'note updated');
       return toApiShape(row);
     },
 
@@ -151,12 +158,14 @@ export function createNotesService(deps: { repo: NotesRepository; files: NoteFil
         // Soft delete (move to trash). Files are kept — the note can be
         // restored — and are only purged on the hard delete below.
         await repo.update(userId, id, { trashedAt: new Date() });
+        logger.debug({ userId, noteId: id, mode: 'soft' }, 'note deleted');
       } else {
         // Hard delete. Remove the note's files (DB rows + blobs) first; the FK
         // cascade would drop the rows anyway, but only this reclaims the blobs
         // from object storage.
         await files.deleteForNote(userId, id);
         await repo.delete(userId, id);
+        logger.debug({ userId, noteId: id, mode: 'hard' }, 'note deleted');
       }
     },
   };

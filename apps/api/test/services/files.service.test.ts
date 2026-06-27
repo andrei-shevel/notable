@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream';
+import type { FastifyBaseLogger } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NotFoundError } from '@/errors/AppError';
 import type { FileRow, FilesRepository } from '@/repositories/files.repository';
@@ -46,14 +47,15 @@ function makeStorage() {
 
 function makeDeps() {
   const repo = {
-    create: vi.fn(async (_userId: string, input: import('@/repositories/files.repository').CreateFileInput) =>
-      fileRow({
-        noteId: input.noteId,
-        key: input.key,
-        filename: input.filename,
-        contentType: input.contentType,
-        size: input.size,
-      }),
+    create: vi.fn(
+      async (_userId: string, input: import('@/repositories/files.repository').CreateFileInput) =>
+        fileRow({
+          noteId: input.noteId,
+          key: input.key,
+          filename: input.filename,
+          contentType: input.contentType,
+          size: input.size,
+        }),
     ),
     deleteByNote: vi.fn(async () => [] as { key: string }[]),
     findById: vi.fn(async () => null as FileRow | null),
@@ -65,11 +67,21 @@ function makeDeps() {
   return { repo, notesRepo, storage };
 }
 
+const logger = {
+  error: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  debug: vi.fn(),
+  trace: vi.fn(),
+  fatal: vi.fn(),
+} as unknown as FastifyBaseLogger;
+
 function build(deps: ReturnType<typeof makeDeps>) {
   return createFilesService({
     repo: deps.repo as unknown as FilesRepository,
     notesRepo: deps.notesRepo as unknown as NotesRepository,
     storage: deps.storage as unknown as Storage,
+    logger,
   });
 }
 
@@ -153,11 +165,16 @@ describe('filesService', () => {
       expect(deps.storage.delete).toHaveBeenCalledWith('k2');
     });
 
-    it('is best-effort: a blob delete failure does not throw', async () => {
+    it('is best-effort: a blob delete failure does not throw but is logged', async () => {
       deps.repo.deleteByNote.mockResolvedValue([{ key: 'k1' }]);
       deps.storage.delete.mockRejectedValue(new Error('orphan blob'));
 
       await expect(service.deleteForNote(USER, 'note-A')).resolves.toBeUndefined();
+      // The orphaned blob must be visible in the log, not swallowed silently.
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({ key: 'k1', noteId: 'note-A' }),
+        expect.stringContaining('orphaned blob'),
+      );
     });
   });
 
@@ -192,7 +209,12 @@ describe('filesService', () => {
     });
 
     it('copies the blob to a fresh key and binds a new row to the destination note', async () => {
-      const source = fileRow({ noteId: 'note-A', key: 'user-1/src', filename: 'shared.png', size: 9 });
+      const source = fileRow({
+        noteId: 'note-A',
+        key: 'user-1/src',
+        filename: 'shared.png',
+        size: 9,
+      });
       deps.repo.findById.mockResolvedValue(source);
 
       const result = await service.cloneToNote(USER, source.id, 'note-B');

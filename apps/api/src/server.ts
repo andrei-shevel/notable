@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import multipart from '@fastify/multipart';
 import Fastify, { type FastifyInstance } from 'fastify';
@@ -34,6 +35,47 @@ export async function buildApp(): Promise<FastifyInstance> {
     logger: {
       level: config.LOG_LEVEL,
       transport: config.NODE_ENV === 'development' ? { target: 'pino-pretty' } : undefined,
+      // Custom serializers keep each request/response line small and — for the
+      // request — emit only an allowlist of headers. An allowlist (rather than
+      // redacting known-bad keys) is what guarantees the session JWT, which
+      // rides in the `cookie` header, can never reach the log sink even if a
+      // new sensitive header is added later.
+      serializers: {
+        req(req) {
+          return {
+            method: req.method,
+            url: req.url,
+            // Low-cardinality route pattern (e.g. /api/notes/:id) for grouping.
+            routeUrl: req.routeOptions?.url,
+            remoteAddress: req.ip,
+            host: req.headers.host,
+            userAgent: req.headers['user-agent'],
+          };
+        },
+        res(res) {
+          return { statusCode: res.statusCode };
+        },
+      },
+      // Defense in depth: censor secrets at any ad-hoc log site that dumps raw
+      // headers or an error carrying them, beyond what the serializers above
+      // already drop.
+      redact: {
+        paths: [
+          'req.headers.cookie',
+          'req.headers.authorization',
+          'res.headers["set-cookie"]',
+          'headers.cookie',
+          'headers.authorization',
+        ],
+        censor: '[redacted]',
+      },
+    },
+    // Correlate logs across a proxy or client retry: honor an inbound
+    // x-request-id, otherwise mint a uuid. Replaces Fastify's default
+    // in-process counter, which resets on restart and collides across replicas.
+    genReqId(req) {
+      const header = req.headers['x-request-id'];
+      return (Array.isArray(header) ? header[0] : header) ?? randomUUID();
     },
     disableRequestLogging: false,
   }).withTypeProvider<ZodTypeProvider>();
@@ -52,6 +94,10 @@ export async function buildApp(): Promise<FastifyInstance> {
   app.get(
     '/api/health',
     {
+      // Liveness/readiness probes hit this on a tight interval; logging every
+      // routine 200 would drown the log. `warn` keeps the noise out while still
+      // surfacing the request log if the handler ever errors.
+      logLevel: 'warn',
       schema: {
         response: {
           200: z.object({ db: z.literal('ok') }),
@@ -77,8 +123,13 @@ export async function buildApp(): Promise<FastifyInstance> {
     repo: filesRepository,
     notesRepo: notesRepository,
     storage,
+    logger: app.log,
   });
-  const notesService = createNotesService({ repo: notesRepository, files: filesService });
+  const notesService = createNotesService({
+    repo: notesRepository,
+    files: filesService,
+    logger: app.log,
+  });
 
   await app.register(authRoutes, { prefix: '/api/auth', authService });
   await app.register(notesRoutes, { prefix: '/api/notes', notesService });

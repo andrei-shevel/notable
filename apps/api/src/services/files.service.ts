@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { Transform, type Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
+import type { FastifyBaseLogger } from 'fastify';
 import type { FileMeta } from '@notable/shared';
 import { NotFoundError } from '@/errors/AppError';
 import type { FileRow, FilesRepository } from '@/repositories/files.repository';
@@ -30,8 +31,9 @@ export function createFilesService(deps: {
   repo: FilesRepository;
   notesRepo: NotesRepository;
   storage: Storage;
+  logger: FastifyBaseLogger;
 }) {
-  const { repo, notesRepo, storage } = deps;
+  const { repo, notesRepo, storage, logger } = deps;
 
   return {
     async upload(userId: string, noteId: string, input: UploadInput): Promise<FileMeta> {
@@ -73,6 +75,10 @@ export function createFilesService(deps: {
         contentType: input.contentType,
         size,
       });
+      logger.debug(
+        { userId, noteId, fileId: row.id, size, contentType: input.contentType },
+        'file uploaded',
+      );
       return toApiShape(row);
     },
 
@@ -84,7 +90,19 @@ export function createFilesService(deps: {
     // and blob removal in one place.
     async deleteForNote(userId: string, noteId: string): Promise<void> {
       const deleted = await repo.deleteByNote(userId, noteId);
-      await Promise.all(deleted.map((f) => storage.delete(f.key).catch(() => {})));
+      await Promise.all(
+        deleted.map((f) =>
+          // Best-effort: the row is already gone, so a failed blob delete leaves
+          // an orphan in object storage. Log it (rather than swallow silently)
+          // so the leak is visible and reclaimable; don't fail the deletion.
+          storage.delete(f.key).catch((err) => {
+            logger.warn(
+              { err, userId, noteId, key: f.key },
+              'orphaned blob: storage delete failed',
+            );
+          }),
+        ),
+      );
     },
 
     // Copies a file into another note and returns the new file's metadata. Used
