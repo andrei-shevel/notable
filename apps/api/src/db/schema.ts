@@ -91,6 +91,38 @@ export const notes = pgTable(
   ],
 );
 
+// Uploaded files. The blob itself lives in object storage (MinIO/S3); this
+// table holds the metadata plus the storage `key` needed to fetch it back.
+// Every read is scoped by user_id so only the uploader can retrieve a file.
+// Each file belongs to a note (it's embedded in that note's body); the
+// onDelete cascade drops the rows when the note is hard-deleted, and the
+// service deletes the matching blobs from object storage (see
+// files.service deleteForNote).
+export const files = pgTable(
+  'files',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    noteId: uuid('note_id')
+      .notNull()
+      .references(() => notes.id, { onDelete: 'cascade' }),
+    // Object-storage key (e.g. `<userId>/<uuid>`). Unique so a row maps to
+    // exactly one blob and vice versa.
+    key: text('key').notNull(),
+    filename: text('filename').notNull(),
+    contentType: text('content_type').notNull(),
+    size: integer('size').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('files_user_created_idx').on(t.userId, t.createdAt.desc()),
+    index('files_note_idx').on(t.noteId),
+    uniqueIndex('files_key_uniq').on(t.key),
+  ],
+);
+
 export const tags = pgTable(
   'tags',
   {
