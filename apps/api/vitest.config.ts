@@ -14,6 +14,20 @@ export default defineConfig({
     // seeded data mid-test, so serialize at the file level. Tests within a file
     // already run sequentially.
     fileParallelism: false,
+    // Dummy values so config.ts parses when the HTTP tests import the plugins
+    // and routes. Nothing here is actually dialed: services are faked and the
+    // DB tests connect via the container URL injected from globalSetup, not
+    // config. JWT_SECRET is real enough (>=32 chars) to sign/verify test
+    // sessions.
+    env: {
+      DATABASE_URL: 'postgres://unused:unused@localhost:5432/unused',
+      JWT_SECRET: 'test-jwt-secret-please-only-for-tests-0123456789',
+      SMTP_URL: 'smtp://localhost:2525',
+      S3_ENDPOINT: 'http://localhost:9000',
+      S3_BUCKET: 'test-bucket',
+      S3_ACCESS_KEY: 'test',
+      S3_SECRET_KEY: 'test',
+    },
     // Container start + migrate on a cold image pull is slow; give hooks room.
     hookTimeout: 120_000,
     testTimeout: 30_000,
