@@ -25,6 +25,11 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 'true'
     restart: unless-stopped
 
+  minio:
+    ports:
+      - '127.0.0.1:9000:9000' # S3 API
+      - '127.0.0.1:9001:9001' # web console
+
   api:
     command: ['sh', '-c', 'pnpm run db:migrate && pnpm run dev']
     ports:
@@ -49,4 +54,6 @@ services:
       db:
         condition: service_healthy
       mailpit:
+        condition: service_started
+      minio:
         condition: service_started
