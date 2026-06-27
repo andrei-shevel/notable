@@ -31,6 +31,11 @@ services:
       - '127.0.0.1:9001:9001' # web console
 
   api:
+    # The default (prod) build targets the slim `runtime` stage, which has no
+    # pnpm/tsx/source. Dev needs the full workspace image with hot-reload, so
+    # build the `builder` stage instead.
+    build:
+      target: builder
     command: ['sh', '-c', 'pnpm run db:migrate && pnpm run dev']
     ports:
       - '127.0.0.1:3000:3000'
