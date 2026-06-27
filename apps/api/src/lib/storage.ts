@@ -39,6 +39,11 @@ export type Storage = {
   ensureBucket(): Promise<void>;
 };
 
+// The process-wide storage handle. A single construction site (mirroring the
+// `s3` client singleton above) so both the service container and the startup
+// bucket-ensure share one instance instead of rebuilding it.
+export const storage = createStorage({ client: s3, bucket: config.S3_BUCKET });
+
 export function createStorage(deps: { client: S3Client; bucket: string }): Storage {
   const { client, bucket } = deps;
 
