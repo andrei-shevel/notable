@@ -113,6 +113,19 @@ the `@notable/*` workspace TS but keeping the API's own declared npm deps
 external. Two entrypoints: `server.js` and `db/migrate.js` (the container runs
 the migrator first).
 
+**Metrics** are Prometheus-format, exposed at `GET /metrics`.
+`plugins/metrics.ts` registers `fastify-metrics` (default Node metrics + a
+per-route `http_request_duration_seconds` histogram keyed by the
+low-cardinality route pattern). Custom domain counters/histograms live in
+`lib/metrics.ts` on prom-client's global registry and are incremented directly
+by the services (`auth`/`notes`/`files`), mirroring how they import `mail/*`.
+Two load-bearing constraints: the plugin is **skipped under `NODE_ENV=test`**
+(it registers process-wide default metrics on the global registry, and
+`buildApp` runs many times per test process — re-registration throws); and
+`/metrics` is deliberately **not** proxied by the Caddyfile (`/api/*` only), so
+it stays private to the deployment network. There's no bundled scraper —
+point a Prometheus-compatible collector at the endpoint to graph the data.
+
 ## Web architecture
 
 - Routing: **wouter**, mounted under base `/app` (`App.tsx`, Vite `base: '/app/'`).

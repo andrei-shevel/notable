@@ -13,6 +13,7 @@ import { ensureBucket, registerGracefulShutdown } from '@/lib/lifecycle';
 import { buildLoggerOptions, genReqId } from '@/lib/logger';
 import cookiePlugin from '@/plugins/cookie';
 import jwtPlugin from '@/plugins/jwt';
+import metricsPlugin from '@/plugins/metrics';
 import ratelimitPlugin from '@/plugins/ratelimit';
 import { authRoutes } from '@/routes/auth.routes';
 import { filesRoutes } from '@/routes/files.routes';
@@ -34,6 +35,14 @@ export async function buildApp(): Promise<FastifyInstance> {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
   registerErrorHandler(app);
+
+  // Register metrics first so its onResponse timing hook wraps every route.
+  // Skipped under test: it registers process-wide default metrics on the global
+  // prom-client registry, and buildApp runs many times per test process, where
+  // re-registration would throw.
+  if (config.NODE_ENV !== 'test') {
+    await app.register(metricsPlugin);
+  }
 
   // Order matters: cookie must register before jwt (jwt reads the cookie),
   // and rate-limit before any route that opts in via `config.rateLimit`.

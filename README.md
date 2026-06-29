@@ -25,7 +25,7 @@ marketing landing page behind a Caddy edge.
 
 | Package            | Path              | Description |
 |--------------------|-------------------|-------------|
-| `@notable/api`     | `apps/api`        | Fastify 5 API — Drizzle ORM + Postgres, JWT-cookie auth, S3/MinIO uploads |
+| `@notable/api`     | `apps/api`        | Fastify 5 API — Drizzle ORM + Postgres, JWT-cookie auth, S3/MinIO uploads, Prometheus metrics |
 | `@notable/web`     | `apps/web`        | React 19 SPA — Vite, wouter, zustand, react-hook-form, ky |
 | `@notable/landing` | `apps/landing`    | Astro marketing site (near-zero JS) |
 | `@notable/editor`  | `packages/editor` | Tiptap editor — client `Editor` component + server-side HTML rendering |
@@ -99,3 +99,12 @@ API tests run against a real Postgres started with Testcontainers — one
 container is shared across files and truncated between tests, so the first run
 is slow while it pulls the image. Repository and service tests connect to the
 database directly; HTTP tests boot the Fastify app with faked services.
+
+## Observability
+
+The API exposes Prometheus-format metrics at `/metrics`: default Node runtime
+metrics, a per-route request-duration histogram (RED — rate, errors, duration),
+and custom domain metrics (auth outcomes, notes created, uploads). The endpoint
+is internal-only — it is not proxied by the Caddy edge, so it stays private to
+the deployment network. Point any Prometheus-compatible scraper at it to collect
+and graph the data.

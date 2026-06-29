@@ -10,6 +10,7 @@ import type {
 } from '@notable/shared';
 import type { JSONContent } from '@notable/editor/server';
 import { BadRequestError, NotFoundError } from '@/errors/AppError';
+import { notesCreatedTotal } from '@/lib/metrics';
 import type { ListCursor, NoteRow, NotesRepository } from '@/repositories/notes.repository';
 
 // Drizzle returns Date instances for timestamptz; the API contract is ISO
@@ -123,6 +124,7 @@ export function createNotesService(deps: {
 
     async create(userId: string, input: CreateNoteRequest): Promise<Note> {
       const row = await repo.create(userId, input);
+      notesCreatedTotal.inc();
       logger.debug({ userId, noteId: row.id }, 'note created');
       return toApiShape(row);
     },

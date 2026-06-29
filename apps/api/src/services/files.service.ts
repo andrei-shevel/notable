@@ -5,6 +5,7 @@ import { pipeline } from 'node:stream/promises';
 import type { FastifyBaseLogger } from 'fastify';
 import type { FileMeta } from '@notable/shared';
 import { NotFoundError } from '@/errors/AppError';
+import { fileUploadBytes, fileUploadsTotal } from '@/lib/metrics';
 import type { FileRow, FilesRepository } from '@/repositories/files.repository';
 import type { NotesRepository } from '@/repositories/notes.repository';
 import type { Storage } from '@/lib/storage';
@@ -75,6 +76,8 @@ export function createFilesService(deps: {
         contentType: input.contentType,
         size,
       });
+      fileUploadsTotal.inc({ kind: 'upload' });
+      fileUploadBytes.observe(size);
       logger.debug(
         { userId, noteId, fileId: row.id, size, contentType: input.contentType },
         'file uploaded',
@@ -129,6 +132,8 @@ export function createFilesService(deps: {
         contentType: source.contentType,
         size: source.size,
       });
+      fileUploadsTotal.inc({ kind: 'clone' });
+      fileUploadBytes.observe(source.size);
       return toApiShape(row);
     },
 

@@ -7,6 +7,7 @@ import {
   InvalidCredentialsError,
   UnauthorizedError,
 } from '@/errors/AppError';
+import { authEventsTotal } from '@/lib/metrics';
 import { sendEmailChangeCode } from '@/mail/emailChangeCode';
 import { sendLoginCode } from '@/mail/loginCode';
 import type { AuthRepository, User } from '@/repositories/auth.repository';
@@ -64,6 +65,7 @@ export function createAuthService(deps: { repo: AuthRepository; logger: FastifyB
       const expiresAt = new Date(Date.now() + CODE_TTL_MS);
 
       await repo.createToken({ tokenHash, userId: user.id, expiresAt });
+      authEventsTotal.inc({ event: 'login_initiated', outcome: 'success' });
 
       // Swallow email errors: the token is already persisted, and surfacing
       // the failure would leak email-existence information to the caller.
@@ -86,9 +88,11 @@ export function createAuthService(deps: { repo: AuthRepository; logger: FastifyB
 
       if (!consumed) {
         await repo.incrementLiveAttempts(userId);
+        authEventsTotal.inc({ event: 'verify', outcome: 'failure' });
         throw new InvalidCredentialsError();
       }
 
+      authEventsTotal.inc({ event: 'verify', outcome: 'success' });
       return { userId: consumed.userId };
     },
 
