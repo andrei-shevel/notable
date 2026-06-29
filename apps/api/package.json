@@ -29,6 +29,7 @@
     "fastify-metrics": "^13.2.1",
     "fastify-plugin": "^5.0.1",
     "fastify-type-provider-zod": "^6.1.0",
+    "ioredis": "^5.11.1",
     "nodemailer": "^8.0.10",
     "postgres": "^3.4.9",
     "prom-client": "^15.1.3",

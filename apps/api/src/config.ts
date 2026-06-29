@@ -5,6 +5,10 @@ const ConfigSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   DATABASE_URL: z.string().min(1),
+  // Optional: when set, the rate limiter stores its per-IP windows in Redis
+  // instead of process memory, so limits hold across api replicas and restarts.
+  // Leave unset for single-container dev/test (in-memory store). See plugins/ratelimit.ts.
+  REDIS_URL: z.string().url().optional(),
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   SMTP_URL: z.string().min(1),
   MAIL_FROM: z.string().default('Notable <noreply@notable.local>'),

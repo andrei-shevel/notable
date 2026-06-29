@@ -30,6 +30,18 @@ services:
       retries: 10
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    # Rate-limit windows are ephemeral, so disable persistence: no RDB
+    # snapshots (--save '') and no AOF. A restart simply resets the counters.
+    command: ['redis-server', '--save', '', '--appendonly', 'no']
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   minio:
     image: minio/minio:latest
     command: server /data --console-address ":9001"
@@ -63,6 +75,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgres://notable:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@db:5432/notable
+      REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required, see .env.example}
       SMTP_URL: ${SMTP_URL:?SMTP_URL required, see .env.example}
       MAIL_FROM: ${MAIL_FROM:?MAIL_FROM required, see .env.example}
@@ -74,6 +87,8 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY:?S3_SECRET_KEY required, see .env.example}
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       minio:
         condition: service_started

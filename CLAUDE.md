@@ -11,14 +11,14 @@ Caddy "edge" image: landing at `/`, SPA under `/app`, API at `/api/*`.
 
 ## Workspace layout
 
-| Package              | Path             | What it is |
-|----------------------|------------------|------------|
-| `@notable/api`       | `apps/api`       | Fastify 5 API, Drizzle ORM + Postgres, JWT-cookie auth, S3/MinIO uploads |
-| `@notable/web`       | `apps/web`       | React 19 SPA (Vite, wouter, zustand, react-hook-form, ky) |
-| `@notable/landing`   | `apps/landing`   | Astro marketing site (near-zero JS) |
-| `@notable/editor`    | `packages/editor`| Tiptap editor: client `Editor` component + server `renderNoteHtml` |
-| `@notable/ui`        | `packages/ui`    | Radix-based primitives, design tokens (SCSS), icons (lucide) |
-| `@notable/shared`    | `packages/shared`| Zod schemas + inferred types shared by API and web (`apps/edge` is build-only: a Dockerfile + Caddyfile) |
+| Package            | Path              | What it is                                                                                               |
+| ------------------ | ----------------- | -------------------------------------------------------------------------------------------------------- |
+| `@notable/api`     | `apps/api`        | Fastify 5 API, Drizzle ORM + Postgres, JWT-cookie auth, S3/MinIO uploads                                 |
+| `@notable/web`     | `apps/web`        | React 19 SPA (Vite, wouter, zustand, react-hook-form, ky)                                                |
+| `@notable/landing` | `apps/landing`    | Astro marketing site (near-zero JS)                                                                      |
+| `@notable/editor`  | `packages/editor` | Tiptap editor: client `Editor` component + server `renderNoteHtml`                                       |
+| `@notable/ui`      | `packages/ui`     | Radix-based primitives, design tokens (SCSS), icons (lucide)                                             |
+| `@notable/shared`  | `packages/shared` | Zod schemas + inferred types shared by API and web (`apps/edge` is build-only: a Dockerfile + Caddyfile) |
 
 `@notable/shared` is the contract layer: request/response shapes are Zod schemas
 there, consumed by the API (Fastify validates and serializes against them via
@@ -34,8 +34,8 @@ Workspace packages ship **raw TypeScript** (no build step; `exports` point at
 Run from the repo root unless noted.
 
 ```bash
-# Local dev: bring up Postgres + MinIO + mailpit + API in Docker, then run the
-# Vite dev server on the host (proxies /api to the container).
+# Local dev: bring up Postgres + Redis + MinIO + mailpit + API in Docker, then
+# run the Vite dev server on the host (proxies /api to the container).
 pnpm up            # docker compose up (base + dev overrides), runs db:migrate then api
 pnpm dev           # vite dev server for @notable/web -> http://localhost:5173/app/
 pnpm logs          # tail compose logs
@@ -70,8 +70,11 @@ There is **no top-level `lint`**; only `apps/web` has eslint (`pnpm --filter @no
 Copy `.env.example` to `.env` at the repo root; compose reads it automatically.
 The API validates all env via Zod in `apps/api/src/config.ts` and **throws at
 startup** on anything missing/invalid — add new config there, not via ad-hoc
-`process.env` reads. Dev URLs of note: SPA `localhost:5173/app/`, mailpit (catches
-magic-link mail) `localhost:8025`, MinIO console `localhost:9001`.
+`process.env` reads. `REDIS_URL` is **optional** — when set the rate limiter
+uses a shared Redis store, otherwise it falls back to per-process in-memory
+counters (compose wires it automatically; see "Rate limiting" below). Dev URLs
+of note: SPA `localhost:5173/app/`, mailpit (catches magic-link mail)
+`localhost:8025`, MinIO console `localhost:9001`.
 
 ## API architecture
 
@@ -102,6 +105,18 @@ Layered, with a single composition root. Per HTTP resource there is a trio:
 (`{ sub: userId }`) set as the `session` httpOnly cookie; `plugins/jwt.ts`
 reads it from the cookie and reshapes the payload to `request.user.id`. See the
 brute-force notes at the top of `auth.service.ts` before touching that flow.
+
+**Rate limiting** (`plugins/ratelimit.ts`) registers `@fastify/rate-limit` with
+`global: false`, so routes opt in via `config.rateLimit` (today only the auth
+routes, to slow magic-link/code flooding). The store is in-memory by default —
+correct for a single api container — but switches to a shared Redis store when
+`REDIS_URL` is set, so per-IP windows hold across replicas and survive restarts.
+The client is created with a short `connectTimeout`/`maxRetriesPerRequest` and
+the plugin's `skipOnError` (default) is left on, so a Redis outage degrades to
+_unthrottled_ rather than failing requests; the plugin closes the client on app
+shutdown via an `onClose` hook. Compose runs a `redis` service (persistence
+disabled — the windows are throwaway) and wires `REDIS_URL` to it. Tests leave
+`REDIS_URL` unset, so the suite never needs Redis.
 
 **Schema** lives in `apps/api/src/db/schema.ts` (Drizzle). It relies on
 Postgres-specific features: `citext` emails, a generated `tsvector` column +
@@ -134,7 +149,7 @@ no second source of truth, so the docs can't drift from the contract. Two
 constraints mirror the metrics plugin: it must register **before** the routes
 (its `onRoute` hook only sees routes added afterward), and it's **skipped under
 `NODE_ENV=test`** (pure overhead for the HTTP tests). Unlike `/metrics`, the
-`/api/docs` path *is* reachable through the Caddy `/api/*` proxy in production.
+`/api/docs` path _is_ reachable through the Caddy `/api/*` proxy in production.
 
 ## Web architecture
 

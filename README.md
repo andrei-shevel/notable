@@ -16,21 +16,21 @@ marketing landing page behind a Caddy edge.
         │ landing (Astro)│    │   web (React)  │    │   api (Fastify)  │
         └───────────────┘    └────────────────┘    └────────┬─────────┘
                                                             │
-                                              ┌─────────────┴─────────────┐
-                                              │  Postgres        S3/MinIO │
-                                              └───────────────────────────┘
+                                              ┌─────────────┴──────────────┐
+                                              │ Postgres  Redis  S3/MinIO  │
+                                              └────────────────────────────┘
 ```
 
 ## Workspace
 
-| Package            | Path              | Description |
-|--------------------|-------------------|-------------|
-| `@notable/api`     | `apps/api`        | Fastify 5 API — Drizzle ORM + Postgres, JWT-cookie auth, S3/MinIO uploads, OpenAPI docs, Prometheus metrics |
-| `@notable/web`     | `apps/web`        | React 19 SPA — Vite, wouter, zustand, react-hook-form, ky |
-| `@notable/landing` | `apps/landing`    | Astro marketing site (near-zero JS) |
-| `@notable/editor`  | `packages/editor` | Tiptap editor — client `Editor` component + server-side HTML rendering |
-| `@notable/ui`      | `packages/ui`     | Radix-based primitives, design tokens (SCSS), icons (lucide) |
-| `@notable/shared`  | `packages/shared` | Zod schemas + inferred types shared by the API and web |
+| Package            | Path              | Description                                                                                                                                      |
+| ------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@notable/api`     | `apps/api`        | Fastify 5 API — Drizzle ORM + Postgres, JWT-cookie auth, S3/MinIO uploads, optional Redis-backed rate limiting, OpenAPI docs, Prometheus metrics |
+| `@notable/web`     | `apps/web`        | React 19 SPA — Vite, wouter, zustand, react-hook-form, ky                                                                                        |
+| `@notable/landing` | `apps/landing`    | Astro marketing site (near-zero JS)                                                                                                              |
+| `@notable/editor`  | `packages/editor` | Tiptap editor — client `Editor` component + server-side HTML rendering                                                                           |
+| `@notable/ui`      | `packages/ui`     | Radix-based primitives, design tokens (SCSS), icons (lucide)                                                                                     |
+| `@notable/shared`  | `packages/shared` | Zod schemas + inferred types shared by the API and web                                                                                           |
 
 `@notable/shared` is the contract layer: request/response shapes are Zod schemas
 consumed by the API (validated and serialized via `fastify-type-provider-zod`)
@@ -41,7 +41,7 @@ consumers compile them (Vite for web, esbuild for the API).
 
 - Node.js 22+
 - pnpm
-- Docker (for Postgres, MinIO, and mailpit)
+- Docker (for Postgres, Redis, MinIO, and mailpit)
 
 ## Getting started
 
@@ -68,7 +68,7 @@ outbound mail at <http://localhost:8025>. The MinIO console is at
 ## Common commands
 
 ```bash
-pnpm up            # start the stack (Postgres + MinIO + mailpit + API)
+pnpm up            # start the stack (Postgres + Redis + MinIO + mailpit + API)
 pnpm down          # stop the stack
 pnpm logs          # tail container logs
 pnpm rebuild       # rebuild + restart containers
