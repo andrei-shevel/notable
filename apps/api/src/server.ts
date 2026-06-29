@@ -15,6 +15,7 @@ import cookiePlugin from '@/plugins/cookie';
 import jwtPlugin from '@/plugins/jwt';
 import metricsPlugin from '@/plugins/metrics';
 import ratelimitPlugin from '@/plugins/ratelimit';
+import swaggerPlugin from '@/plugins/swagger';
 import { authRoutes } from '@/routes/auth.routes';
 import { filesRoutes } from '@/routes/files.routes';
 import { healthRoutes } from '@/routes/health.routes';
@@ -50,6 +51,14 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(jwtPlugin);
   await app.register(ratelimitPlugin);
   await app.register(multipart, { limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 } });
+
+  // Register before routes: @fastify/swagger collects each route's schema via
+  // an onRoute hook, so it only sees routes added after it. Skipped under test
+  // for the same reason as metrics — it's pure overhead for the HTTP tests and
+  // none of them assert on the docs.
+  if (config.NODE_ENV !== 'test') {
+    await app.register(swaggerPlugin);
+  }
 
   await app.register(healthRoutes);
 

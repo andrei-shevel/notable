@@ -126,6 +126,16 @@ Two load-bearing constraints: the plugin is **skipped under `NODE_ENV=test`**
 it stays private to the deployment network. There's no bundled scraper —
 point a Prometheus-compatible collector at the endpoint to graph the data.
 
+**OpenAPI docs** are served at `/api/docs` (Swagger UI; raw spec at
+`/api/docs/json`). `plugins/swagger.ts` registers `@fastify/swagger` +
+`@fastify/swagger-ui`, using `jsonSchemaTransform` from
+`fastify-type-provider-zod` to derive the spec from each route's Zod `schema` —
+no second source of truth, so the docs can't drift from the contract. Two
+constraints mirror the metrics plugin: it must register **before** the routes
+(its `onRoute` hook only sees routes added afterward), and it's **skipped under
+`NODE_ENV=test`** (pure overhead for the HTTP tests). Unlike `/metrics`, the
+`/api/docs` path *is* reachable through the Caddy `/api/*` proxy in production.
+
 ## Web architecture
 
 - Routing: **wouter**, mounted under base `/app` (`App.tsx`, Vite `base: '/app/'`).
