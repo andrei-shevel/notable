@@ -15,7 +15,7 @@ RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 # Workspace plumbing first — changes to source don't bust this layer.
 # Only the package.json files in the filter graphs below are needed:
 #   @notable/web + workspace dep @notable/ui
-#   @notable/landing (no workspace deps)
+#   @notable/landing + workspace dep @notable/ui
 # apps/api is unreachable from either filter, so it's omitted.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY apps/web/package.json     ./apps/web/
@@ -42,8 +42,8 @@ RUN pnpm --filter @notable/web --filter @notable/landing -r build
 # ---------------------------------------------------------------------------
 FROM caddy:2-alpine
 
-# Astro-built marketing landing (multi-page HTML + hashed assets).
-COPY --from=web-builder /repo/apps/landing/dist /srv-landing
+# Next.js static export of the marketing landing (HTML + hashed assets).
+COPY --from=web-builder /repo/apps/landing/out /srv-landing
 
 # Vite-built SPA bundle.
 COPY --from=web-builder /repo/apps/web/dist /srv-app

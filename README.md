@@ -2,7 +2,7 @@
 
 A note-taking app with a rich-text editor, full-text search, and image uploads.
 Built as a pnpm monorepo and served from a single origin in production: a
-Fastify/Postgres API, a React SPA, a Tiptap-based editor, and an Astro
+Fastify/Postgres API, a React SPA, a Tiptap-based editor, and a Next.js
 marketing landing page behind a Caddy edge.
 
 ## Architecture
@@ -13,7 +13,7 @@ marketing landing page behind a Caddy edge.
                          └────────────┬─────────────┘
                 /                     │  /app                /api/*
         ┌───────────────┐    ┌────────────────┐    ┌──────────────────┐
-        │ landing (Astro)│    │   web (React)  │    │   api (Fastify)  │
+        │ landing (Next) │    │   web (React)  │    │   api (Fastify)  │
         └───────────────┘    └────────────────┘    └────────┬─────────┘
                                                             │
                                               ┌─────────────┴──────────────┐
@@ -27,7 +27,7 @@ marketing landing page behind a Caddy edge.
 | ------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `@notable/api`     | `apps/api`        | Fastify 5 API — Drizzle ORM + Postgres, JWT-cookie auth, S3/MinIO uploads, optional Redis-backed rate limiting, OpenAPI docs, Prometheus metrics |
 | `@notable/web`     | `apps/web`        | React 19 SPA — Vite, wouter, zustand, react-hook-form, ky                                                                                        |
-| `@notable/landing` | `apps/landing`    | Astro marketing site (near-zero JS)                                                                                                              |
+| `@notable/landing` | `apps/landing`    | Next.js marketing site (static export, coming-soon page)                                                                                         |
 | `@notable/editor`  | `packages/editor` | Tiptap editor — client `Editor` component + server-side HTML rendering                                                                           |
 | `@notable/ui`      | `packages/ui`     | Radix-based primitives, design tokens (SCSS), icons (lucide)                                                                                     |
 | `@notable/shared`  | `packages/shared` | Zod schemas + inferred types shared by the API and web                                                                                           |
