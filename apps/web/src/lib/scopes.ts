@@ -1,5 +1,5 @@
-import { FileText, Star, Trash2 } from '@notable/ui/icons';
-import type { LucideIcon } from '@notable/ui/icons';
+import { FileText, Star, Trash2 } from 'natural/icons';
+import type { LucideIcon } from 'natural/icons';
 
 export type LibraryScopeId = 'all' | 'starred' | 'trash';
 

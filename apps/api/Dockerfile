@@ -31,7 +31,6 @@ COPY apps/web/package.json apps/web/package.json
 COPY apps/landing/package.json apps/landing/package.json
 COPY packages/editor/package.json packages/editor/package.json
 COPY packages/shared/package.json packages/shared/package.json
-COPY packages/ui/package.json packages/ui/package.json
 
 # Full install (incl. devDeps: esbuild, tsx) for @notable/api and the workspace
 # packages it depends on. The `...` suffix pulls in @notable/shared + the

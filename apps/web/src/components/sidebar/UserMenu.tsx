@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useLocation } from 'wouter';
 
-import { ChevronsUpDown, LogOut, Settings } from '@notable/ui/icons';
-import { Menu } from '@notable/ui';
+import { ChevronsUpDown, LogOut, Settings } from 'natural/icons';
+import { Menu } from 'natural';
 
 import { useCurrentUser } from '@/hooks/data/useCurrentUser';
 import { useSignOut } from '@/hooks/services/useSignOut';

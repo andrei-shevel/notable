@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Button, Dialog } from '@notable/ui';
+import { Button, Dialog } from 'natural';
 
 import styles from './ConfirmModal.module.scss';
 

@@ -1,4 +1,4 @@
-import { Avatar } from '@notable/ui';
+import { Avatar } from 'natural';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
 

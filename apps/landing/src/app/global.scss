@@ -1,7 +1,7 @@
 // Global styles for @notable/landing. Loads design-system tokens + reset once,
 // at the root, before any component module styles.
 
-@use '@notable/ui/tokens';
+@use 'natural/tokens';
 
 // Web fonts — Inter (UI) + JetBrains Mono (code). Hosted by Google Fonts so
 // we don't have to vendor binaries in the prototype phase.

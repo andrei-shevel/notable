@@ -2,8 +2,8 @@ import { useCallback, useState, type FormEvent } from 'react';
 import { Link } from 'wouter';
 import cx from 'clsx';
 
-import { ArrowLeft, Check, Monitor, Moon, Sun } from '@notable/ui/icons';
-import { Button, Icon, Input } from '@notable/ui';
+import { ArrowLeft, Check, Monitor, Moon, Sun } from 'natural/icons';
+import { Button, Icon, Input } from 'natural';
 import { ConfirmModal } from '@/components/notes/ConfirmModal';
 
 import { useCurrentUser } from '@/hooks/data/useCurrentUser';

@@ -1,7 +1,7 @@
 import { useCallback, useState, type SubmitEvent } from 'react';
 
-import { Mail } from '@notable/ui/icons';
-import { Button, Input } from '@notable/ui';
+import { Mail } from 'natural/icons';
+import { Button, Input } from 'natural';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 
 import { useSignIn } from '@/hooks/services/useSignIn';

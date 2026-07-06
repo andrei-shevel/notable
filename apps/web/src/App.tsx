@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { Route, Router, Switch } from 'wouter';
 
-import { Tooltip } from '@notable/ui';
+import { Tooltip } from 'natural';
 import { Workspace } from './routes/Workspace';
 import { AuthGate } from './components/auth/AuthGate';
 import { Login } from './routes/Login';

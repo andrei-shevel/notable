@@ -1,5 +1,5 @@
-import { ArchiveRestore, MoreHorizontal, Star, Trash2 } from '@notable/ui/icons';
-import { Button, Icon, Menu, Tooltip } from '@notable/ui';
+import { ArchiveRestore, MoreHorizontal, Star, Trash2 } from 'natural/icons';
+import { Button, Icon, Menu, Tooltip } from 'natural';
 import { Crumbs } from './Crumbs';
 import { SavedPill } from './SavedPill';
 

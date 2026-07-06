@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Inbox, Plus, Search } from '@notable/ui/icons';
-import { Button, Icon, Input, Tooltip } from '@notable/ui';
+import { Inbox, Plus, Search } from 'natural/icons';
+import { Button, Icon, Input, Tooltip } from 'natural';
 import { NoteCard } from './NoteCard';
 import { NoteListSkeleton } from './NoteListSkeleton';
 import { NoteTitleModal } from '@/components/notes/NoteTitleModal';

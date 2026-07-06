@@ -1,7 +1,7 @@
-import { Button, Dialog } from '@notable/ui';
+import { Button, Dialog } from 'natural';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
-import type { DialogSize } from '@notable/ui';
+import type { DialogSize } from 'natural';
 
 const SIZES: DialogSize[] = ['sm', 'md', 'lg', 'full'];
 

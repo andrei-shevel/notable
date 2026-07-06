@@ -1,5 +1,5 @@
-import { CheckCircle2 } from '@notable/ui/icons';
-import { Button, Icon, Spinner, Tooltip } from '@notable/ui';
+import { CheckCircle2 } from 'natural/icons';
+import { Button, Icon, Spinner, Tooltip } from 'natural';
 
 export type SavedPillProps = {
   label?: string;

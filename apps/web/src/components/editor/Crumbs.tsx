@@ -1,9 +1,9 @@
 import { Fragment } from 'react';
 
-import type { LucideIcon } from '@notable/ui/icons';
+import type { LucideIcon } from 'natural/icons';
 
-import { Pencil } from '@notable/ui/icons';
-import { Icon } from '@notable/ui';
+import { Pencil } from 'natural/icons';
+import { Icon } from 'natural';
 
 import styles from './Crumbs.module.scss';
 

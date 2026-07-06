@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 
-import * as Lucide from '@notable/ui/icons';
-import { Search } from '@notable/ui/icons';
-import { Icon, Input } from '@notable/ui';
+import * as Lucide from 'natural/icons';
+import { Search } from 'natural/icons';
+import { Icon, Input } from 'natural';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
 

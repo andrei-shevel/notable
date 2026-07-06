@@ -1,4 +1,4 @@
-import { Spinner } from '@notable/ui';
+import { Spinner } from 'natural';
 
 import styles from './FullPageSpinner.module.scss';
 

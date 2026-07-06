@@ -29,7 +29,6 @@ marketing landing page behind a Caddy edge.
 | `@notable/web`     | `apps/web`        | React 19 SPA — Vite, wouter, zustand, react-hook-form, ky                                                                                        |
 | `@notable/landing` | `apps/landing`    | Next.js marketing site (static export, coming-soon page)                                                                                         |
 | `@notable/editor`  | `packages/editor` | Tiptap editor — client `Editor` component + server-side HTML rendering                                                                           |
-| `@notable/ui`      | `packages/ui`     | Radix-based primitives, design tokens (SCSS), icons (lucide)                                                                                     |
 | `@notable/shared`  | `packages/shared` | Zod schemas + inferred types shared by the API and web                                                                                           |
 
 `@notable/shared` is the contract layer: request/response shapes are Zod schemas

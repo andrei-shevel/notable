@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { MoreHorizontal, Share2, Star, Trash2, Tag as TagIcon } from '@notable/ui/icons';
-import { Button, Menu, Icon } from '@notable/ui';
+import { MoreHorizontal, Share2, Star, Trash2, Tag as TagIcon } from 'natural/icons';
+import { Button, Menu, Icon } from 'natural';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
 

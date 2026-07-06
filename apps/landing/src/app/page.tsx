@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Tag } from '@notable/ui';
+import { Button, Tag } from 'natural';
 
 import styles from './page.module.scss';
 

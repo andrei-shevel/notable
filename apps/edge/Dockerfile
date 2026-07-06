@@ -14,13 +14,12 @@ RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 
 # Workspace plumbing first — changes to source don't bust this layer.
 # Only the package.json files in the filter graphs below are needed:
-#   @notable/web + workspace dep @notable/ui
-#   @notable/landing + workspace dep @notable/ui
+#   @notable/web and @notable/landing (the UI kit is `natural`, fetched from
+#   its GitHub tarball pinned in the lockfile — no workspace package needed).
 # apps/api is unreachable from either filter, so it's omitted.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY apps/web/package.json     ./apps/web/
 COPY apps/landing/package.json ./apps/landing/
-COPY packages/ui/package.json  ./packages/ui/
 
 # `--filter` installs the dependency graphs for the two surfaces we build
 # here. Frozen lockfile so a stale lock fails the build loudly.
@@ -29,7 +28,6 @@ RUN pnpm install --frozen-lockfile \
       --filter @notable/landing...
 
 # Sources for the workspaces this build touches.
-COPY packages/ui    ./packages/ui
 COPY apps/web       ./apps/web
 COPY apps/landing   ./apps/landing
 

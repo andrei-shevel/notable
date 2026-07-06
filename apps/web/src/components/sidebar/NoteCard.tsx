@@ -4,7 +4,7 @@ import cx from 'clsx';
 
 import type { Note } from '@notable/shared';
 
-import { FileText } from '@notable/ui/icons';
+import { FileText } from 'natural/icons';
 
 import { formatRelativeShort } from '@/lib/date';
 

@@ -1,4 +1,4 @@
-import { Spinner } from '@notable/ui';
+import { Spinner } from 'natural';
 import { Editor } from '@/components/editor/Editor';
 
 import { useLoadNote } from '@/hooks/services/useLoadNote';

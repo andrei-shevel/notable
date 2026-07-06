@@ -17,7 +17,6 @@ Caddy "edge" image: landing at `/`, SPA under `/app`, API at `/api/*`.
 | `@notable/web`     | `apps/web`        | React 19 SPA (Vite, wouter, zustand, react-hook-form, ky)                                                |
 | `@notable/landing` | `apps/landing`    | Next.js marketing site (static export, coming-soon page)                                                 |
 | `@notable/editor`  | `packages/editor` | Tiptap editor: client `Editor` component + server `renderNoteHtml`                                       |
-| `@notable/ui`      | `packages/ui`     | Radix-based primitives, design tokens (SCSS), icons (lucide)                                             |
 | `@notable/shared`  | `packages/shared` | Zod schemas + inferred types shared by API and web (`apps/edge` is build-only: a Dockerfile + Caddyfile) |
 
 `@notable/shared` is the contract layer: request/response shapes are Zod schemas
@@ -170,7 +169,7 @@ constraints mirror the metrics plugin: it must register **before** the routes
 - The API uses the `@/*` → `src/*` path alias (tsconfig `paths`, mirrored in
   `vitest.config.ts` and resolved by esbuild at build).
 - Styling is SCSS modules (`*.module.scss`) consuming tokens/mixins from
-  `@notable/ui` (`@notable/ui/tokens`, `@notable/ui/mixins`).
+  `natural` (`natural/tokens`, `natural/mixins`).
 
 ## Testing
 

@@ -1,5 +1,5 @@
-import { Calendar } from '@notable/ui/icons';
-import { Button, Input, Popover, Icon } from '@notable/ui';
+import { Calendar } from 'natural/icons';
+import { Button, Input, Popover, Icon } from 'natural';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
 

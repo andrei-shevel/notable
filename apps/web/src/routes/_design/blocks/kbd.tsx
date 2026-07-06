@@ -1,4 +1,4 @@
-import { Kbd } from '@notable/ui';
+import { Kbd } from 'natural';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
 

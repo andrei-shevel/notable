@@ -21,7 +21,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@notable/shared": "workspace:*",
-    "@notable/ui": "workspace:*",
+    "natural": "github:andrei-shevel/natural",
     "@tiptap/core": "^3.24.0",
     "@tiptap/extension-link": "^3.24.0",
     "@tiptap/extension-paragraph": "^3.24.0",

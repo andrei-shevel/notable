@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { Button, Dialog, Input } from '@notable/ui';
+import { Button, Dialog, Input } from 'natural';
 
 import styles from './NoteTitleModal.module.scss';
 

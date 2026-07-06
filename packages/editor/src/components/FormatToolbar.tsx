@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { Editor } from '@tiptap/react';
 import { useEditorState } from '@tiptap/react';
 
-import type { LucideIcon } from '@notable/ui/icons';
+import type { LucideIcon } from 'natural/icons';
 
 import {
   Bold,
@@ -19,8 +19,8 @@ import {
   SquareCode,
   Strikethrough,
   Undo2,
-} from '@notable/ui/icons';
-import { Button, Icon, Tooltip } from '@notable/ui';
+} from 'natural/icons';
+import { Button, Icon, Tooltip } from 'natural';
 import { LinkEditPopover } from './LinkEditPopover';
 
 import styles from './FormatToolbar.module.scss';

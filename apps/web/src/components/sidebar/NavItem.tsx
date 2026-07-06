@@ -2,8 +2,8 @@ import type { CSSProperties } from 'react';
 import { Link } from 'wouter';
 import cx from 'clsx';
 
-import type { LucideIcon } from '@notable/ui/icons';
-import { Icon, type TagColor } from '@notable/ui';
+import type { LucideIcon } from 'natural/icons';
+import { Icon, type TagColor } from 'natural';
 
 import { useWorkspaceNav } from '@/hooks/useWorkspaceNav';
 import { scopesEqual, type WorkspaceScope } from '@/lib/scopes';

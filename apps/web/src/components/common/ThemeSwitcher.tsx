@@ -1,5 +1,5 @@
-import { Check, Monitor, Moon, Sun } from '@notable/ui/icons';
-import { Button, Icon, Menu, Tooltip } from '@notable/ui';
+import { Check, Monitor, Moon, Sun } from 'natural/icons';
+import { Button, Icon, Menu, Tooltip } from 'natural';
 import { useTheme, type Theme } from '@/hooks/useTheme';
 
 import styles from './ThemeSwitcher.module.scss';

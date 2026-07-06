@@ -1,5 +1,5 @@
-import { Plus, Star, Trash2 } from '@notable/ui/icons';
-import { Button, Icon } from '@notable/ui';
+import { Plus, Star, Trash2 } from 'natural/icons';
+import { Button, Icon } from 'natural';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
 

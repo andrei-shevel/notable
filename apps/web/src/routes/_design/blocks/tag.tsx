@@ -1,5 +1,5 @@
-import { Tag } from '@notable/ui';
-import type { TagColor } from '@notable/ui';
+import { Tag } from 'natural';
+import type { TagColor } from 'natural';
 import { PageHeader, SectionTitle } from '@/routes/_design/_layout';
 import { Specimen } from '@/routes/_design/_specimen';
 
